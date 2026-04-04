@@ -108,7 +108,7 @@ $slug = $slug.Substring(0,[Math]::Min(60,$slug.Length))
 $fileName = 'blog-post-' + $slug + '.html'
 Write-Host ('   Creating ' + $fileName) -ForegroundColor Gray
 
-$template = Get-Content $TemplatePath -Raw
+$template = Get-Content $TemplatePath -Raw -Encoding UTF8
 $lead = 'Exploring ' + $topic + ': how it works, why it matters, and practical steps to implement with local AI tools.'
 $desc = 'Deep dive into ' + $topic + ' with examples on Ollama, local LLMs, and autonomous coding.'
 
@@ -153,20 +153,22 @@ $blogData = $blogFetch.Content | ConvertFrom-Json
 $blogSha = $blogData.sha
 $blogHtml = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($blogData.content))
 
-$card = @"
-<a class="blog-card" href=""$fileName"">
-    <div class="blog-card-img"><span>📄</span></div>
-    <div class="blog-card-body">
-        <div class="blog-card-meta">
-            <span class="blog-card-date">$date</span>
-            <span class="blog-card-tag">AI</span>
-        </div>
-        <h3>$topic</h3>
-        <p>Automatically generated article about $topic. Explore the full content.</p>
-        <span class="rmore">Read article →</span>
-    </div>
-</a>
-"@
+# Build card HTML safely (avoids here-string quoting issues)
+$cardLines = @(
+    '<a class="blog-card" href="' + $fileName + '">'
+    '  <div class="blog-card-img"><span>📄</span></div>'
+    '  <div class="blog-card-body">'
+    '    <div class="blog-card-meta">'
+    '      <span class="blog-card-date">' + $date + '</span>'
+    '      <span class="blog-card-tag">AI</span>'
+    '    </div>'
+    '    <h3>' + $topic + '</h3>'
+    '    <p>Automatically generated article about ' + $topic + '. Explore the full content.</p>'
+    '    <span class="rmore">Read article &rarr;</span>'
+    '  </div>'
+    '</a>'
+)
+$card = $cardLines -join "`n"
 
 $insertPos = $blogHtml.IndexOf('<div class="blog-grid">')
 if ($insertPos -ge 0) {
