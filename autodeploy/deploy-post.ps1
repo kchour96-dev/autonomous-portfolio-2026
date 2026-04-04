@@ -1,17 +1,28 @@
 $ErrorActionPreference = 'Stop'
 
-$envPath = '..\.env'
-if (!(Test-Path $envPath)) { throw '.env not found' }
-$tokenLine = (Get-Content $envPath | Where-Object { $_ -match '^GITHUB_TOKEN=' })[0]
-$GitHubToken = ($tokenLine -replace '^GITHUB_TOKEN=', '').Trim()
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$envPath = Join-Path $ScriptDir '..\.env'
+if (!(Test-Path $envPath)) { throw ".env not found at $envPath" }
+$envContent = Get-Content $envPath -Raw
+$idx = $envContent.IndexOf('GITHUB_TOKEN=')
+if ($idx -lt 0) { throw 'GITHUB_TOKEN not found in .env' }
+$GitHubToken = $envContent.Substring($idx + 13).Trim().Split("`n")[0].Trim()
+if ($GitHubToken.Length -lt 20) { throw "Token too short: $($GitHubToken.Length) chars" }
+Write-Host "Token loaded: $($GitHubToken.Substring(0,8))*** ($($GitHubToken.Length) chars)" -ForegroundColor Green
+
+if (!$GitHubToken -or $GitHubToken.Length -lt 20) {
+    Write-Host '   FAIL - GITHUB_TOKEN missing or invalid in .env' -ForegroundColor Red
+    pause; exit 1
+}
 
 $GitHubUser = 'kchour96-dev'
 $GitHubRepo = 'autonomous-portfolio-2026'
 $GitHubBranch = 'main'
 $OllamaAPI = 'http://localhost:11434/api/generate'
-$TemplatePath = '..\blog-post-template.html'
+$TemplatePath = Join-Path $ScriptDir '..\blog-post-template.html'
 
 Write-Host '=== AUTONOMOUS POST DEPLOYER ===' -ForegroundColor Cyan
+Write-Host "  Token loaded ($($GitHubToken.Length) chars)" -ForegroundColor Gray
 
 Write-Host '[1/4] Checking Ollama...' -ForegroundColor Yellow
 try {
@@ -71,6 +82,24 @@ try {
     $content = $h1 + "`n" + $intro + "`n" + $img1 + "`n" + $s1 + "`n" + $s2 + "`n" + $img2 + "`n" + $s3 + "`n" + $img3 + "`n" + $concl + "`n" + $nl
 }
 
+Write-Host '[4/4] Verifying GitHub credentials...' -ForegroundColor Yellow
+$testHeaders = @{
+    Authorization = 'Bearer ' + $GitHubToken
+    Accept = 'application/vnd.github.v3+json'
+    'User-Agent' = 'OpenClaw-AutoPost'
+}
+try {
+    $testResp = Invoke-WebRequest -Uri ('https://api.github.com/repos/{0}/{1}' -f $GitHubUser, $GitHubRepo) -Headers $testHeaders -Method Get -TimeoutSec 10 -UseBasicParsing
+    if ($testResp.StatusCode -ge 200 -and $testResp.StatusCode -lt 300) {
+        Write-Host '   OK - GitHub credentials verified' -ForegroundColor Green
+    } else {
+        throw ('HTTP ' + $testResp.StatusCode)
+    }
+} catch {
+    Write-Host ('   FAIL - GitHub auth failed: ' + $_.Exception.Message) -ForegroundColor Red
+    pause; exit 1
+}
+
 Write-Host '[4/4] Building and uploading...' -ForegroundColor Yellow
 $date = Get-Date -Format 'MMMM d, yyyy'
 $dateTag = Get-Date -Format 'yyyy-MM-dd'
@@ -94,7 +123,7 @@ $article = $article -replace '\[\[CONTENT\]\]', $content
 
 $apiUrl = 'https://api.github.com/repos/' + $GitHubUser + '/' + $GitHubRepo + '/contents/' + $fileName
 $headers = @{
-    Authorization = 'token ' + $GitHubToken
+    Authorization = 'Bearer ' + $GitHubToken
     Accept = 'application/vnd.github.v3+json'
     'User-Agent' = 'OpenClaw-AutoPost'
 }
