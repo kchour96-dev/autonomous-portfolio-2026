@@ -105,7 +105,13 @@ $date = Get-Date -Format 'MMMM d, yyyy'
 $dateTag = Get-Date -Format 'yyyy-MM-dd'
 $slug = ($topic.ToLower() -replace '[^a-z0-9]+','-')
 $slug = $slug.Substring(0,[Math]::Min(60,$slug.Length))
-$fileName = 'blog-post-' + $slug + '.html'
+$baseName = 'blog-post-' + $slug
+$fileName = $baseName + '.html'
+# Avoid overwriting existing local file by adding timestamp suffix
+if (Test-Path $fileName) {
+    $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+    $fileName = $baseName + '-' + $timestamp + '.html'
+}
 Write-Host ('   Creating ' + $fileName) -ForegroundColor Gray
 
 $template = Get-Content $TemplatePath -Raw -Encoding UTF8
@@ -141,8 +147,19 @@ try {
         throw ('HTTP ' + $put.StatusCode)
     }
 } catch {
-    Write-Host ('   FAIL - ' + $_.Exception.Message) -ForegroundColor Red
-    pause; exit 1
+    if ($_.Exception.Message -match '422') {
+        Write-Host '   File exists on GitHub, fetching SHA to update...' -ForegroundColor Yellow
+        $check = Invoke-WebRequest -Uri $apiUrl -Headers $headers -UseBasicParsing -Method Get -TimeoutSec 10
+        $existing = $check.Content | ConvertFrom-Json
+        $payloadWithSha = $payload | ConvertFrom-Json
+        $payloadWithSha | Add-Member -NotePropertyName 'sha' -NotePropertyValue $existing.sha -Force
+        $payload = $payloadWithSha | ConvertTo-Json -Depth 4
+        $put = Invoke-WebRequest -Uri $apiUrl -Method Put -Body $payload -Headers $headers -ContentType 'application/json' -TimeoutSec 20 -UseBasicParsing
+        Write-Host '   OK - Updated existing article!' -ForegroundColor Green
+    } else {
+        Write-Host ('   FAIL - ' + $_.Exception.Message) -ForegroundColor Red
+        pause; exit 1
+    }
 }
 
 # Update blog.html with new card
@@ -153,10 +170,11 @@ $blogData = $blogFetch.Content | ConvertFrom-Json
 $blogSha = $blogData.sha
 $blogHtml = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($blogData.content))
 
-# Build card HTML safely (avoids here-string quoting issues)
+# Build card HTML safely with real image
+$imgUrl = 'https://picsum.photos/seed/' + $slug + '/400/200.jpg'
 $cardLines = @(
     '<a class="blog-card" href="' + $fileName + '">'
-    '  <div class="blog-card-img"><span>📄</span></div>'
+    '  <div class="blog-card-img"><img src="' + $imgUrl + '" alt="' + $topic + '" loading="lazy"></div>'
     '  <div class="blog-card-body">'
     '    <div class="blog-card-meta">'
     '      <span class="blog-card-date">' + $date + '</span>'
