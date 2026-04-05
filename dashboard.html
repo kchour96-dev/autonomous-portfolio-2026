@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal dashboard showing live GitHub stats, projects, skills usage and activity heatmap.">
+    <meta name="author" content="kchour96-dev">
+    <title>Dashboard — Autonomous Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="index.html" class="nav-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Autonomous portfolio
+        </a>
+        <button class="nav-toggle" aria-label="Menu">&#9776;</button>
+        <ul class="nav-links">
+            <li><a href="index.html#hero">Home</a></li>
+            <li><a href="index.html#how">How It Works</a></li>
+            <li><a href="index.html#tools">Tools</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="dashboard.html" class="active">Dashboard</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="ad-slot" data-ad-slot="dashboard-top"></div>
+
+<section class="section">
+    <h1 class="sec-title">Personal Dashboard</h1>
+    <p class="sub">Live data from my GitHub profile & projects — updated automatically.</p>
+    
+    <div id="dashboard-content">
+        <p style="text-align:center;padding:40px;">Loading data...</p>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>&copy; 2026 Autonomous Portfolio. Built with Ollama + OpenClaw on a GTX 1650.</p>
+    <div class="footer-links">
+        <a href="index.html#hero">Home</a>
+        <a href="index.html#how">How It Works</a>
+        <a href="blog.html">Blog</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="index.html#contact">Contact</a>
+    </div>
+</footer>
+
+<script src="dashboard.js"></script>
+
+</body>
+</html>
