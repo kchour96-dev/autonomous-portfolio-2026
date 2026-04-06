@@ -35,14 +35,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Load blog posts preview dynamically
     var blogGrid = document.getElementById('blog-grid');
+    var postCountEl = document.getElementById('post-count');
+    if (postCountEl) {
+        var totalPosts = 19; // keep in sync with actual count; API will override if available
+        postCountEl.textContent = totalPosts;
+    }
+
+    // Only attempt dynamic load if blog-grid has data-dynamic attribute
     if (blogGrid && blogGrid.getAttribute('data-dynamic') === 'true') {
-        // Scan for blog-post-*.html files from GitHub API
         fetch('https://api.github.com/repos/kchour96-dev/autonomous-portfolio-2026/contents/?ref=main')
             .then(function(res) { return res.json(); })
             .then(function(files) {
                 var posts = files.filter(function(f) { return f.name.match(/^blog-post-.*\.html$/); }).reverse();
-                // Update post count stat on homepage if present
-                var postCountEl = document.getElementById('post-count');
                 if (postCountEl) {
                     postCountEl.textContent = posts.length;
                 }
@@ -55,12 +59,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     var card = document.createElement('a');
                     card.className = 'blog-card';
                     card.href = link;
-                    // Build card with dynamic date (most recent ~5 show dates, others generic)
                     var dateDisplay = (idx < 5) ? dateStr : 'Recent';
                     card.innerHTML = '<div class="blog-card-img"><img src="https://picsum.photos/seed/' + slug + '/400/200.jpg" alt="' + title + '" loading="lazy"></div><div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-date">' + dateDisplay + '</span><span class="blog-card-tag">AI</span></div><h3>' + title + '</h3><p>Automated post about ' + title + '.</p><span class="rmore">Read article &rarr;</span></div>';
                     blogGrid.appendChild(card);
                 });
             })
-            .catch(function() { console.log('Blog load fallback'); });
+            .catch(function() { console.log('Blog dynamic load failed; using static cards'); });
     }
 });
