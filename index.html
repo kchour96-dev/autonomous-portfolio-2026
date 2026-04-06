@@ -40,7 +40,7 @@
         <h1>I Built This Site Without <span class="hl">Writing Code</span></h1>
         <p class="sub">My real journey deploying an AI-powered portfolio locally with Ollama, a GTX 1650, and OpenClaw — no cloud APIs, no hand-holding.</p>
         <div class="hero-stats">
-            <div class="hero-stat"><span class="num">5</span><span class="lab">Posts</span></div>
+            <div class="hero-stat"><span class="num" id="post-count">5</span><span class="lab">Posts</span></div>
             <div class="hero-stat"><span class="num">48h</span><span class="lab">Setup Time</span></div>
             <div class="hero-stat"><span class="num">$0</span><span class="lab">Cloud Cost</span></div>
         </div>
@@ -98,7 +98,7 @@
 <section id="blog" class="section">
     <div class="sec-label">Content</div>
     <h2 class="sec-title">Latest Articles</h2>
-    <div class="blog-grid">
+    <div class="blog-grid" data-dynamic="true">
         <!-- Dynamically filled by upcoming posts -->
     </div>
 </section>
