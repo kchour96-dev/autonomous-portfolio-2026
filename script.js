@@ -41,14 +41,23 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(function(res) { return res.json(); })
             .then(function(files) {
                 var posts = files.filter(function(f) { return f.name.match(/^blog-post-.*\.html$/); }).reverse();
-                posts.forEach(function(post) {
+                // Update post count stat on homepage if present
+                var postCountEl = document.getElementById('post-count');
+                if (postCountEl) {
+                    postCountEl.textContent = posts.length;
+                }
+                posts.forEach(function(post, idx) {
                     var slug = post.name.replace('.html', '').replace('blog-post-', '').replace(/-/g, ' ');
                     var title = slug.charAt(0).toUpperCase() + slug.slice(1);
                     var link = post.name;
+                    var created = new Date(post.created_at);
+                    var dateStr = created.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
                     var card = document.createElement('a');
                     card.className = 'blog-card';
                     card.href = link;
-                    card.innerHTML = '<div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-date">April 5, 2026</span><span class="blog-card-tag">AI</span></div><h3>' + title + '</h3><p>Automated post about ' + title + '.</p><span class="rmore">Read article \u2192</span></div>';
+                    // Build card with dynamic date (most recent ~5 show dates, others generic)
+                    var dateDisplay = (idx < 5) ? dateStr : 'Recent';
+                    card.innerHTML = '<div class="blog-card-img"><img src="https://picsum.photos/seed/' + slug + '/400/200.jpg" alt="' + title + '" loading="lazy"></div><div class="blog-card-body"><div class="blog-card-meta"><span class="blog-card-date">' + dateDisplay + '</span><span class="blog-card-tag">AI</span></div><h3>' + title + '</h3><p>Automated post about ' + title + '.</p><span class="rmore">Read article &rarr;</span></div>';
                     blogGrid.appendChild(card);
                 });
             })
