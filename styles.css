@@ -136,4 +136,37 @@ img{max-width:100%;display:block}
 }
 @media(max-width:500px){.steps{grid-template-columns:1fr}}
 
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 2.5rem 0;
+    flex-wrap: wrap;
+}
+.page-btn {
+    background: #2a2a2a;
+    color: #ccc;
+    border: 1px solid #444;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+    min-width: 48px;
+    text-align: center;
+}
+.page-btn:hover {
+    background: #00d4aa;
+    color: #000;
+    border-color: #00d4aa;
+}
+.page-btn.active {
+    background: #00d4aa;
+    color: #000;
+    border-color: #00d4aa;
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(0, 212, 170, 0.4);
+}
+
 
