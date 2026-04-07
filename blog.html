@@ -296,10 +296,9 @@
         <a href="index.html#contact">Contact</a>
     </div>
 </footer>
-<script src="script.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var pp = 6;
+    // Pagination
     var cards = document.querySelectorAll('#blog-grid .blog-card');
     var btns = document.querySelectorAll('#pagination .page-btn');
     function showPage(p) {
@@ -310,16 +309,14 @@ document.addEventListener('DOMContentLoaded', function() {
             b.classList.toggle('active', parseInt(b.dataset.page) === p);
         });
     }
-    // Initial page from URL or 1
     var pg = 1;
     var m = new URLSearchParams(window.location.search).get('page');
     if (m && !isNaN(m) && m>0) pg = parseInt(m);
     showPage(pg);
     btns.forEach(function(b) {
         b.addEventListener('click', function() {
-            var p = parseInt(b.dataset.page);
-            showPage(p);
-            window.history.replaceState(null, '', '?page=' + p);
+            showPage(parseInt(b.dataset.page));
+            window.history.replaceState(null, '', '?page=' + b.dataset.page);
         });
     });
 });
