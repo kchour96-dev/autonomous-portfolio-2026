@@ -1,7 +1,39 @@
-- name: Run AI Agent
+name: AI Agent Daily Update
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-site:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Run AI Agent
         env:
           GEMINI: ${{ secrets.GEMINI }}
           TAVILY: ${{ secrets.TAVILY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
         run: python agent_update.py
+
+      - name: Commit and Push Update
+        run: |
+          git config --global user.name "AI-Agent-Bot"
+          git config --global user.email "bot@autonomous-portfolio-2026.live"
+          git add index.html
+          git commit -m "Autonomous update" || echo "No changes"
+          git push
