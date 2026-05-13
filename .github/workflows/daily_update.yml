@@ -2,8 +2,8 @@ name: AI Agent Daily Update
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *' # Runs daily at midnight
+  workflow_dispatch: # Allows manual run
 
 jobs:
   update-site:
@@ -32,5 +32,5 @@ jobs:
           git config --global user.name "AI-Agent-Bot"
           git config --global user.email "bot@autonomous-portfolio-2026.live"
           git add index.html
-          git commit -m "Autonomous update by AI Agent"
+          git commit -m "Autonomous design update [2026 Core]"
           git push
