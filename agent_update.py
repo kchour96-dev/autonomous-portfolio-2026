@@ -3,96 +3,99 @@ import requests
 import json
 from datetime import datetime
 
-def run_agent():
-    api_key = os.getenv("AI_AGENT_KEY")
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-    headers = {'Content-Type': 'application/json'}
+def run_advanced_agent():
+    gemini_key = os.getenv("AI_AGENT_KEY")
+    tavily_key = os.getenv("TAVILY_API_KEY")
+
+    print("Step 1: Agent 'Researcher' is browsing the web...")
     
-    # We tell the AI to focus on "HOT TOPICS" that people search for
-    prompt = """
-    You are an AI SEO Expert and Tech Forecaster in 2026. 
-    1. Identify a HOT TREND for 2026 (e.g., Humanoid Robots, Space Travel, AI-Bio Integration, or Decentralized Energy).
-    2. Provide a JSON response:
-       - "title": A catchy, SEO-friendly headline.
-       - "insight": A 2-sentence deep-dive into this hot topic.
-       - "keywords": 5 trending keywords separated by commas.
-       - "thought1": 'Scanning global tech news for high-volume search trends...'
-       - "thought2": 'Synthesizing 2026 forecast data...'
-       - "thought3": 'Optimizing metadata for Google indexing...'
+    # --- TAVILY SEARCH ---
+    search_url = "https://api.tavily.com/search"
+    search_data = {
+        "api_key": tavily_key,
+        "query": "latest tech breakthroughs and future trends 2026",
+        "search_depth": "advanced",
+        "max_results": 3
+    }
+    search_response = requests.post(search_url, json=search_data)
+    search_results = search_response.json().get('results', [])
+    
+    # Format search results for Gemini
+    context = ""
+    for res in search_results:
+        context += f"Source: {res['title']} - {res['content']}\n"
+
+    print("Step 2: Agent 'Architect' is synthesizing data...")
+
+    # --- GEMINI ANALYSIS & CODING ---
+    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
+    
+    prompt = f"""
+    You are a Lead AI Architect. Based on this REAL-TIME RESEARCH:
+    {context}
+    
+    Create a 2026 forecast for a website. Provide JSON:
+    1. "hot_topic": The main trend name.
+    2. "analysis": A 2-sentence expert forecast.
+    3. "source_url": Use the most interesting URL from the research.
+    4. "thought_log": A list of 3 things you did (searching, analyzing, coding).
     Return ONLY JSON.
     """
     
-    data = {"contents": [{"parts": [{"text": prompt}]}]}
-    response = requests.post(url, headers=headers, json=data)
-    raw_text = response.json()['candidates'][0]['content']['parts'][0]['text']
-    clean_json = raw_text.replace('```json', '').replace('```', '').strip()
-    ai_data = json.loads(clean_json)
+    gemini_data = {"contents": [{"parts": [{"text": prompt}]}]}
+    gemini_response = requests.post(gemini_url, json=gemini_data)
+    
+    raw_text = gemini_response.json()['candidates'][0]['content']['parts'][0]['text']
+    ai_data = json.loads(raw_text.replace('```json', '').replace('```', '').strip())
 
-    date_now = datetime.now().strftime("%d %b %Y")
-
-    # This HTML now includes SEO META TAGS so people can find you on Google
-    html_template = f"""
+    # --- GENERATE HTML ---
+    date_str = datetime.now().strftime("%B %d, %Y")
+    html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{ai_data['title']} | Autonomous Portfolio 2026</title>
-    <meta name="description" content="{ai_data['insight']}">
-    <meta name="keywords" content="{ai_data['keywords']}">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
-        body {{ font-family: 'Inter', sans-serif; background: #000; color: #fff; }}
-        .cyber-font {{ font-family: 'Orbitron', sans-serif; }}
-        .glass {{ background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }}
-        .gradient-text {{ background: linear-gradient(90deg, #4ade80, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
-    </style>
+    <title>Autonomous 2026 | {ai_data['hot_topic']}</title>
 </head>
-<body class="p-6 md:p-20">
-    <div class="max-w-5xl mx-auto">
-        <nav class="flex justify-between items-center mb-16">
-            <div class="cyber-font text-xl font-bold tracking-widest text-green-500">AUTONOMOUS_2026</div>
-            <div class="text-[10px] text-gray-500 uppercase tracking-widest">System Status: Optimal</div>
-        </nav>
+<body class="bg-[#0a0a0a] text-gray-100 min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="max-w-4xl w-full border border-white/10 bg-white/5 p-8 rounded-3xl backdrop-blur-xl">
+        <div class="flex justify-between items-start mb-12">
+            <div class="bg-green-500 text-black px-3 py-1 text-[10px] font-bold rounded-full uppercase tracking-widest">Live Research Feed</div>
+            <div class="text-[10px] text-gray-500 font-mono">Date: {date_str}</div>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
-            <div class="md:col-span-8">
-                <p class="text-green-500 cyber-font text-sm mb-4">>> TREND_ANALYSIS_LIVE</p>
-                <h1 class="text-5xl md:text-7xl font-bold mb-8 leading-tight">{ai_data['title']}</h1>
-                <p class="text-xl text-gray-400 leading-relaxed mb-12">"{ai_data['insight']}"</p>
-                
-                <div class="flex gap-4">
-                    <div class="glass p-4 rounded-xl">
-                        <p class="text-[10px] text-gray-500 uppercase mb-1">Search Keywords</p>
-                        <p class="text-xs text-green-400 italic">{ai_data['keywords']}</p>
-                    </div>
-                </div>
+        <h1 class="text-6xl font-black mb-6 tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 italic">
+            {ai_data['hot_topic'].upper()}
+        </h1>
+        
+        <p class="text-2xl text-gray-400 mb-10 leading-snug">"{ai_data['analysis']}"</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div class="p-4 border border-white/5 bg-white/5 rounded-2xl">
+                <p class="text-[10px] text-gray-500 uppercase mb-4">Internal Thought Logs</p>
+                <ul class="text-xs space-y-2 font-mono text-blue-300">
+                    { "".join([f"<li>> {t}</li>" for t in ai_data['thought_log']]) }
+                </ul>
             </div>
-
-            <div class="md:col-span-4">
-                <div class="glass p-6 rounded-2xl border-l-4 border-green-500">
-                    <h3 class="cyber-font text-xs mb-6 text-gray-400">Agent Thought Process</h3>
-                    <ul class="space-y-6 text-xs font-light tracking-wide text-gray-300">
-                        <li class="flex gap-3"><span class="text-green-500">01</span> {ai_data['thought1']}</li>
-                        <li class="flex gap-3"><span class="text-green-500">02</span> {ai_data['thought2']}</li>
-                        <li class="flex gap-3"><span class="text-green-500">03</span> {ai_data['thought3']}</li>
-                    </ul>
-                </div>
+            <div class="p-4 border border-white/5 bg-white/5 rounded-2xl flex flex-col justify-between">
+                <p class="text-[10px] text-gray-500 uppercase mb-4">Primary Source</p>
+                <a href="{ai_data['source_url']}" target="_blank" class="text-xs text-green-400 break-all underline hover:text-white transition">
+                    {ai_data['source_url']}
+                </a>
             </div>
         </div>
 
-        <footer class="mt-32 pt-8 border-t border-white/10 flex justify-between items-center text-[10px] text-gray-600 tracking-widest uppercase">
-            <div>Last Updated: {date_now}</div>
-            <div>© 2026 Autonomous Agent Systems</div>
-        </footer>
+        <div class="text-center text-[10px] text-gray-600 uppercase tracking-widest">
+            This site was autonomously built using Tavily Research + Gemini Flash 1.5
+        </div>
     </div>
 </body>
 </html>
     """
-
+    
     with open("index.html", "w") as f:
-        f.write(html_template)
+        f.write(html_content)
 
 if __name__ == "__main__":
-    run_agent()
+    run_advanced_agent()
