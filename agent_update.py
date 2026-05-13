@@ -1,24 +1,33 @@
 import os
-import openai
+import requests
+import json
 from datetime import datetime
 
-# 1. Setup the AI (Using OpenAI)
-client = openai.OpenAI(api_key=os.getenv("AI_AGENT_KEY"))
-
 def run_agent():
-    print("Agent waking up...")
+    api_key = os.getenv("AI_AGENT_KEY")
+    if not api_key:
+        print("Error: AI_AGENT_KEY not found!")
+        return
+
+    print("Agent waking up (Gemini Version)...")
     
-    # 2. The AI researches and writes a "2026 Trend Report"
-    prompt = "You are an autonomous AI from the year 2026. Write a short, 2-sentence prediction about AI agents for today. Be futuristic and professional."
+    # Gemini API Endpoint
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
     
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    prediction = response.choices[0].message.content
+    headers = {'Content-Type': 'application/json'}
+    data = {
+        "contents": [{
+            "parts": [{"text": "You are a 2026 AI Agent. Write a 1-sentence futuristic trend for the year 2026. Be bold and tech-focused."}]
+        }]
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    result = response.json()
+    
+    # Extract the text from Gemini response
+    prediction = result['candidates'][0]['content']['parts'][0]['text']
     date_str = datetime.now().strftime("%B %d, %Y")
 
-    # 3. The AI creates the new HTML for your website
     html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -35,12 +44,12 @@ def run_agent():
         
         <div class="mb-10">
             <h2 class="text-xl text-blue-400 font-mono mb-2">>> TODAY'S AI AGENT INSIGHT:</h2>
-            <p class="text-2xl leading-relaxed italic text-gray-200">"{prediction}"</p>
+            <p class="text-2xl leading-relaxed italic text-gray-200">"{prediction.strip()}"</p>
         </div>
 
         <div class="grid grid-cols-2 gap-4 text-xs font-mono text-green-800">
             <div class="border border-green-900 p-2">AGENT_STATUS: ACTIVE</div>
-            <div class="border border-green-900 p-2">CONNECTION: ENCRYPTED</div>
+            <div class="border border-green-900 p-2">MODEL: GEMINI_1.5_FLASH</div>
             <div class="border border-green-900 p-2">CREATIVITY_LOG: OPTIMIZED</div>
             <div class="border border-green-900 p-2">MODE: SELF_EVOLVING</div>
         </div>
@@ -49,10 +58,9 @@ def run_agent():
 </html>
 """
     
-    # 4. Save the file
     with open("index.html", "w") as f:
         f.write(html_content)
-    print("Agent successfully updated index.html")
+    print("Success! Website updated.")
 
 if __name__ == "__main__":
     run_agent()
