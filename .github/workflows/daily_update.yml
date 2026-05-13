@@ -2,8 +2,8 @@ name: AI Agent Daily Update
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight
-  workflow_dispatch: # Allows manual run
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   update-site:
@@ -19,12 +19,14 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install Requirements
-        run: pip install requests
+      - name: Install Dependencies
+        run: |
+          pip install requests
 
       - name: Run AI Agent
         env:
           AI_AGENT_KEY: ${{ secrets.AI_AGENT_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
         run: python agent_update.py
 
       - name: Commit and Push Update
@@ -32,5 +34,5 @@ jobs:
           git config --global user.name "AI-Agent-Bot"
           git config --global user.email "bot@autonomous-portfolio-2026.live"
           git add index.html
-          git commit -m "Autonomous design update [2026 Core]"
+          git commit -m "Autonomous update" || echo "No changes to commit"
           git push
