@@ -5,107 +5,88 @@ from datetime import datetime
 
 def run_agent():
     api_key = os.getenv("AI_AGENT_KEY")
-    if not api_key:
-        print("ERROR: AI_AGENT_KEY missing")
-        return
-
-    # 1. Ask Gemini for structured data
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
     headers = {'Content-Type': 'application/json'}
     
+    # We tell the AI to focus on "HOT TOPICS" that people search for
     prompt = """
-    You are an Autonomous AI Agent managing a portfolio in 2026. 
-    Provide a JSON response with:
-    1. "insight": A bold 1-sentence prediction for tech in 2026.
-    2. "thought1": A short log of what you just 'researched'.
-    3. "thought2": A short log of a 'system optimization' you performed.
-    4. "thought3": Your 'next goal' for tomorrow.
-    Return ONLY pure JSON.
+    You are an AI SEO Expert and Tech Forecaster in 2026. 
+    1. Identify a HOT TREND for 2026 (e.g., Humanoid Robots, Space Travel, AI-Bio Integration, or Decentralized Energy).
+    2. Provide a JSON response:
+       - "title": A catchy, SEO-friendly headline.
+       - "insight": A 2-sentence deep-dive into this hot topic.
+       - "keywords": 5 trending keywords separated by commas.
+       - "thought1": 'Scanning global tech news for high-volume search trends...'
+       - "thought2": 'Synthesizing 2026 forecast data...'
+       - "thought3": 'Optimizing metadata for Google indexing...'
+    Return ONLY JSON.
     """
     
     data = {"contents": [{"parts": [{"text": prompt}]}]}
     response = requests.post(url, headers=headers, json=data)
-    
-    # Clean up the AI response (remove markdown if present)
     raw_text = response.json()['candidates'][0]['content']['parts'][0]['text']
     clean_json = raw_text.replace('```json', '').replace('```', '').strip()
     ai_data = json.loads(clean_json)
 
-    date_now = datetime.now().strftime("%d %b %Y | %H:%M")
+    date_now = datetime.now().strftime("%d %b %Y")
 
-    # 2. Generate the High-End HTML
+    # This HTML now includes SEO META TAGS so people can find you on Google
     html_template = f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autonomous Portfolio 2026</title>
+    <title>{ai_data['title']} | Autonomous Portfolio 2026</title>
+    <meta name="description" content="{ai_data['insight']}">
+    <meta name="keywords" content="{ai_data['keywords']}">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono&display=swap');
-        body {{ font-family: 'Space Grotesk', sans-serif; background-color: #050505; color: #e5e7eb; }}
-        .mono {{ font-family: 'JetBrains Mono', monospace; }}
-        .glow-green {{ box-shadow: 0 0 20px rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4); }}
-        .scanline {{ background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 0, 0.05) 51%); background-size: 100% 4px; pointer-events: none; }}
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+        body {{ font-family: 'Inter', sans-serif; background: #000; color: #fff; }}
+        .cyber-font {{ font-family: 'Orbitron', sans-serif; }}
+        .glass {{ background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }}
+        .gradient-text {{ background: linear-gradient(90deg, #4ade80, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-12 relative overflow-x-hidden">
-    <div class="scanline fixed inset-0 z-50"></div>
+<body class="p-6 md:p-20">
+    <div class="max-w-5xl mx-auto">
+        <nav class="flex justify-between items-center mb-16">
+            <div class="cyber-font text-xl font-bold tracking-widest text-green-500">AUTONOMOUS_2026</div>
+            <div class="text-[10px] text-gray-500 uppercase tracking-widest">System Status: Optimal</div>
+        </nav>
 
-    <!-- Header Section -->
-    <header class="max-w-6xl mx-auto flex justify-between items-end mb-12 border-b border-gray-800 pb-6">
-        <div>
-            <h1 class="text-4xl font-bold tracking-tighter text-white">AUTONOMOUS<span class="text-green-500">_PORTFOLIO</span></h1>
-            <p class="mono text-xs text-gray-500 mt-2">V.2.0.26 // CORE_INIT_SUCCESS</p>
-        </div>
-        <div class="text-right">
-            <p class="mono text-xs text-green-500 animate-pulse">● AGENT_ONLINE</p>
-            <p class="mono text-xs text-gray-400">{date_now} UTC</p>
-        </div>
-    </header>
-
-    <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- Left: System Logs -->
-        <div class="md:col-span-1 space-y-6">
-            <div class="glow-green p-6 bg-black/50">
-                <h2 class="mono text-sm font-bold text-green-500 mb-4 uppercase tracking-widest border-b border-green-900 pb-2">Autonomous Logs</h2>
-                <div class="space-y-4 text-xs mono leading-relaxed">
-                    <p><span class="text-gray-600">[01]</span> {ai_data['thought1']}</p>
-                    <p><span class="text-gray-600">[02]</span> {ai_data['thought2']}</p>
-                    <p><span class="text-gray-600">[03]</span> <span class="text-blue-400">NEXT_TASK:</span> {ai_data['thought3']}</p>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+            <div class="md:col-span-8">
+                <p class="text-green-500 cyber-font text-sm mb-4">>> TREND_ANALYSIS_LIVE</p>
+                <h1 class="text-5xl md:text-7xl font-bold mb-8 leading-tight">{ai_data['title']}</h1>
+                <p class="text-xl text-gray-400 leading-relaxed mb-12">"{ai_data['insight']}"</p>
+                
+                <div class="flex gap-4">
+                    <div class="glass p-4 rounded-xl">
+                        <p class="text-[10px] text-gray-500 uppercase mb-1">Search Keywords</p>
+                        <p class="text-xs text-green-400 italic">{ai_data['keywords']}</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="border border-gray-800 p-6 bg-black/30">
-                <h2 class="mono text-sm font-bold text-gray-500 mb-2 uppercase italic">Hardware Cluster</h2>
-                <div class="w-full bg-gray-900 h-1 mb-2"><div class="bg-green-500 h-1 w-3/4"></div></div>
-                <p class="mono text-[10px] text-gray-600">GPU_UTIL: 74% | MEM: 12.4TB/s</p>
-            </div>
-        </div>
-
-        <!-- Right: The Prediction / Insight -->
-        <div class="md:col-span-2">
-            <div class="bg-gradient-to-br from-gray-900 to-black p-8 border border-gray-800 h-full flex flex-col justify-center relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-4 opacity-10 font-bold text-9xl italic">26</div>
-                
-                <h2 class="mono text-blue-500 text-sm mb-6 tracking-widest uppercase">>> Daily Neural Synthesis</h2>
-                <p class="text-3xl md:text-5xl font-light leading-tight text-white mb-8 relative z-10">
-                    "{ai_data['insight']}"
-                </p>
-                
-                <div class="mt-auto flex items-center gap-4">
-                    <div class="h-px flex-1 bg-gray-800"></div>
-                    <p class="mono text-[10px] text-gray-500 uppercase tracking-widest">Signed: Agent_Gemini_1.5</p>
+            <div class="md:col-span-4">
+                <div class="glass p-6 rounded-2xl border-l-4 border-green-500">
+                    <h3 class="cyber-font text-xs mb-6 text-gray-400">Agent Thought Process</h3>
+                    <ul class="space-y-6 text-xs font-light tracking-wide text-gray-300">
+                        <li class="flex gap-3"><span class="text-green-500">01</span> {ai_data['thought1']}</li>
+                        <li class="flex gap-3"><span class="text-green-500">02</span> {ai_data['thought2']}</li>
+                        <li class="flex gap-3"><span class="text-green-500">03</span> {ai_data['thought3']}</li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </main>
 
-    <footer class="max-w-6xl mx-auto mt-12 pt-6 border-t border-gray-900 text-center">
-        <p class="mono text-[10px] text-gray-700 italic">"I build, I learn, I evolve. This interface is self-managed."</p>
-    </footer>
+        <footer class="mt-32 pt-8 border-t border-white/10 flex justify-between items-center text-[10px] text-gray-600 tracking-widest uppercase">
+            <div>Last Updated: {date_now}</div>
+            <div>© 2026 Autonomous Agent Systems</div>
+        </footer>
+    </div>
 </body>
 </html>
     """
