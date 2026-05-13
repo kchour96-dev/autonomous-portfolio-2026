@@ -20,13 +20,12 @@ jobs:
           python-version: '3.9'
 
       - name: Install Dependencies
-        run: |
-          pip install requests
+        run: pip install requests
 
       - name: Run AI Agent
         env:
-          AI_AGENT_KEY: ${{ secrets.AI_AGENT_KEY }}
-          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          GEMINI: ${{ secrets.GEMINI }}
+          TAVILY: ${{ secrets.TAVILY }}
         run: python agent_update.py
 
       - name: Commit and Push Update
@@ -34,5 +33,5 @@ jobs:
           git config --global user.name "AI-Agent-Bot"
           git config --global user.email "bot@autonomous-portfolio-2026.live"
           git add index.html
-          git commit -m "Autonomous update" || echo "No changes to commit"
+          git commit -m "Autonomous update" || echo "No changes"
           git push
