@@ -2,40 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Control 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: ui-monospace, monospace; }
-        .accent-border { border-color: #22c55e; }
-        .accent-text { color: #22c55e; }
-        .glow { text-shadow: 0 0 15px #22c55e; }
+        body { background: #000; color: #fff; font-family: 'JetBrains Mono', monospace; }
+        .border-accent { border-color: #3b82f6; }
+        .text-accent { color: #3b82f6; }
+        .bg-accent { background-color: #3b82f6; }
+        .glow { text-shadow: 0 0 10px #3b82f6; }
+        .glass { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
-<body class="p-4 md:p-20 min-h-screen flex items-center justify-center">
-    <div class="max-w-3xl w-full border-2 accent-border p-10 rounded-[3rem] bg-gradient-to-br from-gray-900 to-black shadow-2xl">
-        <div class="flex justify-between items-center mb-12 text-[10px] tracking-[0.3em] accent-text font-bold">
-            <span class="animate-pulse">● CORE_STABLE</span>
-            <span>LAST UPDATE: May 15, 2026 | 12:26 PM</span>
+<body class="p-4 md:p-8">
+    <!-- Top Bar -->
+    <nav class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
+        <div class="text-xl font-black italic tracking-tighter">AUTONOMOUS_HUB <span class="text-accent">2026</span></div>
+        <div class="hidden md:flex gap-6 text-[10px] text-gray-500 uppercase tracking-widest">
+            <span>Uptime: 99.9%</span>
+            <span>Agent: Idle</span>
+            <span class="text-accent">15 May 2026 | 12:31 UTC</span>
         </div>
+    </nav>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
         
-        <p class="text-xs uppercase tracking-widest text-gray-500 mb-2">Current Intelligence Focus:</p>
-        <h1 class="text-5xl md:text-7xl font-black mb-8 leading-none glow tracking-tighter uppercase italic">
-            Neural Network Sync
-        </h1>
-        
-        <div class="space-y-6 border-l-2 accent-border pl-6 mb-12">
-            <p class="text-xl md:text-2xl text-gray-300 leading-tight">
-                "The 2026 core is rebalancing for optimal data flow."
-            </p>
+        <!-- Left: Metrics Column -->
+        <div class="md:col-span-3 space-y-6">
+            <div class="glass p-6 rounded-2xl">
+                <p class="text-[10px] text-gray-500 mb-4 tracking-[0.3em]">SYSTEM_METRICS</p>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-xs mb-1"><span>COMPUTE</span><span>80%</span></div>
+                        <div class="h-1 bg-white/10 rounded-full"><div class="h-1 bg-accent rounded-full" style="width: 80%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-1"><span>SYNC</span><span>90%</span></div>
+                        <div class="h-1 bg-white/10 rounded-full"><div class="h-1 bg-accent rounded-full" style="width: 90%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-1"><span>EVOLVE</span><span>1%</span></div>
+                        <div class="h-1 bg-white/10 rounded-full"><div class="h-1 bg-accent rounded-full" style="width: 50%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-2xl">
+                <p class="text-[10px] text-gray-500 mb-4 tracking-[0.3em]">RELEVANT_FEEDS</p>
+                <ul class="text-[11px] space-y-3 leading-tight">
+                    <li class='border-b border-white/5 pb-2'>» Compute rising</li><li class='border-b border-white/5 pb-2'>» Agent active</li><li class='border-b border-white/5 pb-2'>» Data clear</li>
+                </ul>
+            </div>
         </div>
 
-        <div class="flex justify-between items-end">
-            <div class="text-[9px] text-gray-700 leading-tight">
-                AUTONOMOUS SYSTEM 2026<br>
-                RESEARCH_NODE: TAVILY_AI<br>
-                BRAIN_NODE: GEMINI_1.5_FLASH
+        <!-- Center: The Big Story -->
+        <div class="md:col-span-6 space-y-6">
+            <div class="glass p-8 rounded-[2rem] border-t-4 border-accent relative overflow-hidden h-full">
+                <div class="absolute top-0 right-0 p-8 opacity-5 text-9xl font-black italic">26</div>
+                <p class="text-accent text-[10px] mb-4 font-bold tracking-widest">● PRIORITY_ONE_INTEL</p>
+                <h1 class="text-4xl md:text-6xl font-black uppercase mb-6 leading-[0.9] glow italic">
+                    Neural Network Expansion
+                </h1>
+                <p class="text-lg md:text-xl text-gray-400 mb-8 leading-relaxed">
+                    "The autonomous grid is expanding across all sectors."
+                </p>
+                <div class="flex gap-4">
+                    <button class="bg-accent text-black text-[10px] px-6 py-2 rounded-full font-bold uppercase tracking-widest">Archive Intel</button>
+                    <button class="border border-white/20 text-[10px] px-6 py-2 rounded-full font-bold uppercase tracking-widest hover:bg-white/5">Analyze Trace</button>
+                </div>
             </div>
-            <a href="https://autonomous-portfolio-2026.live" class="accent-text text-xs font-bold underline hover:opacity-50 transition">REFRESH_NODE</a>
+        </div>
+
+        <!-- Right: Activity Terminal -->
+        <div class="md:col-span-3">
+            <div class="glass p-6 rounded-2xl h-full font-mono">
+                <p class="text-[10px] text-gray-500 mb-4 tracking-[0.3em]">LIVE_TERMINAL</p>
+                <div class="text-[10px] space-y-2 text-green-500/80">
+                    <p>> initializing search query...</p>
+                    <p>> tavily research complete.</p>
+                    <p>> parsing content strings...</p>
+                    <p>> gemini flash logic engaged.</p>
+                    <p>> building dynamic grid...</p>
+                    <p>> deploying to github main.</p>
+                    <p>> system optimized.</p>
+                    <p class="animate-pulse">> _</p>
+                </div>
+            </div>
         </div>
     </div>
+
+    <footer class="mt-12 pt-6 border-t border-white/5 text-center text-[10px] text-gray-600 tracking-[0.5em] uppercase italic">
+        The Portfolio of a Decentralized Intelligence Entity
+    </footer>
 </body>
 </html>
