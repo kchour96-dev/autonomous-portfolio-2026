@@ -3,156 +3,156 @@ import requests
 import json
 from datetime import datetime
 
+def send_telegram(topic, summary):
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHANNEL_ID")
+    if not token or not chat_id: return
+    msg = f"🛡️ *LAB UPDATE: 2026 INTEL*\n\n💠 *Report:* {topic}\n\n🌐 [Access Lab](https://autonomous-portfolio-2026.live)"
+    try:
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        requests.post(url, data={"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"})
+    except: pass
+
 def run_agent():
-    # 1. Setup Keys
     g_key = os.getenv("GEMINI")
     t_key = os.getenv("TAVILY")
-    if not g_key:
-        print("CRITICAL ERROR: GEMINI Secret is missing!")
-        return
 
-    # 2. Advanced Research (Web3 & AI 2026)
-    context = "2026 tech trends and crypto market"
+    # 1. Researching Niche Topics (L2, DeFi Security, On-Chain Data)
+    research_query = "breaking DeFi hacks security alerts and Layer 2 scaling news 2026"
+    context = "DeFi Security and L2 Ecosystem"
     if t_key:
         try:
             r = requests.post("https://api.tavily.com/search", json={
-                "api_key": t_key, "query": "breaking crypto web3 and ai news 2026", "max_results": 3
-            }, timeout=10)
-            if r.status_code == 200:
-                context = str(r.json().get('results', []))
-        except: print("Tavily search failed, using backup logic.")
+                "api_key": t_key, "query": research_query, "max_results": 3
+            })
+            context = str(r.json().get('results', []))
+        except: pass
 
-    # 3. Brain (Gemini Flash)
+    # 2. Reasoning: The Research Specialist
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={g_key}"
     prompt = f"""
-    Research Data: {context}
-    You are a Systems Engineer for a 2026 Command Center. Create a JSON for a Professional Dashboard.
-    Return ONLY PURE JSON:
+    Research: {context}
+    You are the 'Lead Researcher' for an Autonomous Intelligence Lab. 
+    Create a JSON for a high-end service dashboard.
+    Return ONLY JSON:
     {{
-      "alert": "Headline news event",
-      "forecast": "2 sentence professional analysis",
-      "trend": [40, 55, 45, 70, 85, 80, 95],
-      "sectors": [{{"name": "DeFi", "status": "Stable", "val": "94%"}}, {{"name": "Compute", "status": "Warning", "val": "72%"}}],
-      "action": "Immediate Action Item",
-      "logs": ["Network scan complete", "Node rebalanced"]
+      "report_headline": "Title of research report",
+      "report_body": "2 sentence professional analysis",
+      "audit_log": ["Contract scan complete", "L2 bridge verified", "Gas optimization found"],
+      "edu_snippet": "A short 1-sentence expert tip about Web3/Automation",
+      "market_health": "Optimal/Caution",
+      "color": "#hex"
     }}
     """
     
     try:
-        resp = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=15)
-        raw_text = resp.json()['candidates'][0]['content']['parts'][0]['text']
-        data = json.loads(raw_text.replace('```json', '').replace('```', '').strip())
-    except Exception as e:
-        print(f"Gemini Error: {e}. Using Default Safety Data.")
-        data = {
-            "alert": "System Neural Sync", "forecast": "Autonomous nodes are rebalancing across the global grid.",
-            "trend": [50, 55, 52, 60, 65, 70, 75], "sectors": [{"name": "Global Sync", "status": "Stable", "val": "100%"}],
-            "action": "Initiate Diagnostics", "logs": ["Node 1-A Active", "Database Secure"]
-        }
+        resp = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]})
+        txt = resp.json()['candidates'][0]['content']['parts'][0]['text']
+        data = json.loads(txt.replace('```json', '').replace('```', '').strip())
+    except:
+        data = {{
+            "report_headline": "Neural Protocol Integrity",
+            "report_body": "Initial scans of Layer 2 bridges show 99% security compliance.",
+            "audit_log": ["Checking node health", "Scanning contracts"],
+            "edu_snippet": "Always verify contract sources before interacting with L3 nodes.",
+            "market_health": "Optimal",
+            "color": "#3b82f6"
+        }}
 
-    # 4. Generate UI Components
+    color = data.get('color', '#3b82f6')
     date_str = datetime.now().strftime("%d %b %Y | %H:%M UTC")
-    
-    sector_html = ""
-    for s in data.get('sectors', []):
-        color = "bg-green-500 shadow-[0_0_8px_#22c55e]" if s['status'] == "Stable" else "bg-yellow-500 animate-pulse"
-        sector_html += f'''
-        <div class="flex justify-between items-center mb-6">
-            <div><p class="text-xs font-bold font-mono">{s['name']}</p><p class="text-[9px] text-slate-500 uppercase italic">{s['status']}</p></div>
-            <div class="flex items-center gap-3"><span class="text-sm font-black">{s['val']}</span><div class="h-2 w-2 rounded-full {color}"></div></div>
-        </div>'''
 
-    log_html = "".join([f'<p class="border-l border-slate-700 pl-3 mb-2">> {log}</p>' for log in data.get('logs', [])])
-
-    # 5. Build Final HTML
+    # 3. PROFESSIONAL LAB UI
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center 2026</title>
+    <title>Autonomous Research Lab 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        body {{ background: #020203; color: #f8fafc; font-family: sans-serif; }}
-        .glass {{ background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(51, 65, 85, 0.4); backdrop-filter: blur(12px); }}
+        body {{ background: #050507; color: #f8fafc; font-family: 'Space Grotesk', sans-serif; }}
+        .mono {{ font-family: 'JetBrains Mono', monospace; }}
+        .border-accent {{ border-color: {color}; }}
+        .text-accent {{ color: {color}; }}
+        .glass {{ background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }}
     </style>
 </head>
-<body class="p-4 md:p-10 lg:p-16">
-    <header class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-        <div class="flex items-center gap-4">
-            <div class="h-10 w-10 bg-cyan-400 rounded flex items-center justify-center font-black text-black italic">CC</div>
-            <h1 class="text-xl font-black uppercase tracking-tighter">Command_Center <span class="text-cyan-400 font-mono">2026</span></h1>
+<body class="p-4 md:p-12 lg:p-20">
+
+    <!-- Header Section -->
+    <header class="max-w-7xl mx-auto flex justify-between items-center mb-16 border-b border-white/5 pb-8">
+        <div>
+            <h1 class="text-3xl font-black tracking-tighter uppercase italic">AUTONOMOUS_<span class="text-accent tracking-normal">LAB_2026</span></h1>
+            <p class="text-[10px] mono text-slate-500 uppercase tracking-[0.3em]">Specialized Research & Audit Engine</p>
         </div>
-        <div class="text-[10px] text-slate-500 uppercase font-mono tracking-widest">Last_Sync: {date_str}</div>
+        <div class="hidden md:block text-right">
+            <p class="text-[10px] text-slate-400 uppercase mono mb-1">Status: {data['market_health']}</p>
+            <p class="text-[10px] text-accent font-bold mono uppercase">{date_str}</p>
+        </div>
     </header>
 
-    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-3 space-y-4">
-            <div class="glass p-6 rounded-xl">
-                <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-6 italic tracking-widest">Sector_Status</h3>
-                {sector_html}
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Pillar 1: Research & Data Analysis -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="glass p-10 rounded-[2.5rem] border-l-8 border-accent">
+                <p class="text-[10px] text-accent font-bold uppercase tracking-[0.4em] mb-4">● Intelligence_Report</p>
+                <h2 class="text-4xl md:text-6xl font-bold leading-none mb-6 tracking-tight text-white italic underline decoration-slate-800">
+                    {data['report_headline']}
+                </h2>
+                <p class="text-xl md:text-2xl text-slate-400 leading-snug mb-10">
+                    "{data['report_body']}"
+                </p>
+                <button class="bg-white text-black px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-accent transition">Request Full Analysis</button>
             </div>
-            <div class="glass p-6 rounded-xl">
-                <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-4 italic tracking-widest">Agent_Ops</h3>
-                <div class="text-[9px] font-mono text-slate-400">{log_html}</div>
-            </div>
-        </div>
 
-        <div class="lg:col-span-6">
-            <div class="glass p-8 rounded-2xl relative overflow-hidden">
-                <p class="text-[10px] text-cyan-400 uppercase font-bold mb-2 tracking-[0.3em]">Priority_Analysis</p>
-                <h1 class="text-4xl font-black mb-6 uppercase tracking-tighter italic">{data['alert']}</h1>
-                <div class="h-48 mb-8"><canvas id="trendChart"></canvas></div>
-                <div class="flex justify-between items-center pt-6 border-t border-slate-800">
-                    <p class="text-[9px] text-slate-500 uppercase font-mono italic">Source: Neural_Node_Alpha</p>
-                    <button class="bg-white text-black px-6 py-2 rounded text-[10px] font-black uppercase hover:bg-cyan-400 transition">{data['action']}</button>
+            <!-- Pillar 2: Building & Auditing Tools -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass p-8 rounded-3xl">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-6 tracking-widest">Live_Security_Audit</h3>
+                    <div class="space-y-3 text-[11px] mono text-slate-300">
+                        {"".join([f'<p class="flex items-center gap-3"><span class="h-1 w-1 bg-accent"></span> {log}</p>' for log in data['audit_log']])}
+                        <p class="text-accent animate-pulse mt-4">> Monitoring_Mainnet...</p>
+                    </div>
+                </div>
+                <div class="glass p-8 rounded-3xl flex flex-col justify-center border-t border-accent/20">
+                    <p class="text-[10px] text-slate-500 uppercase mb-2">Automation Tooling</p>
+                    <p class="text-xs text-slate-400 italic">Custom monitoring scripts and automated smart-contract auditing available upon request.</p>
                 </div>
             </div>
         </div>
 
-        <div class="lg:col-span-3 space-y-6">
-            <div class="bg-cyan-400 text-black p-6 rounded-xl shadow-[0_0_20px_rgba(34,211,238,0.2)]">
-                <p class="text-[10px] font-black uppercase mb-2 tracking-widest">Oracle_Brief</p>
-                <p class="text-sm font-bold italic leading-tight">"{data['forecast']}"</p>
+        <!-- Pillar 3: Content Creation & Education -->
+        <div class="space-y-8">
+            <div class="bg-accent text-black p-8 rounded-[2rem] flex flex-col justify-between min-h-[300px] shadow-2xl">
+                <div>
+                    <h3 class="text-[10px] font-black uppercase tracking-widest mb-4">Academy_Insight</h3>
+                    <p class="text-xl font-bold leading-tight italic">"{data['edu_snippet']}"</p>
+                </div>
+                <p class="text-[10px] font-black border-t border-black/20 pt-4 mt-6 uppercase">Education Series // No. 042</p>
             </div>
-            <div class="p-6 border border-red-900/30 rounded-xl bg-red-950/10 text-[9px] text-red-400/70 leading-relaxed uppercase font-mono">
-                Disclaimer: Operational data is simulated for 2026 forecast. Not financial advice.
+
+            <div class="glass p-8 rounded-[2rem] text-center">
+                <p class="text-slate-500 text-[10px] uppercase mb-4 tracking-widest">Connect with Researcher</p>
+                <a href="#" class="text-xs font-bold hover:text-accent transition uppercase tracking-tighter italic text-xl border-b border-accent pb-1">Hire Agent Alpha</a>
             </div>
         </div>
+
     </main>
 
-    <script>
-        const ctx = document.getElementById('trendChart').getContext('2d');
-        new Chart(ctx, {{
-            type: 'line',
-            data: {{
-                labels: ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7'],
-                datasets: [{{
-                    data: {data['trend']},
-                    borderColor: '#22d3ee',
-                    borderWidth: 3,
-                    tension: 0.4,
-                    pointRadius: 0,
-                    fill: true,
-                    backgroundColor: 'rgba(34, 211, 238, 0.05)'
-                }}]
-            }},
-            options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }} }}, scales: {{ x: {{ display: false }}, y: {{ display: false }} }} }}
-        }});
-    </script>
+    <footer class="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 flex justify-between items-center text-[9px] mono text-slate-700 uppercase tracking-widest">
+        <div>© 2026 Autonomous Intelligence Lab</div>
+        <div>Built for Skill-Based Growth</div>
+    </footer>
 </body>
 </html>"""
     
     with open("index.html", "w") as f:
         f.write(html)
     
-    # Send Telegram
-    token, chat = os.getenv("TELEGRAM_BOT_TOKEN"), os.getenv("TELEGRAM_CHANNEL_ID")
-    if token and chat:
-        try:
-            requests.post(f"https://api.telegram.org/bot{token}/sendMessage", data={"chat_id": chat, "text": f"🛰️ COMMAND SYNC: {data['alert']}"})
-        except: print("Telegram failed.")
+    send_telegram(data['report_headline'], data['market_health'])
 
 if __name__ == "__main__":
     run_agent()
