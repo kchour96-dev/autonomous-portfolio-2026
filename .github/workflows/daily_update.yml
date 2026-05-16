@@ -1,15 +1,18 @@
-name: AI Agent Master Sync
+name: AI Agent Production Sync
 
 on:
   schedule:
-    - cron: '0 0,12 * * *'
+    # Runs at 06:00, 14:00, 22:00 UTC every day (3x daily)
+    - cron: '0 6,14,22 * * *'
+  # Allows manual trigger from GitHub Actions tab
   workflow_dispatch:
 
 jobs:
-  build:
+  update-site:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -26,14 +29,17 @@ jobs:
         env:
           GEMINI: ${{ secrets.GEMINI }}
           TAVILY: ${{ secrets.TAVILY }}
+          GROQ: ${{ secrets.GROQ }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          DEVTO_KEY: ${{ secrets.DEVTO_KEY }}
         run: python agent_update.py
 
       - name: Commit and Push
         run: |
           git config --global user.name "AI-Agent-Bot"
           git config --global user.email "bot@autonomous-portfolio-2026.live"
-          git add index.html
-          git commit -m "Autonomous Lab Sync [$(date)]" || echo "No changes"
+          git add index.html sitemap.xml robots.txt
+          # If Gemini failed (circuit breaker), index.html didn't change → commit exits 0 silently
+          git commit -m "Production Lab Sync [$(date)]" || exit 0
           git push
