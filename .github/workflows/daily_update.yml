@@ -2,8 +2,9 @@ name: AI Agent Production Sync
 
 on:
   schedule:
-    # Runs at 06:00, 14:00, 22:00 UTC every day (3x daily)
-    - cron: '0 6,14,22 * * *'
+    # Runs 5x daily: 2am, 7am, 12pm, 5pm, 10pm UTC
+    # = Phnom Penh: 9am, 2pm, 7pm, 12am, 5am
+    - cron: '0 2,7,12,17,22 * * *'
   # Allows manual trigger from GitHub Actions tab
   workflow_dispatch:
 
