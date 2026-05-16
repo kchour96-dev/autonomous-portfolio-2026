@@ -42,6 +42,7 @@ jobs:
           git config --global user.name "AI-Agent-Bot"
           git config --global user.email "bot@autonomous-portfolio-2026.live"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git add index.html sitemap.xml robots.txt
+          git add index.html
+          git add sitemap.xml robots.txt 2>/dev/null || true
           git commit -m "Production Lab Sync [$(date)]" || exit 0
           git push origin main
