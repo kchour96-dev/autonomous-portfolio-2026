@@ -1,61 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Research Lab</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        body { background: #050507; color: #f8fafc; font-family: 'Space Grotesk', sans-serif; }
+        body { background: #020203; color: #f8fafc; font-family: 'Space Grotesk', sans-serif; text-align: left; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .glass { background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
+        .glass { background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(12px); }
+        #reportSection { display: none; }
     </style>
 </head>
 <body class="p-4 md:p-12 lg:p-20">
     <header class="max-w-7xl mx-auto flex justify-between items-center mb-16 border-b border-white/5 pb-8">
         <div>
-            <h1 class="text-3xl font-black tracking-tighter uppercase italic">AUTONOMOUS_<span style="color: #10b981">LAB_2026</span></h1>
-            <p class="text-[10px] mono text-slate-500 uppercase tracking-[0.3em]">Specialized Research & Audit Engine</p>
+            <h1 class="text-3xl font-black italic tracking-tighter uppercase">AUTONOMOUS_<span style="color: #3b82f6">LAB_2026</span></h1>
+            <p class="text-[10px] mono text-slate-500 uppercase tracking-widest italic">Node Status: Low</p>
         </div>
-        <div class="text-right text-[10px] mono text-slate-500">
-            <p class="uppercase">Status: Optimal</p>
-            <p style="color: #10b981" class="font-bold uppercase">16 May 2026 | 12:51 UTC</p>
+        <div class="text-right text-[10px] mono text-slate-500 uppercase font-bold">
+            <p style="color: #3b82f6">16 May 2026 | 17:26 UTC</p>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
-        <div class="lg:col-span-2 space-y-8 text-left">
-            <div class="glass p-10 rounded-[2.5rem]" style="border-left: 8px solid #10b981">
-                <p style="color: #10b981" class="text-[10px] font-bold uppercase tracking-[0.4em] mb-4">● Intelligence_Report</p>
-                <h2 class="text-4xl md:text-6xl font-bold leading-none mb-6 tracking-tight text-white italic underline decoration-slate-800">
-                    Neural Protocol Integrity
-                </h2>
-                <p class="text-xl md:text-2xl text-slate-400 leading-snug mb-10 italic">"Autonomous nodes are maintaining 99.9% security across all Layer 2 bridges."</p>
-                <button class="bg-white text-black px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:opacity-80 transition">Full Analysis</button>
-            </div>
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div class="lg:col-span-8 space-y-12">
+            <section class="glass p-10 rounded-[3rem]" style="border-left: 8px solid #3b82f6">
+                <p style="color: #3b82f6" class="text-[10px] font-black uppercase tracking-[0.4em] mb-4">● Intelligence_Report</p>
+                <h2 class="text-4xl md:text-7xl font-bold mb-6 tracking-tighter leading-none text-white italic">Neural Protocol Sync</h2>
+                <p class="text-xl md:text-2xl text-slate-400 mb-10 leading-tight italic">"System rebalancing."</p>
+                <button onclick="toggle()" id="btn" class="bg-white text-black px-10 py-4 rounded-full text-[11px] font-black uppercase tracking-widest hover:opacity-80 transition">Read Full Analysis ↓</button>
+                <div id="reportSection" class="mt-12 pt-12 border-t border-white/10">
+                    <div class="text-lg text-slate-300 leading-relaxed space-y-6 whitespace-pre-line">Standard maintenance in progress.</div>
+                </div>
+            </section>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass p-8 rounded-3xl">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-6 tracking-widest">Security_Audit</h3>
-                    <div class="text-[11px] mono text-slate-300"><p class="flex items-center gap-3 mb-2"><span class="h-1 w-1" style="background-color: #10b981"></span> Checking RPC health</p><p class="flex items-center gap-3 mb-2"><span class="h-1 w-1" style="background-color: #10b981"></span> Verifying contracts</p></div>
-                </div>
-                <div class="glass p-8 rounded-3xl flex flex-col justify-center border-t border-white/5">
-                    <p class="text-[10px] text-slate-500 uppercase mb-2">Automation Tooling</p>
-                    <p class="text-xs text-slate-400 italic">Automated smart-contract auditing available upon request.</p>
-                </div>
+                <div class="glass p-8 rounded-3xl"><h3 class="text-xs font-bold text-slate-500 uppercase mb-6 tracking-widest">Audit_Log</h3><div class="text-[10px] mono text-slate-400 uppercase"><p class="mb-2">> Check Nodes</p></div></div>
+                <div class="glass p-8 rounded-3xl" style="background: #3b82f622"><h3 class="text-xs font-bold text-slate-500 uppercase mb-4 tracking-widest tracking-widest">Skill_Sync</h3><p class="text-sm font-bold italic leading-snug">"Always verify hash."</p></div>
             </div>
         </div>
-        <div class="space-y-8 text-left">
-            <div class="p-8 rounded-[2rem] flex flex-col justify-between min-h-[300px]" style="background-color: #10b981; color: black">
-                <div><h3 class="text-[10px] font-black uppercase tracking-widest mb-4">Academy_Insight</h3><p class="text-xl font-bold italic">"Verify bridge security before cross-chain movement."</p></div>
-                <p class="text-[10px] font-black pt-4 mt-6 border-t border-black/20 uppercase tracking-widest">Edu Series // v.2026</p>
+        <aside class="lg:col-span-4">
+            <div class="glass p-8 rounded-[2.5rem]">
+                <h3 class="text-xs font-bold text-slate-500 uppercase mb-8 tracking-[0.3em] italic">Intelligence_Archive</h3>
+                <div class="mono"><!-- HIST_S --><div class='mb-4 border-l border-white/10 pl-4'><p class='text-[10px] opacity-50'>16 May 2026 | 17:26 UTC</p><p class='text-[11px] font-bold'>Neural Protocol Sync</p></div><!-- HIST_E --></div>
             </div>
-            <div class="glass p-8 rounded-[2rem] text-center">
-                <p class="text-slate-500 text-[10px] uppercase mb-4 tracking-widest">Connect with Agent</p>
-                <a href="#" style="border-bottom: 2px solid #10b981" class="text-xl font-bold italic tracking-tighter uppercase transition">Hire Agent Alpha</a>
-            </div>
-        </div>
+        </aside>
     </main>
-    <footer class="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 text-[9px] mono text-slate-700 uppercase tracking-widest text-center">
-        Built for Skill-Based Growth // 2026 Lab
-    </footer>
+    <script>
+        function toggle() {
+            var x = document.getElementById("reportSection");
+            var b = document.getElementById("btn");
+            if (x.style.display === "none" || x.style.display === "") { x.style.display = "block"; b.innerHTML = "Close Report ↑"; }
+            else { x.style.display = "none"; b.innerHTML = "Read Full Analysis ↓"; }
+        }
+    </script>
 </body>
 </html>
