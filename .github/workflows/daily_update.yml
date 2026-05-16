@@ -15,12 +15,14 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install Dependencies
         run: pip install requests
@@ -39,7 +41,7 @@ jobs:
         run: |
           git config --global user.name "AI-Agent-Bot"
           git config --global user.email "bot@autonomous-portfolio-2026.live"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git add index.html sitemap.xml robots.txt
-          # If Gemini failed (circuit breaker), index.html didn't change → commit exits 0 silently
           git commit -m "Production Lab Sync [$(date)]" || exit 0
-          git push
+          git push origin main
