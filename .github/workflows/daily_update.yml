@@ -1,4 +1,4 @@
-name: AI Agent Daily Update
+name: AI Agent Master Sync
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-site:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -30,10 +30,10 @@ jobs:
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
         run: python agent_update.py
 
-      - name: Commit and Push Update
+      - name: Commit and Push
         run: |
           git config --global user.name "AI-Agent-Bot"
           git config --global user.email "bot@autonomous-portfolio-2026.live"
           git add index.html
-          git commit -m "Lab Update: $(date)" || echo "No changes"
+          git commit -m "Autonomous Lab Sync [$(date)]" || echo "No changes"
           git push
