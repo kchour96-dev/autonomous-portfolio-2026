@@ -1,58 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autonomous Research Lab</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Lab 2026 — Live Crypto Intelligence Dashboard</title>
+    <meta name="description" content="Real-time crypto and Web3 intelligence dashboard. Threat score, opportunity signals, tokens to watch — updated 5x daily by AI.">
+    <meta name="keywords" content="crypto intelligence, web3 security, DeFi signals, AI research dashboard, blockchain threats 2026">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Autonomous Lab 2026 — Live Crypto Intelligence">
+    <meta property="og:description" content="Real-time crypto and Web3 intelligence. Threat scores, opportunity signals, tokens to watch.">
+    <meta property="og:url" content="https://autonomous-portfolio-2026.live">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://autonomous-portfolio-2026.live/">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { background: #020203; color: #f8fafc; font-family: 'Space Grotesk', sans-serif; text-align: left; }
+        * { box-sizing: border-box; }
+        body { background: #06070f; color: #f1f5f9; font-family: 'Space Grotesk', sans-serif; margin: 0; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .glass { background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(12px); }
-        #reportSection { display: none; }
+        .glass { background: rgba(15,23,42,0.5); border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .score-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+        .score-fill { height: 100%; border-radius: 99px; }
+        #deepdive { display: none; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        .blink { animation: pulse 2s infinite; }
+        @keyframes fadeup { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        .fadein { animation: fadeup 0.5s ease forwards; }
     </style>
 </head>
-<body class="p-4 md:p-12 lg:p-20">
-    <header class="max-w-7xl mx-auto flex justify-between items-center mb-16 border-b border-white/5 pb-8">
-        <div>
-            <h1 class="text-3xl font-black italic tracking-tighter uppercase">AUTONOMOUS_<span style="color: #3b82f6">LAB_2026</span></h1>
-            <p class="text-[10px] mono text-slate-500 uppercase tracking-widest italic">Node Status: Low</p>
-        </div>
-        <div class="text-right text-[10px] mono text-slate-500 uppercase font-bold">
-            <p style="color: #3b82f6">16 May 2026 | 17:26 UTC</p>
-        </div>
-    </header>
+<body class="p-4 md:p-8 lg:p-12 min-h-screen">
 
-    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div class="lg:col-span-8 space-y-12">
-            <section class="glass p-10 rounded-[3rem]" style="border-left: 8px solid #3b82f6">
-                <p style="color: #3b82f6" class="text-[10px] font-black uppercase tracking-[0.4em] mb-4">● Intelligence_Report</p>
-                <h2 class="text-4xl md:text-7xl font-bold mb-6 tracking-tighter leading-none text-white italic">Neural Protocol Sync</h2>
-                <p class="text-xl md:text-2xl text-slate-400 mb-10 leading-tight italic">"System rebalancing."</p>
-                <button onclick="toggle()" id="btn" class="bg-white text-black px-10 py-4 rounded-full text-[11px] font-black uppercase tracking-widest hover:opacity-80 transition">Read Full Analysis ↓</button>
-                <div id="reportSection" class="mt-12 pt-12 border-t border-white/10">
-                    <div class="text-lg text-slate-300 leading-relaxed space-y-6 whitespace-pre-line">Standard maintenance in progress.</div>
+<!-- HEADER -->
+<header class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4 mb-10 pb-6 border-b border-white/5">
+    <div>
+        <h1 class="text-2xl md:text-3xl font-black tracking-tighter uppercase">
+            AUTONOMOUS_<span style="color:#3b82f6">LAB</span><span class="text-slate-600">_2026</span>
+        </h1>
+        <p class="text-[10px] mono text-slate-500 uppercase tracking-widest mt-1">
+            <span class="blink" style="color:#3b82f6">●</span>&nbsp;Real-Time Crypto &amp; Web3 Intelligence — Updated 5× Daily By AI
+        </p>
+    </div>
+    <div class="text-right text-[10px] mono uppercase font-bold">
+        <p style="color:#22c55e" class="mb-1">● Initializing Intelligence Matrix</p>
+        <p class="text-slate-500">First sync loading soon...</p>
+    </div>
+</header>
+
+<!-- MAIN GRID -->
+<main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT COLUMN -->
+    <div class="lg:col-span-8 space-y-6 fadein">
+
+        <!-- HEADLINE CARD -->
+        <section class="glass rounded-2xl p-6 md:p-8 border-l-4" style="border-color:#3b82f6">
+            <p class="text-[10px] mono font-black uppercase tracking-[0.4em] mb-3" style="color:#3b82f6">
+                ● Today's Intelligence Brief
+            </p>
+            <h2 class="text-3xl md:text-5xl font-black tracking-tighter leading-tight text-white mb-6">
+                AI Dashboard Online
+            </h2>
+            <p class="text-[10px] mono text-slate-500 uppercase tracking-widest mb-3">What happened today:</p>
+            <div class="space-y-1">
+                <div class="flex gap-3 mb-3 items-start">
+                    <span style="color:#3b82f6" class="mt-0.5 flex-shrink-0">›</span>
+                    <p class="text-sm text-slate-300 leading-snug">Multi-agent AI pipeline initialized — Gemini + Groq + Tavily research stack active</p>
                 </div>
-            </section>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass p-8 rounded-3xl"><h3 class="text-xs font-bold text-slate-500 uppercase mb-6 tracking-widest">Audit_Log</h3><div class="text-[10px] mono text-slate-400 uppercase"><p class="mb-2">> Check Nodes</p></div></div>
-                <div class="glass p-8 rounded-3xl" style="background: #3b82f622"><h3 class="text-xs font-bold text-slate-500 uppercase mb-4 tracking-widest tracking-widest">Skill_Sync</h3><p class="text-sm font-bold italic leading-snug">"Always verify hash."</p></div>
+                <div class="flex gap-3 mb-3 items-start">
+                    <span style="color:#3b82f6" class="mt-0.5 flex-shrink-0">›</span>
+                    <p class="text-sm text-slate-300 leading-snug">RSS feeds connected — pulling live headlines from HackerNews, Krebs, CoinTelegraph, Decrypt</p>
+                </div>
+                <div class="flex gap-3 mb-3 items-start">
+                    <span style="color:#3b82f6" class="mt-0.5 flex-shrink-0">›</span>
+                    <p class="text-sm text-slate-300 leading-snug">First AI-generated intelligence report will appear automatically at next scheduled sync</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCORES -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="glass rounded-2xl p-6 border-t-2 border-red-500/60">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-[10px] mono font-black text-red-400 uppercase tracking-widest">⚠️ Threat Signal</p>
+                    <p class="text-2xl font-black text-red-400">—<span class="text-sm text-slate-600">/10</span></p>
+                </div>
+                <div class="score-bar mb-4"><div class="score-fill bg-red-500" style="width:0%"></div></div>
+                <p class="text-sm text-slate-500 leading-relaxed italic">Awaiting first intelligence sync...</p>
+            </div>
+            <div class="glass rounded-2xl p-6 border-t-2" style="border-color:#3b82f688">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-[10px] mono font-black uppercase tracking-widest" style="color:#3b82f6">💡 Opportunity Signal</p>
+                    <p class="text-2xl font-black" style="color:#3b82f6">—<span class="text-sm text-slate-600">/10</span></p>
+                </div>
+                <div class="score-bar mb-4"><div class="score-fill" style="width:0%;background:#3b82f6"></div></div>
+                <p class="text-sm text-slate-500 leading-relaxed italic">Awaiting first intelligence sync...</p>
             </div>
         </div>
-        <aside class="lg:col-span-4">
-            <div class="glass p-8 rounded-[2.5rem]">
-                <h3 class="text-xs font-bold text-slate-500 uppercase mb-8 tracking-[0.3em] italic">Intelligence_Archive</h3>
-                <div class="mono"><!-- HIST_S --><div class='mb-4 border-l border-white/10 pl-4'><p class='text-[10px] opacity-50'>16 May 2026 | 17:26 UTC</p><p class='text-[11px] font-bold'>Neural Protocol Sync</p></div><!-- HIST_E --></div>
+
+        <!-- TOKENS -->
+        <div class="glass rounded-2xl p-6">
+            <p class="text-[10px] mono font-black text-slate-500 uppercase tracking-widest mb-4">🪙 Tokens To Watch</p>
+            <p class="text-sm text-slate-500 italic">Token watchlist will appear after first AI sync.</p>
+            <p class="text-[9px] text-slate-600 italic mt-2">* Not financial advice. For research purposes only.</p>
+        </div>
+
+        <!-- DEEP ANALYSIS -->
+        <div class="glass rounded-2xl p-6">
+            <div class="flex justify-between items-center">
+                <p class="text-[10px] mono font-black text-slate-500 uppercase tracking-widest">📊 Deep Analysis</p>
+                <button
+                    id="deepbtn"
+                    onclick="var d=document.getElementById('deepdive'),b=document.getElementById('deepbtn');if(d.style.display==='none'||!d.style.display){d.style.display='block';b.innerText='Close ↑'}else{d.style.display='none';b.innerText='Read More ↓'}"
+                    class="text-[10px] mono font-black uppercase px-4 py-2 rounded-full border border-white/10 hover:border-white/30 transition">
+                    Read More ↓
+                </button>
             </div>
-        </aside>
-    </main>
-    <script>
-        function toggle() {
-            var x = document.getElementById("reportSection");
-            var b = document.getElementById("btn");
-            if (x.style.display === "none" || x.style.display === "") { x.style.display = "block"; b.innerHTML = "Close Report ↑"; }
-            else { x.style.display = "none"; b.innerHTML = "Read Full Analysis ↓"; }
-        }
-    </script>
+            <div id="deepdive" class="mt-6 pt-6 border-t border-white/5 text-sm text-slate-300 leading-relaxed">
+                <p>This dashboard tracks real-time crypto and Web3 intelligence using a multi-agent AI pipeline. Every update pulls live news from RSS feeds, researches deeper context via Tavily, generates expert analysis with Gemini, and adds a contrarian critique via Groq/Llama. Updated 5 times daily automatically.</p>
+            </div>
+        </div>
+
+        <!-- CONTRARIAN -->
+        <div class="glass rounded-2xl p-6 border-l-4 border-yellow-500/40">
+            <p class="text-[10px] mono font-black text-yellow-500 uppercase tracking-widest mb-3">🤔 Contrarian View</p>
+            <p class="text-sm text-slate-500 italic leading-relaxed">"Every signal has a counter-signal. The critic node will challenge each report automatically."</p>
+            <p class="text-[9px] mono text-slate-600 mt-3 uppercase">— Powered by Groq / Llama 3.3 70b</p>
+        </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="lg:col-span-4 space-y-6">
+
+        <!-- SCORE SUMMARY -->
+        <div class="glass rounded-2xl p-6 text-center">
+            <p class="text-[10px] mono text-slate-500 uppercase tracking-widest mb-4">Signal Summary</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="rounded-xl p-4" style="background:#3b82f611;border:1px solid #3b82f633">
+                    <p class="text-3xl font-black" style="color:#3b82f6">—</p>
+                    <p class="text-[9px] mono text-slate-500 uppercase mt-1">Opportunity</p>
+                </div>
+                <div class="rounded-xl p-4 bg-red-500/10 border border-red-500/20">
+                    <p class="text-3xl font-black text-red-400">—</p>
+                    <p class="text-[9px] mono text-slate-500 uppercase mt-1">Threat</p>
+                </div>
+            </div>
+            <p class="text-[9px] mono text-slate-600 mt-4 uppercase">Awaiting first sync</p>
+        </div>
+
+        <!-- ARCHIVE -->
+        <div class="glass rounded-2xl p-6">
+            <p class="text-[10px] mono font-bold text-slate-500 uppercase tracking-widest mb-4 pb-3 border-b border-white/5">
+                📁 Signal Archive
+            </p>
+            <div><!-- H_S --><!-- H_E --></div>
+            <p class="text-[10px] mono text-slate-600 italic">Archive builds automatically with each sync.</p>
+        </div>
+
+        <!-- AI STACK -->
+        <div class="rounded-2xl p-6 bg-white/[0.02] border border-white/5 text-[10px] mono text-slate-600">
+            <p class="text-slate-400 font-bold uppercase tracking-widest mb-3">AI Stack:</p>
+            <p class="mb-1">» RSS: HackerNews / Krebs / CoinTelegraph</p>
+            <p class="mb-1">» Research: Tavily Search API</p>
+            <p class="mb-1">» Brain: Gemini 2.0 Flash Lite</p>
+            <p class="mb-1">» Critic: Llama 3.3 via Groq</p>
+            <p class="mb-1">» Notify: Telegram Bot</p>
+            <p class="mb-1">» SEO: Dev.to Auto-Publish</p>
+            <p class="mt-4 text-[8px] opacity-30 uppercase tracking-widest">Free AI Pipeline // 2026</p>
+        </div>
+
+        <!-- DISCLAIMER -->
+        <div class="rounded-2xl p-4 bg-yellow-500/5 border border-yellow-500/10">
+            <p class="text-[9px] text-yellow-500/50 leading-relaxed">
+                ⚠️ This dashboard is AI-generated for research and education only.
+                Nothing here is financial advice. Always do your own research before any investment decision.
+            </p>
+        </div>
+
+    </aside>
+</main>
+
+<!-- FOOTER -->
+<footer class="max-w-7xl mx-auto mt-12 pt-6 border-t border-white/5 flex flex-wrap justify-between gap-2 text-[9px] mono text-slate-700">
+    <p>AUTONOMOUS-PORTFOLIO-2026.LIVE // AI AGENT PIPELINE // 2026</p>
+    <p>NOT FINANCIAL ADVICE // RESEARCH ONLY</p>
+</footer>
+
 </body>
 </html>
