@@ -57,7 +57,7 @@ def get_research(rss_context, t_key):
 def get_gemini_data(research_context, g_key):
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/"
-        f"models/gemini-1.5-flash:generateContent?key={g_key}"
+        f"models/gemini-2.0-flash:generateContent?key={g_key}"
     )
     prompt = f"""You are an expert crypto and Web3 analyst running a real-time intelligence dashboard.
 Based on this research: {research_context}
