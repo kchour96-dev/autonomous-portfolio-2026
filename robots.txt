@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://autonomous-portfolio-2026.live/sitemap.xml
