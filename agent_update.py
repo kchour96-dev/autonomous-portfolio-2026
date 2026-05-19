@@ -395,6 +395,21 @@ def build_html(data, final_history, date_str):
             </p>
         </div>
 
+        <!-- DONATION -->
+        <div class="glass rounded-2xl p-6 border border-yellow-500/20">
+            <p class="text-[10px] mono font-black text-yellow-400 uppercase tracking-widest mb-3">💰 Support This Lab</p>
+            <p class="text-xs text-slate-400 leading-relaxed mb-4">If this dashboard saved you time or helped you spot an opportunity — support the work.</p>
+            <div class="rounded-xl p-3 mb-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)">
+                <p class="text-[9px] mono text-slate-500 uppercase mb-1">USDT (BEP20 / BSC Network)</p>
+                <p class="text-[10px] mono text-yellow-400 break-all leading-relaxed">0x30ce31b427707335343b43708a35b20955f1763c2</p>
+                <button onclick="navigator.clipboard.writeText('0x30ce31b427707335343b43708a35b20955f1763c2');this.innerText='✅ Copied!';setTimeout(()=>this.innerText='Copy Address',2000)"
+                    class="mt-2 text-[9px] mono font-black uppercase px-3 py-1 rounded-full border border-white/10 hover:border-yellow-500/50 hover:text-yellow-400 transition text-slate-500">
+                    Copy Address
+                </button>
+            </div>
+            <p class="text-[9px] text-slate-600 italic">⚠️ BSC network only. Send USDT BEP20.</p>
+        </div>
+
         <!-- ABOUT -->
         <div class="glass rounded-2xl p-6">
             <p class="text-[10px] mono font-black text-slate-500 uppercase tracking-widest mb-4">👤 About</p>
