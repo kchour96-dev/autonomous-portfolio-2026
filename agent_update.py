@@ -85,10 +85,12 @@ Return ONLY a valid JSON object. No markdown fences. No extra text before or aft
   "opportunity_score": 6,
   "threat_level": "Medium",
   "deep_analysis": "Three paragraphs of expert analysis separated by newlines",
-  "tokens_to_watch": ["BTC", "ETH", "SOL"],
+  "tokens_to_watch": ["PICK_TOKEN_RELATED_TO_THIS_SPECIFIC_NEWS", "PICK_ANOTHER_RELEVANT_TOKEN", "PICK_A_THIRD_RELEVANT_TOKEN"],
   "critic": "One sentence contrarian view why the opportunity might be wrong",
-  "color": "#3b82f6"
-}}"""
+  "color": "#hexcolor matching the mood of the story"
+}}
+
+IMPORTANT for tokens_to_watch: Do NOT default to BTC/ETH/SOL every time. Pick tokens DIRECTLY related to the news story. Security breach news = pick security/privacy tokens like SCRT, ROSE, NMR. DeFi hack = pick tokens of affected protocol. L2 news = pick relevant L2 tokens. AI news = pick AI tokens like FET, AGIX, RENDER. Be specific and relevant to the actual story.""""""
 
     # Try models in order — if one fails, try the next
     models = [
@@ -339,6 +341,20 @@ def build_html(data, final_history, date_str):
             <p class="text-[9px] mono text-slate-600 mt-3 uppercase">— Powered by Groq / Llama 3.3 70b</p>
         </div>
 
+        <!-- SHARE BUTTON -->
+        <div class="glass rounded-2xl p-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <p class="text-[10px] mono font-black text-slate-500 uppercase tracking-widest mb-1">📢 Share This Report</p>
+                <p class="text-xs text-slate-500">Found this useful? Share it with your network.</p>
+            </div>
+            <a href="https://twitter.com/intent/tweet?text={title}%20%E2%80%94%20Threat%3A%20{threat_score}%2F10%20%7C%20Opportunity%3A%20{opp_score}%2F10%0A%0Ahttps%3A%2F%2Fautonomous-portfolio-2026.live%20%23crypto%20%23web3%20%23AI"
+               target="_blank"
+               class="flex items-center gap-2 px-6 py-3 rounded-full font-black text-[11px] uppercase tracking-widest transition hover:opacity-80"
+               style="background:#1d9bf0;color:white">
+                𝕏 Share on X
+            </a>
+        </div>
+
     </div>
 
     <aside class="lg:col-span-4 space-y-6">
@@ -378,6 +394,27 @@ def build_html(data, final_history, date_str):
                 ⚠️ AI-generated for research and education only. Not financial advice. Always do your own research.
             </p>
         </div>
+
+        <!-- ABOUT -->
+        <div class="glass rounded-2xl p-6">
+            <p class="text-[10px] mono font-black text-slate-500 uppercase tracking-widest mb-4">👤 About</p>
+            <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                Built by <span class="text-white font-bold">Kchour</span>, a developer from
+                <span class="text-white font-bold">Phnom Penh, Cambodia</span> — experimenting
+                with autonomous AI systems and real-time intelligence pipelines.
+            </p>
+            <p class="text-xs text-slate-500 leading-relaxed">
+                This lab runs a fully automated multi-agent pipeline that pulls live news,
+                researches deeper context, and generates expert analysis — updated every 2 hours,
+                entirely free, entirely autonomous.
+            </p>
+            <a href="https://github.com/kchour96-dev/autonomous-portfolio-2026"
+               target="_blank"
+               class="inline-block mt-4 text-[10px] mono font-black uppercase tracking-widest px-4 py-2 rounded-full border border-white/10 hover:border-white/30 transition text-slate-400 hover:text-white">
+                View on GitHub →
+            </a>
+        </div>
+
     </aside>
 </main>
 
