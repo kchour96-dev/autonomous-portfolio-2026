@@ -67,6 +67,24 @@ def call_gemini(prompt, g_key, model):
     resp.raise_for_status()
     return resp.json()['candidates'][0]['content']['parts'][0]['text']
 
+def call_groq(prompt, g_key):
+    """Groq fallback — 14,400 free requests/day, extremely fast"""
+    if not g_key:
+        raise ValueError("No GROQ key")
+    headers = {"Authorization": f"Bearer {g_key}", "Content-Type": "application/json"}
+    payload = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 2000,
+        "temperature": 0.7
+    }
+    resp = requests.post(
+        "https://api.groq.com/openai/v1/chat/completions",
+        json=payload, headers=headers, timeout=30
+    )
+    resp.raise_for_status()
+    return resp.json()['choices'][0]['message']['content']
+
 def get_gemini_data(research_context, g_key):
     prompt = f"""You are an expert crypto and Web3 analyst running a real-time intelligence dashboard.
 Based on this research: {research_context}
@@ -85,36 +103,40 @@ Return ONLY a valid JSON object. No markdown fences. No extra text before or aft
   "opportunity_score": 6,
   "threat_level": "Medium",
   "deep_analysis": "Three paragraphs of expert analysis separated by newlines",
-  "tokens_to_watch": ["PICK_TOKEN_RELATED_TO_THIS_SPECIFIC_NEWS", "PICK_ANOTHER_RELEVANT_TOKEN", "PICK_A_THIRD_RELEVANT_TOKEN"],
+  "tokens_to_watch": ["TOKEN_RELATED_TO_NEWS", "ANOTHER_RELEVANT_TOKEN", "THIRD_RELEVANT_TOKEN"],
   "critic": "One sentence contrarian view why the opportunity might be wrong",
   "color": "#hexcolor matching the mood of the story"
 }}
 
 IMPORTANT for tokens_to_watch: Do NOT default to BTC/ETH/SOL every time. Pick tokens DIRECTLY related to the news story. Security breach = pick security/privacy tokens like SCRT, ROSE, NMR. DeFi hack = pick tokens of affected protocol. L2 news = pick relevant L2 tokens. AI news = pick AI tokens like FET, AGIX, RENDER. Be specific."""
 
-    # Try models in order — if one fails, try the next
-    models = [
-        "gemini-2.5-flash",
-        "gemini-1.5-flash",
-        "gemini-1.5-flash-8b",
+    # Fallback chain — tries each until one works
+    attempts = [
+        ("gemini-2.5-flash",   "gemini",  g_key),
+        ("groq-llama-3.3-70b", "groq",    os.getenv("GROQ")),
+        ("gemini-1.5-flash",   "gemini",  g_key),
+        ("gemini-1.5-flash-8b","gemini",  g_key),
     ]
 
-    for model in models:
+    for model_name, provider, key in attempts:
         try:
-            print(f"Trying model: {model}")
-            raw = call_gemini(prompt, g_key, model)
-            print(f"Response received: {len(raw)} chars")
+            print(f"Trying: {model_name}")
+            if provider == "groq":
+                raw = call_groq(prompt, key)
+            else:
+                raw = call_gemini(prompt, key, model_name)
+            print(f"Response: {len(raw)} chars")
             match = re.search(r'\{.*\}', raw, re.DOTALL)
             if not match:
-                raise ValueError("No JSON found in response")
+                raise ValueError("No JSON found")
             data = json.loads(match.group(0))
-            print(f"SUCCESS with {model}: {data.get('title', 'no title')}")
+            print(f"SUCCESS with {model_name}: {data.get('title','no title')}")
             return data
         except Exception as e:
-            print(f"Model {model} failed: {e}")
+            print(f"{model_name} failed: {e}")
             continue
 
-    print("ALL GEMINI MODELS FAILED. Circuit breaker triggered.")
+    print("ALL MODELS FAILED. Circuit breaker triggered.")
     return None
 
 # ─────────────────────────────────────────────
