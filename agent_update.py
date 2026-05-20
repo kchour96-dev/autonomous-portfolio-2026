@@ -168,20 +168,23 @@ def send_telegram(title, threat, opportunity, threat_score, opp_score):
 # PUBLISH: Dev.to
 # ─────────────────────────────────────────────
 def post_to_devto(data):
-    key = os.getenv("DEVTO_KEY")
+    key = os.getenv("DEV")
     if not key:
-        print("No DEVTO_KEY, skipping.")
+        print("No DEV key, skipping.")
         return
     bullets = "\n".join([f"- {b}" for b in data.get('news_bullets', [])])
     tokens = ", ".join(data.get('tokens_to_watch', []))
     body = (
-        f"> 🔗 Live: [autonomous-portfolio-2026.live](https://autonomous-portfolio-2026.live)\n\n"
+        f"> 🔗 Live Dashboard: [autonomous-portfolio-2026.live](https://autonomous-portfolio-2026.live)\n"
+        f"> 📢 Telegram Channel: [t.me/AII2026futher](https://t.me/AII2026futher)\n\n"
         f"## Today's Headlines\n\n{bullets}\n\n"
-        f"## Threat [{data.get('threat_score','?')}/10]\n\n{data.get('threat','')}\n\n"
-        f"## Opportunity [{data.get('opportunity_score','?')}/10]\n\n{data.get('opportunity','')}\n\n"
-        f"## Tokens To Watch\n\n{tokens}\n\n"
-        f"## Deep Analysis\n\n{data.get('deep_analysis','')}\n\n"
-        f"---\n*AI dashboard — Gemini + Groq + Tavily*"
+        f"## ⚠️ Threat Signal [{data.get('threat_score','?')}/10]\n\n{data.get('threat','')}\n\n"
+        f"## 💡 Opportunity Signal [{data.get('opportunity_score','?')}/10]\n\n{data.get('opportunity','')}\n\n"
+        f"## 🪙 Tokens To Watch\n\n{tokens}\n\n"
+        f"## 📊 Deep Analysis\n\n{data.get('deep_analysis','')}\n\n"
+        f"---\n"
+        f"*AI-powered dashboard — Gemini + Groq + Tavily. Updated every 2 hours automatically.*\n\n"
+        f"📢 Follow our Telegram for real-time alerts: https://t.me/AII2026futher"
     )
     try:
         r = requests.post(
@@ -449,6 +452,11 @@ def build_html(data, final_history, date_str):
                target="_blank"
                class="inline-block mt-4 text-[10px] mono font-black uppercase tracking-widest px-4 py-2 rounded-full border border-white/10 hover:border-white/30 transition text-slate-400 hover:text-white">
                 View on GitHub →
+            </a>
+            <a href="https://t.me/AII2026futher"
+               target="_blank"
+               class="inline-block mt-2 text-[10px] mono font-black uppercase tracking-widest px-4 py-2 rounded-full border border-blue-500/30 hover:border-blue-500/60 transition text-blue-400 hover:text-blue-300">
+                📢 Join Telegram →
             </a>
         </div>
 
