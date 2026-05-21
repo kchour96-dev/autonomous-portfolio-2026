@@ -2,10 +2,10 @@ name: AI Agent Production Sync
 
 on:
   schedule:
-    # Changed from on-the-hour to minute 17 to bypass heavy GitHub queues!
-    # Runs 5 times a day (Phnom Penh: 9:17 AM, 2:17 PM, 7:17 PM, 12:17 AM, 5:17 AM)
+    # Runs at minute 17 of odd hours to bypass congested server queues
+    # Phnom Penh: 9:17 AM, 2:17 PM, 7:17 PM, 12:17 AM, 5:17 AM
     - cron: '17 2,7,12,17,22 * * *'
-  # Allows manual runs from the GitHub actions interface
+  # Allows manual runs from the GitHub actions tab
   workflow_dispatch:
 
 jobs:
@@ -30,12 +30,12 @@ jobs:
 
       - name: Run AI Agent
         env:
-          # MATCHED EXACTLY to your repository secrets configuration
           GEMINI: ${{ secrets.GEMINI }}
           TAVILY: ${{ secrets.TAVILY }}
           GROQ: ${{ secrets.GROQ }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          # Mapped to match your repository secret "DEV"
           DEV: ${{ secrets.DEV }}
         run: python agent_update.py
 
@@ -43,7 +43,7 @@ jobs:
         run: |
           git config --global user.name "AI-Agent-Bot"
           git config --global user.email "bot@autonomous-portfolio-2026.live"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@[github.com/$](https://github.com/$){{ github.repository }}
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git add index.html
           git add sitemap.xml robots.txt 2>/dev/null || true
           git commit -m "Production Lab Sync [$(date)]" || exit 0
