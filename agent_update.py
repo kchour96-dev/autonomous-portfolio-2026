@@ -97,11 +97,12 @@ def call_groq(prompt, groq_key):
     payload = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
-            {"role": "system", "content": "You are a JSON generator. Always respond with valid raw JSON only. No markdown, no backticks, no explanation."},
+            {"role": "system", "content": "You are a JSON API. Output only a valid JSON object. Start with { and end with }. No markdown, no backticks, no explanation."},
             {"role": "user", "content": prompt}
         ],
         "max_tokens": 2000,
-        "temperature": 0.5
+        "temperature": 0.3,
+        "response_format": {"type": "json_object"}
     }
     resp = requests.post(
         "https://api.groq.com/openai/v1/chat/completions",
@@ -169,13 +170,13 @@ RULES:
 - threat_level: Only use Critical, High, Medium, or Low.
 - Return ONLY the JSON object, nothing else."""
 
-    # Updated fallback order: working model names in 2026
+    # Updated fallback order: verified working model names May 2026
     attempts = [
-        ("gemini-2.5-flash-preview-05-20", "gemini", g_key),
-        ("gemini-2.0-flash",               "gemini", g_key),
-        ("groq-llama-3.3-70b",             "groq",   os.getenv("GROQ")),
-        ("gemini-1.5-flash-latest",        "gemini", g_key),
-        ("gemini-1.5-pro-latest",          "gemini", g_key),
+        ("gemini-2.5-flash",        "gemini", g_key),
+        ("gemini-2.0-flash-lite",   "gemini", g_key),
+        ("groq-llama-3.3-70b",      "groq",   os.getenv("GROQ")),
+        ("gemini-1.5-flash-8b",     "gemini", g_key),
+        ("gemini-1.5-flash",        "gemini", g_key),
     ]
 
     for model_name, provider, key in attempts:
