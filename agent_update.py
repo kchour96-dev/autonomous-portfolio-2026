@@ -702,18 +702,6 @@ def run_production_agent():
     )
     print("✅ Autonomous execution loop complete!")
 
-# ─────────────────────────────────────────────
-# 2-HOUR LOOP — keeps running forever
-# ─────────────────────────────────────────────
 if __name__ == "__main__":
-    print("🚀 Autonomous Lab Agent starting — runs every 2 hours.")
-    while True:
-        try:
-            print(f"\n{'='*50}")
-            print(f"⏰ Cycle start: {datetime.now().strftime('%d %b %Y %H:%M UTC')}")
-            print(f"{'='*50}")
-            run_production_agent()
-        except Exception as e:
-            print(f"❌ Unexpected top-level error: {e}")
-        print(f"\n💤 Sleeping 2 hours until next update...")
-        time.sleep(7200)  # 2 hours = 7200 seconds
+    print(f"🚀 Agent starting: {datetime.now().strftime('%d %b %Y %H:%M UTC')}")
+    run_production_agent()
