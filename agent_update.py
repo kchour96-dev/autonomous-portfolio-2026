@@ -296,11 +296,6 @@ def build_html(data, final_history, date_str):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autonomous Lab 2026 — {title}</title>
-    
-    <!-- GOOGLE ADSENSE VERIFICATION SCRIPT -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3639279484055527"
-         crossorigin="anonymous"></script>
-
     <meta name="description" content="Real-time crypto and Web3 intelligence. Threat score, opportunity signals, tokens to watch — updated every 2 hours by AI.">
     <meta name="keywords" content="crypto intelligence, web3 security, DeFi signals, AI research dashboard, blockchain 2026">
     <meta name="robots" content="index, follow">
@@ -427,13 +422,6 @@ def build_html(data, final_history, date_str):
                     <p class="text-[9px] mono text-slate-500 uppercase mt-1">Threat</p>
                 </div>
             </div>
-            
-            <!-- EXPLANATION SUBTEXT FOR USER STRATEGY -->
-            <div class="mt-4 pt-4 border-t border-white/5 text-[10px] text-slate-500 mono text-left space-y-2">
-                <p>💡 <strong class="text-slate-400">High Opportunity:</strong> Narrative buy pressure building.</p>
-                <p>⚠️ <strong class="text-slate-400">High Threat:</strong> De-risk, secure keys, hold stable assets.</p>
-            </div>
-            
             <p class="text-[9px] mono text-slate-600 mt-4 uppercase">{date_str}</p>
         </div>
 
@@ -596,11 +584,3 @@ def run_production_agent():
 
 if __name__ == "__main__":
     run_production_agent()
-```
-eof
-
-### Summary of what was added:
-* **Google AdSense integration:** I placed the asynchronous Google AdSense script code directly inside the `<head>` block of your generated HTML string:
-  ```html
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3639279484055527"
-       crossorigin="anonymous"></script>
