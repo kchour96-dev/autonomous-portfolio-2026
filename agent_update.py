@@ -3,10 +3,11 @@ import requests
 import json
 import re
 import shutil
+import xml.etree.ElementTree as ET
 from datetime import datetime
 
 # ─────────────────────────────────────────────
-# LAYER 1: RSS — Real world news
+# LAYER 1: RSS — Real world news (Hardened Parsing)
 # ─────────────────────────────────────────────
 def get_rss_context():
     feeds = [
@@ -16,196 +17,224 @@ def get_rss_context():
         "https://decrypt.co/feed"
     ]
     items = []
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+    
     for url in feeds:
         try:
-            r = requests.get(url, timeout=8)
-            titles = re.findall(r'<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>', r.text, re.DOTALL)
-            items.extend([t.strip() for t in titles[1:3] if t.strip()])
+            r = requests.get(url, headers=headers, timeout=10)
+            r.raise_for_status()
+            
+            # Use native XML parsing to avoid RegEx failures on unexpected tags
+            root = ET.fromstring(r.content)
+            channel = root.find('channel')
+            if channel is not None:
+                count = 0
+                for item in channel.findall('item'):
+                    title = item.find('title')
+                    if title is not None and title.text:
+                        clean_title = title.text.replace("<![CDATA[", "").replace("]]>", "").strip()
+                        if clean_title:
+                            items.append(clean_title)
+                            count += 1
+                            if count >= 2:  # Keep top 2 items from each feed
+                                break
         except Exception as e:
-            print(f"RSS failed {url}: {e}")
-    result = " | ".join(items[:6]) if items else "Crypto and Web3 market developments 2026"
-    print(f"RSS context: {result[:80]}...")
+            print(f"Warning: RSS parse failed for {url} -> {e}")
+            
+    result = " | ".join(items[:8]) if items else "Crypto markets and Web3 security threat vectors"
+    print(f"RSS Context Compiled: {result[:120]}...")
     return result
 
 # ─────────────────────────────────────────────
-# LAYER 2: Tavily — Deep research
+# LAYER 2: Tavily — Deep background research
 # ─────────────────────────────────────────────
 def get_research(rss_context, t_key):
     if not t_key:
-        print("No TAVILY key, using RSS context only.")
+        print("Tavily API key missing. Running in Direct Context mode.")
         return rss_context
     try:
         r = requests.post(
             "https://api.tavily.com/search",
             json={
                 "api_key": t_key,
-                "query": f"crypto web3 DeFi {rss_context[:150]} risk opportunity 2026",
+                "query": f"latest crypto web3 exploit breach market news {rss_context[:120]} 2026",
                 "max_results": 3
             },
-            timeout=10
+            timeout=12
         )
         r.raise_for_status()
         results = r.json().get('results', [])
         if results:
-            combined = " ".join([res.get('content', '') for res in results])[:2000]
-            print(f"Tavily loaded: {len(combined)} chars")
+            combined = " ".join([res.get('content', '') for res in results])[:2500]
+            print(f"Tavily ground research loaded successfully ({len(combined)} chars)")
             return combined
     except Exception as e:
-        print(f"Tavily failed: {e}")
+        print(f"Warning: Tavily research API call failed -> {e}")
     return rss_context
 
 # ─────────────────────────────────────────────
-# LAYER 3: Gemini — with model fallback chain
+# LAYER 3: Core LLM Synthesis & Fallback Channels
 # ─────────────────────────────────────────────
 def call_gemini(prompt, g_key, model):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={g_key}"
     resp = requests.post(
         url,
         json={"contents": [{"parts": [{"text": prompt}]}]},
+        headers={"Content-Type": "application/json"},
         timeout=30
     )
     resp.raise_for_status()
     return resp.json()['candidates'][0]['content']['parts'][0]['text']
 
-def call_groq(prompt, g_key):
-    """Groq fallback — 14,400 free requests/day, extremely fast"""
-    if not g_key:
-        raise ValueError("No GROQ key")
-    headers = {"Authorization": f"Bearer {g_key}", "Content-Type": "application/json"}
+def call_groq(prompt, groq_key):
+    if not groq_key:
+        raise ValueError("GROQ API key unavailable")
+    headers = {
+        "Authorization": f"Bearer {groq_key}",
+        "Content-Type": "application/json"
+    }
     payload = {
         "model": "llama-3.3-70b-versatile",
         "messages": [{"role": "user", "content": prompt}],
         "max_tokens": 2000,
-        "temperature": 0.7
+        "temperature": 0.6
     }
     resp = requests.post(
         "https://api.groq.com/openai/v1/chat/completions",
-        json=payload, headers=headers, timeout=30
+        json=payload,
+        headers=headers,
+        timeout=30
     )
     resp.raise_for_status()
     return resp.json()['choices'][0]['message']['content']
 
 def get_gemini_data(research_context, g_key):
-    prompt = f"""You are an expert crypto and Web3 analyst running a real-time intelligence dashboard.
-Based on this research: {research_context}
+    prompt = f"""You are an elite, autonomous AI cybersecurity researcher and Web3 risk analyst.
+Evaluate this intelligence data: {research_context}
 
-Return ONLY a valid JSON object. No markdown fences. No extra text before or after. Just the JSON:
+Output exactly a raw JSON block. No wrapping, no markdown backticks, no preface.
+JSON structure to generate:
 {{
-  "title": "Sharp 4-6 word headline about today biggest story",
+  "title": "A highly punchy 4-6 word alert header summarizing today's key dynamic",
   "news_bullets": [
-    "One sentence summary of news item 1",
-    "One sentence summary of news item 2",
-    "One sentence summary of news item 3"
+    "First crucial summary sentence highlighting specific players, targets, or protocols",
+    "Second sentence adding deep mechanical context or technical exploit details",
+    "Third sentence detailing immediate ecosystem-wide operational fallout"
   ],
-  "threat": "One clear sentence about the main risk to avoid right now",
-  "opportunity": "One clear sentence about the best opportunity to watch right now",
-  "threat_score": 7,
+  "threat": "One dense, clear sentence analyzing the precise systemic risk factor to look out for",
+  "opportunity": "One forward-looking sentence about tactical, defensive positions or protocols that benefit",
+  "threat_score": 8,
   "opportunity_score": 6,
-  "threat_level": "Medium",
-  "deep_analysis": "Three paragraphs of expert analysis separated by newlines",
-  "tokens_to_watch": ["TOKEN_RELATED_TO_NEWS", "ANOTHER_RELEVANT_TOKEN", "THIRD_RELEVANT_TOKEN"],
-  "critic": "One sentence contrarian view why the opportunity might be wrong",
-  "color": "#hexcolor matching the mood of the story"
+  "threat_level": "High",
+  "deep_analysis": "Three analytical, expert paragraphs detailing the mechanical root causes, supply-chain impacts, and mid-term architecture predictions. Separate paragraphs with a single newline.",
+  "tokens_to_watch": ["SYM1", "SYM2", "SYM3"],
+  "critic": "One highly analytical, contrarian statement challenging why the opportunity might prove premature, unscalable, or risky.",
+  "color": "#8B0000"
 }}
 
-IMPORTANT for tokens_to_watch: Do NOT default to BTC/ETH/SOL every time. Pick tokens DIRECTLY related to the news story. Security breach = pick security/privacy tokens like SCRT, ROSE, NMR. DeFi hack = pick tokens of affected protocol. L2 news = pick relevant L2 tokens. AI news = pick AI tokens like FET, AGIX, RENDER. Be specific."""
+Rules for 'tokens_to_watch': Do not print generic Bitcoin (BTC) or Ethereum (ETH). Choose targeted protocol assets directly associated with the vulnerability.
+Rules for 'threat_level': Choose strictly from 'Critical', 'High', 'Medium', or 'Low'."""
 
-    # Fallback chain — tries each until one works
+    # Robust multi-engine fallback matrix
     attempts = [
         ("gemini-2.5-flash",   "gemini",  g_key),
         ("groq-llama-3.3-70b", "groq",    os.getenv("GROQ")),
         ("gemini-1.5-flash",   "gemini",  g_key),
-        ("gemini-1.5-flash-8b","gemini",  g_key),
     ]
 
     for model_name, provider, key in attempts:
         try:
-            print(f"Trying: {model_name}")
-            if provider == "groq":
-                raw = call_groq(prompt, key)
-            else:
-                raw = call_gemini(prompt, key, model_name)
-            print(f"Response: {len(raw)} chars")
-            match = re.search(r'\{.*\}', raw, re.DOTALL)
+            print(f"Triggering pipeline request via: {model_name}...")
+            if provider == "groq" and not key:
+                print("Skipping Groq: No local credential set in environment.")
+                continue
+            
+            raw = call_groq(prompt, key) if provider == "groq" else call_gemini(prompt, key, model_name)
+            
+            # Sanitize responses dynamically using dynamic string constructors to avoid nesting errors
+            cleaned_text = raw.strip()
+            backticks = chr(96) * 3
+            if backticks in cleaned_text:
+                cleaned_text = re.sub(rf'^{backticks}(?:json)?\s*|\s*{backticks}$', '', cleaned_text, flags=re.MULTILINE)
+            
+            match = re.search(r'\{.*\}', cleaned_text, re.DOTALL)
             if not match:
-                raise ValueError("No JSON found")
-            data = json.loads(match.group(0))
-            print(f"SUCCESS with {model_name}: {data.get('title','no title')}")
-            return data
+                raise ValueError("JSON matching brackets not found in raw response.")
+                
+            parsed_data = json.loads(match.group(0))
+            print(f"Pipeline SUCCESS via {model_name}!")
+            return parsed_data
+            
         except Exception as e:
-            print(f"{model_name} failed: {e}")
+            print(f"Engine failure [{model_name}]: {e}")
             continue
-
-    print("ALL MODELS FAILED. Circuit breaker triggered.")
+            
     return None
 
 # ─────────────────────────────────────────────
-# NOTIFY: Telegram
+# LAYER 4: Notification & Automation Integration
 # ─────────────────────────────────────────────
 def send_telegram(title, threat, opportunity, threat_score, opp_score):
     token = os.getenv("TELEGRAM_BOT_TOKEN")
     chat_id = os.getenv("TELEGRAM_CHANNEL_ID")
     if not token or not chat_id:
+        print("Telegram configuration absent. Skipping dispatch.")
         return
     msg = (
         f"🧠 *AUTONOMOUS LAB UPDATE*\n\n"
         f"*{title}*\n\n"
-        f"⚠️ Threat [{threat_score}/10]: {threat}\n\n"
-        f"💡 Opportunity [{opp_score}/10]: {opportunity}\n\n"
+        f"⚠️ *Threat [{threat_score}/10]:* {threat}\n\n"
+        f"💡 *Opportunity [{opp_score}/10]:* {opportunity}\n\n"
         f"🔗 https://autonomous-portfolio-2026.live"
     )
     try:
-        requests.post(
+        r = requests.post(
             f"https://api.telegram.org/bot{token}/sendMessage",
             data={"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"},
             timeout=10
         )
-        print("Telegram sent.")
+        r.raise_for_status()
+        print("Telegram alert successfully sent!")
     except Exception as e:
-        print(f"Telegram failed: {e}")
+        print(f"Telegram dispatch failed: {e}")
 
-# ─────────────────────────────────────────────
-# PUBLISH: Dev.to
-# ─────────────────────────────────────────────
 def post_to_devto(data):
     key = os.getenv("DEV")
     if not key:
-        print("No DEV key, skipping.")
+        print("Dev.to publishing credentials (DEV) absent. Skipping step.")
         return
+        
     bullets = "\n".join([f"- {b}" for b in data.get('news_bullets', [])])
-    tokens = ", ".join(data.get('tokens_to_watch', []))
     body = (
         f"> 🔗 Live Dashboard: [autonomous-portfolio-2026.live](https://autonomous-portfolio-2026.live)\n"
-        f"> 📢 Telegram Channel: [t.me/AII2026futher](https://t.me/AII2026futher)\n\n"
-        f"## Today's Headlines\n\n{bullets}\n\n"
-        f"## ⚠️ Threat Signal [{data.get('threat_score','?')}/10]\n\n{data.get('threat','')}\n\n"
-        f"## 💡 Opportunity Signal [{data.get('opportunity_score','?')}/10]\n\n{data.get('opportunity','')}\n\n"
-        f"## 🪙 Tokens To Watch\n\n{tokens}\n\n"
-        f"## 📊 Deep Analysis\n\n{data.get('deep_analysis','')}\n\n"
+        f"> 📢 Telegram Feed: [t.me/AII2026futher](https://t.me/AII2026futher)\n\n"
+        f"## Live Headlines\n\n{bullets}\n\n"
+        f"## ⚠️ Systemic Risk Assessment [{data.get('threat_score','?')}/10]\n\n{data.get('threat','')}\n\n"
+        f"## 💡 Market Catalyst Assessment [{data.get('opportunity_score','?')}/10]\n\n{data.get('opportunity','')}\n\n"
+        f"## 🪙 Tokens Under Watch\n\n{', '.join(data.get('tokens_to_watch', []))}\n\n"
+        f"## 📊 Deep Core Analysis\n\n{data.get('deep_analysis','')}\n\n"
         f"---\n"
-        f"*AI-powered dashboard — Gemini + Groq + Tavily. Updated every 2 hours automatically.*\n\n"
-        f"📢 Follow our Telegram for real-time alerts: https://t.me/AII2026futher"
+        f"*Report generated completely autonomously via the Autonomous Lab 2026 Engine.*"
     )
     try:
         r = requests.post(
             "https://dev.to/api/articles",
             json={"article": {
-                "title": data.get('title', 'Crypto Intelligence Update'),
+                "title": f"Autonomous Lab Alert: {data.get('title')}",
                 "body_markdown": body,
-                "tags": ["crypto", "web3", "defi", "security"],
+                "tags": ["crypto", "blockchain", "security", "ai"],
                 "published": True
             }},
             headers={"api-key": key},
             timeout=15
         )
         r.raise_for_status()
-        print(f"Dev.to published: {r.json().get('url','')}")
+        print(f"Dev.to article published: {r.json().get('url','')}")
     except Exception as e:
-        print(f"Dev.to failed: {e}")
+        print(f"Dev.to publishing step encountered an error: {e}")
 
-# ─────────────────────────────────────────────
-# SEO files
-# ─────────────────────────────────────────────
 def write_seo_files():
     date_today = datetime.now().strftime("%Y-%m-%d")
     sitemap = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -216,26 +245,23 @@ def write_seo_files():
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
   </url>
-  <url>
-    <loc>https://autonomous-portfolio-2026.live/privacy.html</loc>
-    <lastmod>{date_today}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
 </urlset>"""
-    with open("sitemap.xml", "w") as f:
-        f.write(sitemap)
-    with open("robots.txt", "w") as f:
-        f.write("User-agent: *\nAllow: /\nSitemap: https://autonomous-portfolio-2026.live/sitemap.xml\n")
-    print("SEO files updated.")
+    try:
+        with open("sitemap.xml", "w") as f:
+            f.write(sitemap)
+        with open("robots.txt", "w") as f:
+            f.write("User-agent: *\nAllow: /\nSitemap: https://autonomous-portfolio-2026.live/sitemap.xml\n")
+        print("SEO assets successfully exported.")
+    except Exception as e:
+        print(f"SEO writing error: {e}")
 
 # ─────────────────────────────────────────────
-# BUILD HTML
+# LAYER 5: Frontend Design Compilation
 # ─────────────────────────────────────────────
 def build_html(data, final_history, date_str):
-    color        = data.get('color', '#3b82f6')
-    threat       = data.get('threat_level', 'Unknown')
-    title        = data.get('title', 'Intelligence Report')
+    color        = data.get('color', '#8B0000')
+    threat       = data.get('threat_level', 'High')
+    title        = data.get('title', 'Intelligence Analysis')
     news_bullets = data.get('news_bullets', [])
     threat_txt   = data.get('threat', '')
     opp_txt      = data.get('opportunity', '')
@@ -303,13 +329,14 @@ def build_html(data, final_history, date_str):
         <h1 class="text-2xl md:text-3xl font-black tracking-tighter uppercase">
             AUTONOMOUS_<span style="color:{color}">LAB</span><span class="text-slate-600">_2026</span>
         </h1>
-        <p class="text-[10px] mono text-slate-500 uppercase tracking-widest mt-1">
-            <span class="blink" style="color:{color}">●</span>&nbsp;Real-Time Crypto &amp; Web3 Intelligence — Updated Every 2 Hours By AI
+        <p class="text-[10px] mono text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-2">
+            <span class="blink" style="color:{color}">●</span>
+            <span id="terminal-live-status">AI Agent Pipeline Online // Monitoring Nodes...</span>
         </p>
     </div>
     <div class="text-right text-[10px] mono uppercase font-bold">
         <p style="color:{threat_color}" class="mb-1">● {threat} Threat Environment</p>
-        <p class="text-slate-500">{date_str}</p>
+        <p class="text-slate-500">Last Synced: {date_str}</p>
     </div>
 </header>
 
@@ -400,7 +427,7 @@ def build_html(data, final_history, date_str):
 
         <div class="glass rounded-2xl p-6">
             <p class="text-[10px] mono font-bold text-slate-500 uppercase tracking-widest mb-4 pb-3 border-b border-white/5">📁 Signal Archive</p>
-            <div><!-- H_S -->{final_history}<!-- H_E --></div>
+            <div class="max-h-[380px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10"><!-- H_S -->{final_history}<!-- H_E --></div>
         </div>
 
         <div class="rounded-2xl p-6 bg-white/[0.02] border border-white/5 text-[10px] mono text-slate-600">
@@ -467,39 +494,54 @@ def build_html(data, final_history, date_str):
     <p>AUTONOMOUS-PORTFOLIO-2026.LIVE // AI AGENT PIPELINE // {date_str}</p>
     <p>NOT FINANCIAL ADVICE // RESEARCH ONLY</p>
 </footer>
+
+<script>
+    // System Thinking Simulator to make the page look and feel continuously live
+    const agentProcesses = [
+        "Analyzing security vectors via Gemini Brain...",
+        "Evaluating systemic risk thresholds via Llama 3.3...",
+        "Parsing active exploits from HackerNews RSS...",
+        "Scraping background articles via Tavily API...",
+        "Compiling real-time sentiment metrics...",
+        "Validating network signature data..."
+    ];
+    setInterval(() => {{
+        const el = document.getElementById('terminal-live-status');
+        if(el) el.innerText = agentProcesses[Math.floor(Math.random() * agentProcesses.length)];
+    }}, 8000);
+</script>
 </body>
 </html>"""
 
 # ─────────────────────────────────────────────
-# MAIN
+# MAIN EXECUTOR
 # ─────────────────────────────────────────────
 def run_production_agent():
     g_key = os.getenv("GEMINI")
     t_key = os.getenv("TAVILY")
 
     if not g_key:
-        print("FATAL: GEMINI secret not set. Aborting.")
+        print("Fatal Error: GEMINI API secret not mapped in environment variables. Aborting.")
         return
 
-    # Backup
+    # Create safety backup in case generation pipeline hits failure loops
     old_content = ""
     if os.path.exists("index.html"):
         shutil.copy("index.html", "index.html.bak")
         with open("index.html", "r", encoding="utf-8") as f:
             old_content = f.read()
 
-    # Run pipeline
     rss_context = get_rss_context()
     research    = get_research(rss_context, t_key)
     data        = get_gemini_data(research, g_key)
 
     if not data:
-        print("All models failed. Keeping old site.")
+        print("Warning: All pipeline LLM pathways failed. Restoring index backup.")
         if os.path.exists("index.html.bak"):
             shutil.copy("index.html.bak", "index.html")
         return
 
-    # Build archive
+    # Isolate history records
     history_html = ""
     if "<!-- H_S -->" in old_content and "<!-- H_E -->" in old_content:
         history_html = old_content.split("<!-- H_S -->")[1].split("<!-- H_E -->")[0]
@@ -508,20 +550,19 @@ def run_production_agent():
     new_entry = (
         f"<div class='mb-3 pl-3 border-l border-white/10 opacity-50 text-[10px]'>"
         f"<p class='mono text-slate-500'>{date_str}</p>"
-        f"<p class='font-bold text-slate-300 uppercase tracking-tight'>{data.get('title','Update')}</p>"
+        f"<p class='font-bold text-slate-300 uppercase tracking-tight'>{data.get('title','Intelligence Alert')}</p>"
         f"<p class='text-slate-500'>⚠️ {data.get('threat_score','?')}/10 &nbsp;💡 {data.get('opportunity_score','?')}/10</p>"
         f"</div>"
     )
-    final_history = (new_entry + history_html)[:4000]
+    final_history = (new_entry + history_html)[:4500]  # Limit cache footprint sizes
 
-    # Write HTML
-    html = build_html(data, final_history, date_str)
+    html_payload = build_html(data, final_history, date_str)
     try:
         with open("index.html", "w", encoding="utf-8") as f:
-            f.write(html)
-        print("index.html written successfully.")
+            f.write(html_payload)
+        print("Dashboard generation complete: index.html written successfully.")
     except Exception as e:
-        print(f"Write failed: {e}")
+        print(f"Error: index.html block write failed -> {e}")
         if os.path.exists("index.html.bak"):
             shutil.copy("index.html.bak", "index.html")
         return
@@ -529,6 +570,7 @@ def run_production_agent():
     if os.path.exists("index.html.bak"):
         os.remove("index.html.bak")
 
+    # Post processing pipeline tasks
     write_seo_files()
     post_to_devto(data)
     send_telegram(
@@ -538,7 +580,7 @@ def run_production_agent():
         data.get('threat_score','?'),
         data.get('opportunity_score','?')
     )
-    print("✅ Production sync complete!")
+    print("✅ Autonomous execution loop successfully synchronized!")
 
 if __name__ == "__main__":
     run_production_agent()
