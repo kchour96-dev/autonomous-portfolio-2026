@@ -2,10 +2,10 @@ name: AI Agent Production Sync
 
 on:
   schedule:
-    # Runs 5x daily: 2am, 7am, 12pm, 5pm, 10pm UTC
-    # = Phnom Penh: 9am, 2pm, 7pm, 12am, 5am
-    - cron: '0 2,7,12,17,22 * * *'
-  # Allows manual trigger from GitHub Actions tab
+    # Changed from on-the-hour to minute 17 to bypass heavy GitHub queues!
+    # Runs 5 times a day (Phnom Penh: 9:17 AM, 2:17 PM, 7:17 PM, 12:17 AM, 5:17 AM)
+    - cron: '17 2,7,12,17,22 * * *'
+  # Allows manual runs from the GitHub actions interface
   workflow_dispatch:
 
 jobs:
@@ -30,19 +30,20 @@ jobs:
 
       - name: Run AI Agent
         env:
+          # MATCHED EXACTLY to your repository secrets configuration
           GEMINI: ${{ secrets.GEMINI }}
           TAVILY: ${{ secrets.TAVILY }}
           GROQ: ${{ secrets.GROQ }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
-          DEVTO_KEY: ${{ secrets.DEVTO_KEY }}
+          DEV: ${{ secrets.DEV }}
         run: python agent_update.py
 
       - name: Commit and Push
         run: |
           git config --global user.name "AI-Agent-Bot"
           git config --global user.email "bot@autonomous-portfolio-2026.live"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@[github.com/$](https://github.com/$){{ github.repository }}
           git add index.html
           git add sitemap.xml robots.txt 2>/dev/null || true
           git commit -m "Production Lab Sync [$(date)]" || exit 0
