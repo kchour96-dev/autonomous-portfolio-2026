@@ -16,259 +16,931 @@
     <link rel="canonical" href="https://autonomous-portfolio-2026.live/">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3639279484055527" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        dark: {
+                            900: '#06070f',
+                            800: '#0a0e1a',
+                            700: '#0f172a',
+                            600: '#1e293b',
+                        },
+                        crimson: {
+                            DEFAULT: '#dc2626',
+                            light: '#ef4444',
+                            dark: '#991b1b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        *{box-sizing:border-box}
-        body{background:#06070f;color:#f1f5f9;font-family:'Space Grotesk',sans-serif;margin:0;font-size:16px}
-        .mono{font-family:'JetBrains Mono',monospace}
-        .glass{background:rgba(15,23,42,0.5);border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-        .score-bar{height:6px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden}
-        .score-fill{height:100%;border-radius:99px}
-        #deepdive{display:none}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-        .blink{animation:pulse 2s infinite}
-        @keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-        .fadein{animation:fadeup 0.5s ease forwards}
+        * { box-sizing: border-box; }
+        body {
+            background: #06070f;
+            color: #f1f5f9;
+            font-family: 'Space Grotesk', sans-serif;
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Premium Glass Effect */
+        .glass {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(24px) saturate(1.2);
+            -webkit-backdrop-filter: blur(24px) saturate(1.2);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+        
+        .glass-hover:hover {
+            background: rgba(15, 23, 42, 0.5);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+        
+        /* Score Bars */
+        .score-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 99px;
+            overflow: hidden;
+            position: relative;
+        }
+        .score-fill {
+            height: 100%;
+            border-radius: 99px;
+            position: relative;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .score-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 30px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4));
+            border-radius: 0 99px 99px 0;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 12px currentColor; }
+            50% { opacity: 0.4; box-shadow: 0 0 4px currentColor; }
+        }
+        .blink {
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+        
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fadein {
+            animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .fadein-delay-1 { animation-delay: 0.15s; opacity: 0; }
+        .fadein-delay-2 { animation-delay: 0.3s; opacity: 0; }
+        .fadein-delay-3 { animation-delay: 0.45s; opacity: 0; }
+        .fadein-delay-4 { animation-delay: 0.6s; opacity: 0; }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 8s infinite;
+        }
+        
+        /* Number Counter Animation */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.8); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .count-number {
+            animation: countUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+        
+        /* Tags */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 99px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        .tag:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        /* Deep Dive Transition */
+        #deepdive {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease, padding 0.5s ease;
+        }
+        #deepdive.active {
+            max-height: 1000px;
+            opacity: 1;
+        }
+        
+        /* Grid Lines Background */
+        .bg-grid {
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 80px 80px;
+        }
+        
+        /* Status Dot */
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        /* Archive Item Hover */
+        .archive-item {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        .archive-item:hover {
+            background: rgba(255,255,255,0.02);
+            border-left-color: rgba(220, 38, 38, 0.6);
+            padding-left: 20px;
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Big Number Display */
+        .big-number {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.04em;
+        }
+        
+        /* Section Label */
+        .section-label {
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #94a3b8;
+        }
+        
+        /* Professional Card Header */
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        
+        /* Highlight Box */
+        .highlight-box {
+            background: rgba(220, 38, 38, 0.04);
+            border: 1px solid rgba(220, 38, 38, 0.12);
+            border-radius: 16px;
+            padding: 24px;
+        }
     </style>
 </head>
-<body class="p-4 md:p-8 lg:p-12 min-h-screen">
+<body class="min-h-screen bg-grid">
 
-<header class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4 mb-10 pb-6 border-b border-white/5">
-    <div>
-        <h1 class="text-3xl md:text-4xl font-black tracking-tighter uppercase">
-            AUTONOMOUS_<span style="color:#8B0000">LAB</span><span class="text-slate-600">_2026</span>
-        </h1>
-        <p class="text-xs mono text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-2">
-            <span class="blink" style="color:#8B0000">●</span>
-            <span id="terminal-live-status">AI Agent Pipeline Online // Monitoring Nodes...</span>
-        </p>
-    </div>
-    <div class="text-right text-xs mono uppercase font-bold">
-        <p style="color:#f97316" class="mb-1">● High Threat Environment</p>
-        <p class="text-slate-500">Last Synced: 24 May 2026 | 13:59 UTC</p>
-    </div>
-</header>
-
-<main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <div class="lg:col-span-8 space-y-6 fadein">
-
-        <section class="glass rounded-2xl p-6 md:p-8 border-l-4" style="border-color:#8B0000">
-            <p class="text-xs mono font-black uppercase tracking-[0.4em] mb-3" style="color:#8B0000">● Today's Intelligence Brief</p>
-            <h2 class="text-3xl md:text-5xl font-black tracking-tighter leading-tight text-white mb-6">npm Supply Chain Attack</h2>
-            <p class="text-xs mono text-slate-500 uppercase tracking-widest mb-3">What happened today:</p>
-            <div class="space-y-1"><div class="flex gap-3 mb-3 items-start"><span style="color:#8B0000" class="mt-0.5 flex-shrink-0">›</span><p class="text-base text-slate-300 leading-relaxed">The axios npm package was compromised on March 31, 2026, in a supply chain attack dubbed 'Mini Shai-Hulud', affecting numerous npm and PyPI packages</p></div><div class="flex gap-3 mb-3 items-start"><span style="color:#8B0000" class="mt-0.5 flex-shrink-0">›</span><p class="text-base text-slate-300 leading-relaxed">The attack delivered a cross-platform Remote Access Trojan (RAT) via a compromised npm account, leveraging the popularity of the axios package</p></div><div class="flex gap-3 mb-3 items-start"><span style="color:#8B0000" class="mt-0.5 flex-shrink-0">›</span><p class="text-base text-slate-300 leading-relaxed">The ecosystem-wide impact puts crypto wallets, businesses, and open-source software at risk due to the potential for malware injection into popular packages</p></div></div>
-        </section>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="glass rounded-2xl p-6 border-t-2 border-red-500/60">
-                <div class="flex justify-between items-center mb-2">
-                    <p class="text-xs mono font-black text-red-400 uppercase tracking-widest">⚠️ Threat Signal</p>
-                    <p class="text-3xl font-black text-red-400">8<span class="text-base text-slate-600">/10</span></p>
-                </div>
-                <div class="score-bar mb-4"><div class="score-fill bg-red-500" style="width:80%"></div></div>
-                <p class="text-base text-slate-300 leading-relaxed">The supply chain attack on axios poses a significant systemic risk to the entire JavaScript ecosystem, potentially compromising sensitive data and disrupting critical services</p>
+    <!-- Top Status Bar -->
+    <div class="w-full border-b border-white/[0.04] bg-dark-900/90 backdrop-blur-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <span class="status-dot blink bg-red-500"></span>
+                <span class="text-xs mono font-semibold text-slate-400 uppercase tracking-widest" id="terminal-live-status">
+                    AI Agent Pipeline Online
+                </span>
             </div>
-            <div class="glass rounded-2xl p-6 border-t-2" style="border-color:#8B000088">
-                <div class="flex justify-between items-center mb-2">
-                    <p class="text-xs mono font-black uppercase tracking-widest" style="color:#8B0000">💡 Opportunity Signal</p>
-                    <p class="text-3xl font-black" style="color:#8B0000">6<span class="text-base text-slate-600">/10</span></p>
-                </div>
-                <div class="score-bar mb-4"><div class="score-fill" style="width:60%;background:#8B0000"></div></div>
-                <p class="text-base text-slate-300 leading-relaxed">Protocols with robust security audits and secure package management, such as those utilizing IPFS or decentralized package repositories, may benefit from the increased focus on supply chain security</p>
+            <div class="flex items-center gap-6 text-xs mono text-slate-500">
+                <span class="hidden sm:inline">Last Synced: 24 May 2026 | 13:59 UTC</span>
+                <span class="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 font-bold tracking-wider">● HIGH THREAT</span>
             </div>
         </div>
-
-        <div class="glass rounded-2xl p-6">
-            <p class="text-xs mono font-black text-slate-500 uppercase tracking-widest mb-4">🪙 Tokens To Watch</p>
-            <div class="mb-2"><span class="inline-block px-4 py-1.5 rounded-full text-sm font-black mono mr-2 mb-2" style="background:#8B000022;color:#8B0000;border:1px solid #8B000044">SIA</span><span class="inline-block px-4 py-1.5 rounded-full text-sm font-black mono mr-2 mb-2" style="background:#8B000022;color:#8B0000;border:1px solid #8B000044">HEDERA</span><span class="inline-block px-4 py-1.5 rounded-full text-sm font-black mono mr-2 mb-2" style="background:#8B000022;color:#8B0000;border:1px solid #8B000044">POLYGON</span></div>
-            <p class="text-xs text-slate-600 italic mt-2">* Not financial advice. For research only.</p>
-        </div>
-
-        <div class="glass rounded-2xl p-6">
-            <div class="flex justify-between items-center">
-                <p class="text-xs mono font-black text-slate-500 uppercase tracking-widest">📊 Deep Analysis</p>
-                <button id="deepbtn"
-                    onclick="var d=document.getElementById('deepdive'),b=document.getElementById('deepbtn');if(d.style.display==='none'||!d.style.display){d.style.display='block';b.innerText='Close ↑'}else{d.style.display='none';b.innerText='Read More ↓'}"
-                    class="text-xs mono font-black uppercase px-4 py-2 rounded-full border border-white/10 hover:border-white/30 transition">
-                    Read More ↓
-                </button>
-            </div>
-            <div id="deepdive" class="mt-6 pt-6 border-t border-white/5 text-base text-slate-300 leading-relaxed">The root cause of the attack lies in the compromised npm account, highlighting the need for improved security measures in package management. <br><br>The supply chain impact is far-reaching, with potential consequences for businesses and individuals relying on affected packages. <br><br>In the mid-term, we can expect increased adoption of decentralized package repositories and secure package management protocols, such as those utilizing blockchain or IPFS.</div>
-        </div>
-
-        <div class="glass rounded-2xl p-6 border-l-4 border-yellow-500/40">
-            <p class="text-xs mono font-black text-yellow-500 uppercase tracking-widest mb-3">🤔 Contrarian View</p>
-            <p class="text-base text-slate-400 italic leading-relaxed">"The opportunity for secure package management protocols may be premature, as the complexity of implementing such solutions may outweigh the benefits, at least in the short term"</p>
-            <p class="text-xs mono text-slate-600 mt-3 uppercase">— Powered by Groq / Llama 3.3 70b</p>
-        </div>
-
-        <div class="glass rounded-2xl p-6 flex flex-wrap items-center justify-between gap-4">
-            <div>
-                <p class="text-xs mono font-black text-slate-500 uppercase tracking-widest mb-1">📢 Share This Report</p>
-                <p class="text-sm text-slate-500">Found this useful? Share it with your network.</p>
-            </div>
-            <a href="https://twitter.com/intent/tweet?text=npm Supply Chain Attack%20%E2%80%94%20Threat%3A%208%2F10%20%7C%20Opportunity%3A%206%2F10%0A%0Ahttps%3A%2F%2Fautonomous-portfolio-2026.live%20%23crypto%20%23web3%20%23AI"
-               target="_blank"
-               class="flex items-center gap-2 px-6 py-3 rounded-full font-black text-xs uppercase tracking-widest transition hover:opacity-80"
-               style="background:#1d9bf0;color:white">
-                𝕏 Share on X
-            </a>
-        </div>
-
     </div>
 
-    <aside class="lg:col-span-4 space-y-6">
+    <div class="p-4 md:p-8 lg:p-12">
 
-        <div class="glass rounded-2xl p-6 text-center">
-            <p class="text-xs mono text-slate-500 uppercase tracking-widest mb-4">Signal Summary</p>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="rounded-xl p-4" style="background:#8B000011;border:1px solid #8B000033">
-                    <p class="text-4xl font-black" style="color:#8B0000">6</p>
-                    <p class="text-xs mono text-slate-500 uppercase mt-1">Opportunity</p>
+        <!-- Header -->
+        <header class="max-w-7xl mx-auto mb-16 fadein">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 pb-10 border-b border-white/[0.06]">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="h-px w-16 bg-gradient-to-r from-red-500 to-transparent"></div>
+                        <span class="text-xs mono font-bold text-red-400 uppercase tracking-[0.3em]">Intelligence Dashboard</span>
+                    </div>
+                    <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.9]">
+                        <span class="gradient-text">AUTONOMOUS</span><br>
+                        <span class="text-red-600">LAB<span class="text-slate-600 font-light">.2026</span></span>
+                    </h1>
+                    <p class="text-base text-slate-500 max-w-xl leading-relaxed mt-4">
+                        Real-time autonomous intelligence pipeline monitoring crypto security threats, Web3 vulnerabilities, and market signals.
+                    </p>
                 </div>
-                <div class="rounded-xl p-4 bg-red-500/10 border border-red-500/20">
-                    <p class="text-4xl font-black text-red-400">8</p>
-                    <p class="text-xs mono text-slate-500 uppercase mt-1">Threat</p>
+                <div class="flex items-center gap-4 bg-white/[0.02] border border-white/[0.06] rounded-2xl px-6 py-4">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 blink" style="animation-duration: 3s;"></span>
+                    <div>
+                        <p class="text-[10px] mono text-slate-500 uppercase tracking-widest mb-1">System Status</p>
+                        <p class="text-sm font-bold text-emerald-400 uppercase tracking-wide">Operational</p>
+                    </div>
                 </div>
             </div>
-            <p class="text-xs mono text-slate-600 mt-4 uppercase">24 May 2026 | 13:59 UTC</p>
-        </div>
+        </header>
 
+        <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Main Content Column -->
+            <div class="lg:col-span-8 space-y-8">
+
+                <!-- Hero Intelligence Card -->
+                <section class="glass rounded-3xl p-8 md:p-12 relative overflow-hidden fadein fadein-delay-1 group">
+                    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:bg-red-600/8 transition duration-700"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-4 mb-8">
+                            <span class="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-xs mono font-bold text-red-400 uppercase tracking-widest">
+                                ● Critical Alert
+                            </span>
+                            <span class="text-xs mono text-slate-500 uppercase tracking-widest">Today's Intelligence Brief</span>
+                        </div>
+                        
+                        <h2 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-8 leading-[1.05]">
+                            npm Supply Chain<br>
+                            <span class="text-red-500">Attack Detected</span>
+                        </h2>
+                        
+                        <div class="space-y-6">
+                            <div class="flex gap-5 items-start group/item p-4 rounded-2xl hover:bg-white/[0.02] transition duration-300">
+                                <span class="mt-1 flex-shrink-0 w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">1</span>
+                                <p class="text-lg text-slate-300 leading-relaxed group-hover/item:text-slate-200 transition">
+                                    The <strong class="text-white text-xl">axios npm package</strong> was compromised on March 31, 2026, in a supply chain attack dubbed <em class="text-red-400 not-italic font-mono text-base bg-red-500/5 px-2 py-1 rounded">'Mini Shai-Hulud'</em>, affecting numerous npm and PyPI packages.
+                                </p>
+                            </div>
+                            <div class="flex gap-5 items-start group/item p-4 rounded-2xl hover:bg-white/[0.02] transition duration-300">
+                                <span class="mt-1 flex-shrink-0 w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">2</span>
+                                <p class="text-lg text-slate-300 leading-relaxed group-hover/item:text-slate-200 transition">
+                                    Attack delivered a cross-platform <strong class="text-white text-xl">Remote Access Trojan (RAT)</strong> via compromised npm account, leveraging axios package popularity.
+                                </p>
+                            </div>
+                            <div class="flex gap-5 items-start group/item p-4 rounded-2xl hover:bg-white/[0.02] transition duration-300">
+                                <span class="mt-1 flex-shrink-0 w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">3</span>
+                                <p class="text-lg text-slate-300 leading-relaxed group-hover/item:text-slate-200 transition">
+                                    Ecosystem-wide impact puts <strong class="text-white text-xl">crypto wallets, businesses, and OSS</strong> at risk due to potential malware injection.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Signal Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 fadein fadein-delay-2">
+                    <!-- Threat Card -->
+                    <div class="glass rounded-3xl p-8 relative overflow-hidden group glass-hover transition-all duration-300">
+                        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-700 via-red-500 to-red-400"></div>
+                        <div class="card-header !border-red-500/10">
+                            <div>
+                                <p class="section-label text-red-400 mb-1">Threat Signal</p>
+                                <p class="text-sm text-slate-500">Systemic Risk Assessment</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-baseline gap-2 mb-2">
+                            <span class="big-number text-red-400 count-number" data-target="8">0</span>
+                            <span class="text-2xl text-slate-600 font-light">/10</span>
+                        </div>
+                        
+                        <div class="score-bar mb-6">
+                            <div class="score-fill bg-gradient-to-r from-red-700 via-red-500 to-red-400" style="width:0%" data-width="80%"></div>
+                        </div>
+                        
+                        <p class="text-base text-slate-400 leading-relaxed">
+                            The supply chain attack on axios poses a <span class="text-red-400 font-semibold text-lg">significant systemic risk</span> to the entire JavaScript ecosystem, potentially compromising sensitive data and disrupting critical services.
+                        </p>
+                    </div>
+
+                    <!-- Opportunity Card -->
+                    <div class="glass rounded-3xl p-8 relative overflow-hidden group glass-hover transition-all duration-300">
+                        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-900 via-red-700 to-red-600"></div>
+                        <div class="card-header !border-red-800/10">
+                            <div>
+                                <p class="section-label text-red-500 mb-1">Opportunity Signal</p>
+                                <p class="text-sm text-slate-500">Market Positioning</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-baseline gap-2 mb-2">
+                            <span class="big-number text-red-500 count-number" data-target="6">0</span>
+                            <span class="text-2xl text-slate-600 font-light">/10</span>
+                        </div>
+                        
+                        <div class="score-bar mb-6">
+                            <div class="score-fill bg-gradient-to-r from-red-900 via-red-700 to-red-600" style="width:0%" data-width="60%"></div>
+                        </div>
+                        
+                        <p class="text-base text-slate-400 leading-relaxed">
+                            Protocols with robust security audits and secure package management utilizing <span class="text-red-400 font-semibold text-lg">IPFS or decentralized repositories</span> may benefit from increased focus on supply chain security.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Tokens Section -->
+                <div class="glass rounded-3xl p-8 md:p-10 fadein fadein-delay-3">
+                    <div class="card-header">
+                        <div>
+                            <p class="section-label mb-1">🪙 Tokens To Watch</p>
+                            <p class="text-sm text-slate-500">AI-identified positioning opportunities</p>
+                        </div>
+                        <span class="text-xs mono text-slate-600 uppercase tracking-widest px-3 py-1 rounded-lg bg-white/[0.02] border border-white/[0.04]">Research Only</span>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-4 mb-6">
+                        <span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10 hover:border-red-500/40 text-base">
+                            <span class="w-2 h-2 rounded-full bg-red-400 blink"></span>
+                            SIA
+                        </span>
+                        <span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10 hover:border-red-500/40 text-base">
+                            <span class="w-2 h-2 rounded-full bg-red-400 blink" style="animation-delay: 0.3s"></span>
+                            HEDERA
+                        </span>
+                        <span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10 hover:border-red-500/40 text-base">
+                            <span class="w-2 h-2 rounded-full bg-red-400 blink" style="animation-delay: 0.6s"></span>
+                            POLYGON
+                        </span>
+                    </div>
+                    
+                    <div class="highlight-box">
+                        <p class="text-sm text-slate-500 leading-relaxed">
+                            <span class="text-red-400 font-bold">Note:</span> These tokens are identified through AI pattern recognition based on current threat landscape. Not financial advice. Generated for research and educational purposes only.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Deep Analysis -->
+                <div class="glass rounded-3xl overflow-hidden fadein fadein-delay-3">
+                    <div class="p-8 md:p-10">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="section-label mb-1">📊 Deep Analysis</p>
+                                <p class="text-sm text-slate-500">Expanded technical breakdown</p>
+                            </div>
+                            <button id="deepbtn" onclick="toggleDeepDive()"
+                                class="btn-primary text-sm mono font-bold uppercase tracking-widest px-6 py-3 rounded-2xl border border-white/10 hover:border-white/30 transition bg-white/[0.02] hover:bg-white/[0.05] text-slate-300 flex items-center gap-2">
+                                <span>Read Analysis</span>
+                                <svg class="w-4 h-4 transition-transform" id="deep-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="deepdive" class="px-8 md:px-10 pb-10 text-base text-slate-400 leading-relaxed space-y-5 border-t border-white/[0.04]">
+                        <div class="pt-8 space-y-5">
+                            <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
+                                <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                    Root Cause Analysis
+                                </h4>
+                                <p>The root cause of the attack lies in the compromised npm account, highlighting the critical need for improved security measures in package management ecosystems. This incident exposes fundamental vulnerabilities in centralized software distribution.</p>
+                            </div>
+                            
+                            <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
+                                <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                    Supply Chain Impact
+                                </h4>
+                                <p>The supply chain impact is far-reaching, with potential consequences for businesses and individuals relying on affected packages. The attack vector demonstrates how a single compromised maintainer account can cascade into ecosystem-wide damage.</p>
+                            </div>
+                            
+                            <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
+                                <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                    Mid-Term Outlook
+                                </h4>
+                                <p>In the mid-term, we can expect increased adoption of <strong class="text-slate-200">decentralized package repositories</strong> and secure package management protocols, such as those utilizing blockchain verification or IPFS content-addressing to ensure package integrity.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contrarian View -->
+                <div class="glass rounded-3xl p-8 md:p-10 border-l-4 border-yellow-500/30 relative overflow-hidden fadein fadein-delay-3">
+                    <div class="absolute -right-8 -top-8 w-40 h-40 bg-yellow-500/5 rounded-full blur-3xl"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="text-2xl">🤔</span>
+                            <p class="section-label text-yellow-500">Contrarian View</p>
+                        </div>
+                        <blockquote class="text-2xl md:text-3xl text-slate-200 font-light italic leading-relaxed border-l-4 border-yellow-500/20 pl-6">
+                            "The opportunity for secure package management protocols may be premature, as the complexity of implementing such solutions may outweigh the benefits, at least in the short term."
+                        </blockquote>
+                        <div class="mt-6 flex items-center gap-3 pt-6 border-t border-white/[0.04]">
+                            <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
+                                <span class="text-yellow-500 text-lg">🧠</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-300">AI Critic Model</p>
+                                <p class="text-xs mono text-slate-500 uppercase tracking-widest">Groq / Llama 3.3 70b</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Share Section -->
+                <div class="glass rounded-3xl p-8 md:p-10 flex flex-wrap items-center justify-between gap-6 fadein fadein-delay-4">
+                    <div>
+                        <p class="section-label mb-1">📢 Share This Report</p>
+                        <p class="text-base text-slate-500">Found this useful? Share it with your network.</p>
+                    </div>
+                    <a href="https://twitter.com/intent/tweet?text=npm%20Supply%20Chain%20Attack%20%E2%80%94%20Threat%3A%208%2F10%20%7C%20Opportunity%3A%206%2F10%0A%0Ahttps%3A%2F%2Fautonomous-portfolio-2026.live%20%23crypto%20%23web3%20%23AI"
+                       target="_blank"
+                       class="btn-primary flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest transition bg-[#1d9bf0] hover:bg-[#1a8cd8] text-white shadow-xl shadow-[#1d9bf0]/20">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        Share on X
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="lg:col-span-4 space-y-8">
+
+                <!-- Signal Summary -->
+                <div class="glass rounded-3xl p-8 text-center relative overflow-hidden">
+                    <div class="absolute inset-0 shimmer pointer-events-none"></div>
+                    <p class="section-label mb-8">Signal Summary</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="rounded-2xl p-6 bg-gradient-to-b from-red-500/5 to-transparent border border-red-500/10 relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-red-500/5 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                            <p class="big-number text-red-400 mb-2 count-number" data-target="8">0</p>
+                            <p class="text-xs mono text-slate-500 uppercase tracking-widest font-bold">Threat</p>
+                            <div class="mt-4 h-1.5 w-16 mx-auto bg-red-500/20 rounded-full overflow-hidden">
+                                <div class="h-full bg-red-400 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="rounded-2xl p-6 bg-gradient-to-b from-red-800/5 to-transparent border border-red-800/10 relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-red-800/5 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                            <p class="big-number text-red-500 mb-2 count-number" data-target="6">0</p>
+                            <p class="text-xs mono text-slate-500 uppercase tracking-widest font-bold">Opportunity</p>
+                            <div class="mt-4 h-1.5 w-16 mx-auto bg-red-500/20 rounded-full overflow-hidden">
+                                <div class="h-full bg-red-600 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-white/[0.04]">
+                        <p class="text-xs mono text-slate-600 uppercase tracking-widest">24 May 2026 | 13:59 UTC</p>
+                    </div>
+                </div>
+
+                <!-- Market Bias Panel -->
+                <div class="glass rounded-3xl p-8 border border-orange-500/10">
+                    <div class="card-header !border-orange-500/10">
+                        <span class="text-orange-400 text-xl">📊</span>
+                        <p class="section-label text-orange-400">Market Bias This Cycle</p>
+                    </div>
+
+                    <div class="rounded-2xl p-6 mb-6 text-center bg-gradient-to-b from-red-500/5 to-transparent border border-red-500/10 relative overflow-hidden">
+                        <p class="section-label mb-3">Combined Reading</p>
+                        <p class="text-3xl md:text-4xl font-bold text-red-400 mb-2">📉 BEARISH BIAS</p>
+                        <p class="text-base text-slate-400">High threat — short-term selling pressure likely</p>
+                    </div>
+
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-center justify-between rounded-xl px-5 py-5 bg-red-500/[0.03] border border-red-500/10 hover:bg-red-500/[0.06] transition">
+                            <div>
+                                <p class="section-label text-red-400 mb-2">🔴 Threat 8/10</p>
+                                <p class="text-base text-slate-300">Possible <span class="font-bold text-red-400 text-lg">selling pressure</span></p>
+                            </div>
+                            <span class="text-3xl font-bold text-red-400">↓</span>
+                        </div>
+                        <div class="flex items-center justify-between rounded-xl px-5 py-5 bg-red-800/[0.03] border border-red-800/10 hover:bg-red-800/[0.06] transition">
+                            <div>
+                                <p class="section-label text-red-400 mb-2">💡 Opportunity 6/10</p>
+                                <p class="text-base text-slate-300">Some tokens may see <span class="font-bold text-red-400 text-lg">buying interest</span></p>
+                            </div>
+                            <span class="text-3xl font-bold text-red-400">→</span>
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl p-6 mb-5 bg-dark-700/30 border border-white/[0.04]">
+                        <p class="section-label mb-5">📖 How To Read This</p>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-4">
+                                <span class="mt-1 text-red-400 text-lg">●</span>
+                                <p class="text-base text-slate-400">Threat <span class="text-white font-bold text-lg">8–10</span> = Market may go <span class="text-red-400 font-bold text-lg">DOWN</span> short-term. Be careful.</p>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <span class="mt-1 text-emerald-400 text-lg">●</span>
+                                <p class="text-base text-slate-400">Opportunity <span class="text-white font-bold text-lg">7–10</span> = Some tokens may go <span class="text-emerald-400 font-bold text-lg">UP</span> mid-term.</p>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <span class="mt-1 text-yellow-400 text-lg">●</span>
+                                <p class="text-base text-slate-400">Both high = <span class="text-yellow-400 font-bold text-lg">MIXED</span>. Wait for clarity. Do NOT use futures.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-xl p-4 bg-red-500/[0.03] border border-red-500/10">
+                        <p class="text-sm text-red-400/70 leading-relaxed">
+                            ⚠️ <strong class="text-red-400">News sentiment only.</strong> Price can move opposite to the news. <strong>Never trade futures based on this alone.</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Signal Archive -->
+                <div class="glass rounded-3xl p-8">
+                    <div class="card-header">
+                        <p class="section-label">📁 Signal Archive</p>
+                        <span class="text-xs mono text-slate-600">History</span>
+                    </div>
+                    <div class="max-h-[480px] overflow-y-auto pr-2 space-y-2">
+                        <div class='archive-item rounded-xl p-4 cursor-pointer'>
+                            <p class='text-xs mono text-slate-500 mb-2'>24 May 2026 | 13:59 UTC</p>
+                            <p class='text-base font-bold text-slate-200 uppercase tracking-tight'>npm Supply Chain Attack</p>
+                            <div class='flex gap-4 mt-3 text-xs mono font-bold'>
+                                <span class='text-red-400'>⚠️ 8/10</span>
+                                <span class='text-red-500'>💡 6/10</span>
+                            </div>
+                        </div>
+                        <div class='archive-item rounded-xl p-4 cursor-pointer'>
+                            <p class='text-xs mono text-slate-500 mb-2'>24 May 2026 | 11:43 UTC</p>
+                            <p class='text-base font-bold text-slate-200 uppercase tracking-tight'>Mini Shai-Hulud Supply Chain Attack</p>
+                            <div class='flex gap-4 mt-3 text-xs mono font-bold'>
+                                <span class='text-red-400'>⚠️ 8/10</span>
+                                <span class='text-red-500'>💡 6/10</span>
+                            </div>
+                        </div>
+                        <div class='archive-item rounded-xl p-4 cursor-pointer'>
+                            <p class='text-xs mono text-slate-500 mb-2'>24 May 2026 | 08:45 UTC</p>
+                            <p class='text-base font-bold text-slate-200 uppercase tracking-tight'>NPM Supply Chain Attack</p>
+                            <div class='flex gap-4 mt-3 text-xs mono font-bold'>
+                                <span class='text-red-400'>⚠️ 8/10</span>
+                                <span class='text-red-500'>💡 6/10</span>
+                            </div>
+                        </div>
+                        <div class='archive-item rounded-xl p-4 cursor-pointer'>
+                            <p class='text-xs mono text-slate-500 mb-2'>24 May 2026 | 04:38 UTC</p>
+                            <p class='text-base font-bold text-slate-200 uppercase tracking-tight'>Mini Shai-Hulud Wrecks npm Supply Chain</p>
+                            <div class='flex gap-4 mt-3 text-xs mono font-bold'>
+                                <span class='text-red-400'>⚠️ 9/10</span>
+                                <span class='text-red-500'>💡 7/10</span>
+                            </div>
+                        </div>
+                        <div class='archive-item rounded-xl p-4 cursor-pointer'>
+                            <p class='text-xs mono text-slate-500 mb-2'>23 May 2026 | 23:12 UTC</p>
+                            <p class='text-base font-bold text-slate-200 uppercase tracking-tight'>Mini Shai-Hulud Supply Chain Attack</p>
+                            <div class='flex gap-4 mt-3 text-xs mono font-bold'>
+                                <span class='text-red-400'>⚠️ 9/10</span>
+                                <span class='text-red-500'>💡 7/10</span>
+                            </div>
+                        </div>
+                        <div class='archive-item rounded-xl p-4 cursor-pointer'>
+                            <p class='text-xs mono text-slate-500 mb-2'>23 May 2026 | 21:08 UTC</p>
+                            <p class='text-base font-bold text-slate-200 uppercase tracking-tight'>NPM Supply Chain Attack: Wallets At Risk</p>
+                            <div class='flex gap-4 mt-3 text-xs mono font-bold'>
+                                <span class='text-red-400'>⚠️ 9/10</span>
+                                <span class='text-red-500'>💡 7/10</span>
+                            </div>
+                        </div>
+                        <div class='archive-item rounded-xl p-4 cursor-pointer'>
+                            <p class='text-xs mono text-slate-500 mb-2'>23 May 2026 | 19:39 UTC</p>
+                            <p class='text-base font-bold text-slate-200 uppercase tracking-tight'>npm Supply Chain Attack</p>
+                            <div class='flex gap-4 mt-3 text-xs mono font-bold'>
+                                <span class='text-red-400'>⚠️ 8/10</span>
+                                <span class='text-red-500'>💡 6/10</span>
+                            </div>
+                        </div>
+                        <div class='archive-item rounded-xl p-4 cursor-pointer'>
+                            <p class='text-xs mono text-slate-500 mb-2'>23 May 2026 | 17:17 UTC</p>
+                            <p class='text-base font-bold text-slate-200 uppercase tracking-tight'>NPM Supply Chain Attack</p>
+                            <div class='flex gap-4 mt-3 text-xs mono font-bold'>
+                                <span class='text-red-400'>⚠️ 9/10</span>
+                                <span class='text-red-500'>💡 7/10</span>
+                            </div>
+                        </div>
+                        <div class='archive-item rounded-xl p-4 cursor-pointer'>
+                            <p class='text-xs mono text-slate-500 mb-2'>23 May 2026 | 15:20 UTC</p>
+                            <p class='text-base font-bold text-slate-200 uppercase tracking-tight'>Mythos Leak Exposes Crypto</p>
+                            <div class='flex gap-4 mt-3 text-xs mono font-bold'>
+                                <span class='text-red-400'>⚠️ 9/10</span>
+                                <span class='text-red-500'>💡 7/10</span>
+                            </div>
+                        </div>
+                        <div class='archive-item rounded-xl p-4 cursor-pointer'>
+                            <p class='text-xs mono text-slate-500 mb-2'>23 May 2026 | 14:03 UTC</p>
+                            <p class='text-base font-bold text-slate-200 uppercase tracking-tight'>Mythos Leaks Web3 Risks</p>
+                            <div class='flex gap-4 mt-3 text-xs mono font-bold'>
+                                <span class='text-red-400'>⚠️ 8/10</span>
+                                <span class='text-red-500'>💡 6/10</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Stack -->
+                <div class="glass rounded-3xl p-8 bg-gradient-to-b from-white/[0.02] to-transparent border border-white/[0.04]">
+                    <p class="section-label mb-6">AI Stack</p>
+                    <div class="space-y-4 text-sm mono text-slate-500">
+                        <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition">
+                            <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                            <span>RSS: HackerNews / Krebs / CoinTelegraph</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition">
+                            <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                            <span>Research: Tavily Search API</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition">
+                            <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                            <span>Brain: Gemini 2.5 Flash</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition">
+                            <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                            <span>Critic: Llama 3.3 via Groq</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition">
+                            <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                            <span>Notify: Telegram Bot</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition">
+                            <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                            <span>SEO: Dev.to Auto-Publish</span>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-white/[0.04]">
+                        <p class="text-xs text-slate-700 uppercase tracking-[0.3em] text-center font-bold">Free AI Pipeline // 2026</p>
+                    </div>
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="rounded-3xl p-6 bg-yellow-500/[0.03] border border-yellow-500/10">
+                    <div class="flex items-start gap-4">
+                        <span class="text-yellow-500/60 text-2xl">⚠️</span>
+                        <p class="text-base text-yellow-500/60 leading-relaxed">
+                            AI-generated for research and education only. Not financial advice. Always do your own research before making any investment decisions.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Support -->
+                <div class="glass rounded-3xl p-8 border border-yellow-500/10 relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-yellow-500/5 rounded-full blur-3xl"></div>
+                    <div class="relative z-10">
+                        <div class="card-header !border-yellow-500/10">
+                            <span class="text-yellow-400 text-xl">💰</span>
+                            <p class="section-label text-yellow-400">Support This Lab</p>
+                        </div>
+                        
+                        <p class="text-base text-slate-400 leading-relaxed mb-6">
+                            If this dashboard saved you time or helped you spot an opportunity — support the autonomous work.
+                        </p>
+                        
+                        <div class="rounded-2xl p-6 bg-white/[0.02] border border-white/[0.06] mb-4">
+                            <p class="text-xs mono text-slate-500 uppercase mb-3 tracking-widest font-bold">USDT (BEP20 / BSC Network)</p>
+                            <p class="text-sm mono text-yellow-400 break-all leading-relaxed select-all bg-yellow-500/5 p-3 rounded-xl border border-yellow-500/10">0x30ce31b427707335343b43708a35b20955f1763c2</p>
+                            <button onclick="navigator.clipboard.writeText('0x30ce31b427707335343b43708a35b20955f1763c2');this.innerHTML='✅ Copied!';setTimeout(()=>this.innerHTML='Copy Address',2000)"
+                                class="mt-4 text-sm mono font-bold uppercase px-6 py-3 rounded-xl border border-white/10 hover:border-yellow-500/50 hover:text-yellow-400 transition text-slate-500 bg-white/[0.02] hover:bg-white/[0.05] w-full">
+                                Copy Address
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 p-3 rounded-xl bg-yellow-500/[0.03] border border-yellow-500/10">
+                            <span class="text-yellow-500/60">⚠️</span>
+                            <p class="text-xs text-yellow-500/60">BSC network only. Send USDT BEP20.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About -->
+                <div class="glass rounded-3xl p-8">
+                    <p class="section-label mb-6">👤 About</p>
+                    <div class="space-y-5 text-base text-slate-400 leading-relaxed">
+                        <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
+                            <p class="mb-3">
+                                Built by <span class="text-white font-bold text-lg">Kchour</span>, a developer from
+                                <span class="text-white font-bold text-lg">Phnom Penh, Cambodia</span> — experimenting
+                                with autonomous AI systems and real-time intelligence pipelines.
+                            </p>
+                        </div>
+                        <p class="text-slate-500">
+                            This lab runs a fully automated multi-agent pipeline that pulls live news,
+                            researches deeper context, and generates expert analysis — updated every 2 hours,
+                            entirely free, entirely autonomous.
+                        </p>
+                    </div>
+                    <div class="flex flex-col gap-3 mt-8">
+                        <a href="https://github.com/kchour96-dev/autonomous-portfolio-2026"
+                           target="_blank"
+                           class="inline-flex items-center justify-center gap-3 text-sm mono font-bold uppercase tracking-widest px-6 py-4 rounded-2xl border border-white/10 hover:border-white/30 transition text-slate-400 hover:text-white bg-white/[0.02] hover:bg-white/[0.05]">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            View on GitHub →
+                        </a>
+                        <a href="https://t.me/AII2026futher"
+                           target="_blank"
+                           class="inline-flex items-center justify-center gap-3 text-sm mono font-bold uppercase tracking-widest px-6 py-4 rounded-2xl border border-blue-500/20 hover:border-blue-500/40 transition text-blue-400 hover:text-blue-300 bg-blue-500/[0.03] hover:bg-blue-500/[0.06]">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.329-.913.489-1.302.481-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                            Join Telegram →
+                        </a>
+                    </div>
+                </div>
+
+            </aside>
+        </main>
+
+        <!-- Footer -->
+        <footer class="max-w-7xl mx-auto mt-20 pt-10 border-t border-white/[0.04]">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-6 text-sm mono text-slate-700">
+                    <span class="font-bold">AUTONOMOUS-PORTFOLIO-2026.LIVE</span>
+                    <span class="hidden md:inline text-slate-800">|</span>
+                    <span class="hidden md:inline">AI AGENT PIPELINE</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm mono text-slate-700">
+                    <span>24 May 2026 | 13:59 UTC</span>
+                    <span class="text-slate-800">|</span>
+                    <span class="text-slate-600 font-bold uppercase tracking-wider">Not Financial Advice</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // Deep Dive Toggle
+        function toggleDeepDive() {
+            const d = document.getElementById('deepdive');
+            const b = document.getElementById('deepbtn');
+            const icon = document.getElementById('deep-icon');
+            if (d.classList.contains('active')) {
+                d.classList.remove('active');
+                b.querySelector('span').innerText = 'Read Analysis';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                d.classList.add('active');
+                b.querySelector('span').innerText = 'Close Analysis';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Number Counter Animation
+        function animateNumbers() {
+            const counters = document.querySelectorAll('.count-number');
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = 1500;
+                const start = performance.now();
+                
+                function update(currentTime) {
+                    const elapsed = currentTime - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeOut = 1 - Math.pow(1 - progress, 3);
+                    const current = Math.floor(easeOut * target);
+                    counter.innerText = current;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        counter.innerText = target;
+                    }
+                }
+                
+                requestAnimationFrame(update);
+            });
+        }
+
+        // Score Bar Animation
+        function animateBars() {
+            const bars = document.querySelectorAll('.score-fill[data-width]');
+            bars.forEach(bar => {
+                setTimeout(() => {
+                    bar.style.width = bar.getAttribute('data-width');
+                }, 300);
+            });
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.querySelector('.count-number')) {
+                        animateNumbers();
+                    }
+                    if (entry.target.querySelector('.score-fill[data-width]')) {
+                        animateBars();
+                    }
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe sections with numbers
+        document.querySelectorAll('.fadein-delay-2, .glass.rounded-3xl').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Also trigger on load for visible elements
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                animateNumbers();
+                animateBars();
+            }, 500);
+        });
+
+        // Terminal Status Rotator
+        const agentProcesses = [
+            "Analyzing security vectors via Gemini Brain...",
+            "Evaluating systemic risk thresholds via Llama 3.3...",
+            "Parsing active exploits from HackerNews RSS...",
+            "Scraping background articles via Tavily API...",
+            "Compiling real-time sentiment metrics...",
+            "Validating network signature data..."
+        ];
         
-        <!-- MARKET BIAS PANEL -->
-        <div class="glass rounded-2xl p-6" style="border:1px solid rgba(249,115,22,0.2)">
-            <p class="text-xs mono font-black uppercase tracking-widest mb-4" style="color:#f97316">📊 Market Bias This Cycle</p>
+        setInterval(() => {
+            const el = document.getElementById('terminal-live-status');
+            if(el) {
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.innerText = agentProcesses[Math.floor(Math.random() * agentProcesses.length)];
+                    el.style.opacity = '1';
+                }, 300);
+            }
+        }, 8000);
 
-            <div class="rounded-xl p-4 mb-4 text-center" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2)">
-                <p class="text-[10px] mono text-slate-400 uppercase tracking-widest mb-1">Combined Reading</p>
-                <p class="text-xl font-black text-red-400">📉 BEARISH BIAS</p>
-                <p class="text-sm text-slate-400 mt-1">High threat — short-term selling pressure likely</p>
-            </div>
-
-            <div class="space-y-3 mb-4">
-                <div class="flex items-center justify-between rounded-xl px-4 py-3" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15)">
-                    <div>
-                        <p class="text-xs mono text-red-400 uppercase tracking-widest font-bold">🔴 Threat 8/10</p>
-                        <p class="text-sm text-slate-300 mt-1">Possible <span class="font-bold text-red-400">selling pressure</span></p>
-                    </div>
-                    <p class="text-3xl font-black text-red-400">↓</p>
-                </div>
-                <div class="flex items-center justify-between rounded-xl px-4 py-3" style="background:rgba(139,0,0,0.08);border:1px solid rgba(139,0,0,0.2)">
-                    <div>
-                        <p class="text-xs mono uppercase tracking-widest font-bold" style="color:#e57373">💡 Opportunity 6/10</p>
-                        <p class="text-sm text-slate-300 mt-1">Some tokens may see <span class="font-bold" style="color:#e57373">buying interest</span></p>
-                    </div>
-                    <p class="text-3xl font-black" style="color:#e57373">→</p>
-                </div>
-            </div>
-
-            <div class="rounded-xl p-4 mb-3" style="background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.05)">
-                <p class="text-xs mono text-slate-300 uppercase tracking-widest mb-3 font-black">📖 How To Read This:</p>
-                <div class="space-y-2">
-                    <div class="flex items-start gap-2">
-                        <span class="text-sm">🔴</span>
-                        <p class="text-sm text-slate-300">Threat <span class="text-white font-bold">8–10</span> = Market may go <span class="text-red-400 font-bold">DOWN</span> short-term. Be careful.</p>
-                    </div>
-                    <div class="flex items-start gap-2">
-                        <span class="text-sm">💡</span>
-                        <p class="text-sm text-slate-300">Opportunity <span class="text-white font-bold">7–10</span> = Some tokens may go <span class="text-green-400 font-bold">UP</span> mid-term.</p>
-                    </div>
-                    <div class="flex items-start gap-2">
-                        <span class="text-sm">⚖️</span>
-                        <p class="text-sm text-slate-300">Both high = <span class="text-yellow-400 font-bold">MIXED</span>. Wait for clarity. Do NOT use futures.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="rounded-lg px-3 py-2" style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.1)">
-                <p class="text-xs text-red-400/80 leading-relaxed">
-                    ⚠️ <strong>News sentiment only.</strong> Price can move opposite to the news. <strong>Never trade futures based on this alone.</strong>
-                </p>
-            </div>
-        </div>
-        <!-- END MARKET BIAS PANEL -->
-
-        <div class="glass rounded-2xl p-6">
-            <p class="text-xs mono font-bold text-slate-500 uppercase tracking-widest mb-4 pb-3 border-b border-white/5">📁 Signal Archive</p>
-            <div class="max-h-[420px] overflow-y-auto pr-2"><!-- H_S --><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>24 May 2026 | 13:59 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>npm Supply Chain Attack</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>24 May 2026 | 11:43 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>Mini Shai-Hulud Supply Chain Attack</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>24 May 2026 | 08:45 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>NPM Supply Chain Attack</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>24 May 2026 | 04:38 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>Mini Shai-Hulud Wrecks npm Supply Chain</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 9/10 &nbsp;💡 7/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>23 May 2026 | 23:12 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>Mini Shai-Hulud Supply Chain Attack</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 9/10 &nbsp;💡 7/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>23 May 2026 | 21:08 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>NPM Supply Chain Attack: Wallets At Risk</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 9/10 &nbsp;💡 7/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>23 May 2026 | 19:39 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>npm Supply Chain Attack</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>23 May 2026 | 17:17 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>NPM Supply Chain Attack</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 9/10 &nbsp;💡 7/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>23 May 2026 | 15:20 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>Mythos Leak Exposes Crypto</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 9/10 &nbsp;💡 7/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>23 May 2026 | 14:03 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>Mythos Leaks Web3 Risks</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>23 May 2026 | 11:36 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>LiteSpeed cPanel Plugin Vulnerability</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>23 May 2026 | 10:05 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>LiteSpeed cPanel Plugin Under Attack</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>23 May 2026 | 06:45 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>First VPN Shutdown</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>23 May 2026 | 04:07 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>Europol Dismantles First VPN Criminal Network</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>22 May 2026 | 23:20 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>VPN Takedown</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>22 May 2026 | 21:36 UTC</p><p class='text-sm font-bold text-slate-300 uppercase tracking-tight mt-0.5'>VPN Takedown Alert</p><p class='text-xs text-slate-500 mt-0.5'>⚠️ 8/10 &nbsp;💡 6/10</p></div><div class='mb-4 pl-3 border-l border-white/10 opacity-60'><p class='text-xs mono text-slate-500'>22 May 2026 | 20:10 UTC</p><p <!-- H_E --></div>
-        </div>
-
-        <div class="rounded-2xl p-6 bg-white/[0.02] border border-white/5 text-xs mono text-slate-600">
-            <p class="text-slate-400 font-bold uppercase tracking-widest mb-3">AI Stack:</p>
-            <p class="mb-1">» RSS: HackerNews / Krebs / CoinTelegraph</p>
-            <p class="mb-1">» Research: Tavily Search API</p>
-            <p class="mb-1">» Brain: Gemini 2.5 Flash</p>
-            <p class="mb-1">» Critic: Llama 3.3 via Groq</p>
-            <p class="mb-1">» Notify: Telegram Bot</p>
-            <p class="mb-1">» SEO: Dev.to Auto-Publish</p>
-            <p class="mt-4 text-[9px] opacity-30 uppercase tracking-widest">Free AI Pipeline // 2026</p>
-        </div>
-
-        <div class="rounded-2xl p-4 bg-yellow-500/5 border border-yellow-500/10">
-            <p class="text-xs text-yellow-500/60 leading-relaxed">
-                ⚠️ AI-generated for research and education only. Not financial advice. Always do your own research.
-            </p>
-        </div>
-
-        <div class="glass rounded-2xl p-6 border border-yellow-500/20">
-            <p class="text-xs mono font-black text-yellow-400 uppercase tracking-widest mb-3">💰 Support This Lab</p>
-            <p class="text-sm text-slate-400 leading-relaxed mb-4">If this dashboard saved you time or helped you spot an opportunity — support the work.</p>
-            <div class="rounded-xl p-3 mb-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)">
-                <p class="text-xs mono text-slate-500 uppercase mb-1">USDT (BEP20 / BSC Network)</p>
-                <p class="text-xs mono text-yellow-400 break-all leading-relaxed">0x30ce31b427707335343b43708a35b20955f1763c2</p>
-                <button onclick="navigator.clipboard.writeText('0x30ce31b427707335343b43708a35b20955f1763c2');this.innerText='✅ Copied!';setTimeout(()=>this.innerText='Copy Address',2000)"
-                    class="mt-2 text-xs mono font-black uppercase px-3 py-1 rounded-full border border-white/10 hover:border-yellow-500/50 hover:text-yellow-400 transition text-slate-500">
-                    Copy Address
-                </button>
-            </div>
-            <p class="text-xs text-slate-600 italic">⚠️ BSC network only. Send USDT BEP20.</p>
-        </div>
-
-        <div class="glass rounded-2xl p-6">
-            <p class="text-xs mono font-black text-slate-500 uppercase tracking-widest mb-4">👤 About</p>
-            <p class="text-sm text-slate-400 leading-relaxed mb-3">
-                Built by <span class="text-white font-bold">Kchour</span>, a developer from
-                <span class="text-white font-bold">Phnom Penh, Cambodia</span> — experimenting
-                with autonomous AI systems and real-time intelligence pipelines.
-            </p>
-            <p class="text-sm text-slate-500 leading-relaxed">
-                This lab runs a fully automated multi-agent pipeline that pulls live news,
-                researches deeper context, and generates expert analysis — updated every 2 hours,
-                entirely free, entirely autonomous.
-            </p>
-            <a href="https://github.com/kchour96-dev/autonomous-portfolio-2026"
-               target="_blank"
-               class="inline-block mt-4 text-xs mono font-black uppercase tracking-widest px-4 py-2 rounded-full border border-white/10 hover:border-white/30 transition text-slate-400 hover:text-white">
-                View on GitHub →
-            </a>
-            <a href="https://t.me/AII2026futher"
-               target="_blank"
-               class="inline-block mt-2 text-xs mono font-black uppercase tracking-widest px-4 py-2 rounded-full border border-blue-500/30 hover:border-blue-500/60 transition text-blue-400 hover:text-blue-300">
-                📢 Join Telegram →
-            </a>
-        </div>
-
-    </aside>
-</main>
-
-<footer class="max-w-7xl mx-auto mt-12 pt-6 border-t border-white/5 flex flex-wrap justify-between gap-2 text-xs mono text-slate-700">
-    <p>AUTONOMOUS-PORTFOLIO-2026.LIVE // AI AGENT PIPELINE // 24 May 2026 | 13:59 UTC</p>
-    <p>NOT FINANCIAL ADVICE // RESEARCH ONLY</p>
-</footer>
-
-<script>
-    const agentProcesses = [
-        "Analyzing security vectors via Gemini Brain...",
-        "Evaluating systemic risk thresholds via Llama 3.3...",
-        "Parsing active exploits from HackerNews RSS...",
-        "Scraping background articles via Tavily API...",
-        "Compiling real-time sentiment metrics...",
-        "Validating network signature data..."
-    ];
-    setInterval(() => {
-        const el = document.getElementById('terminal-live-status');
-        if(el) el.innerText = agentProcesses[Math.floor(Math.random() * agentProcesses.length)];
-    }, 8000);
-</script>
+        // Smooth scroll for archive items
+        document.querySelectorAll('.archive-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.background = 'rgba(220, 38, 38, 0.05)';
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 300);
+            });
+        });
+    </script>
 </body>
 </html>
