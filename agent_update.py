@@ -144,16 +144,19 @@ def call_gemini(prompt, g_key, model):
     resp.raise_for_status()
     return resp.json()['candidates'][0]['content']['parts'][0]['text']
 
-def call_groq(prompt, key):
+def call_groq(prompt, key, model="llama-3.3-70b-versatile"):
     """Groq fallback — 14,400 free requests/day"""
     if not key:
         raise ValueError("No GROQ key")
     headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
     payload = {
-        "model": "llama-3.3-70b-versatile",
-        "messages": [{"role": "user", "content": prompt}],
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "You are a JSON API. Output ONLY valid JSON. No markdown, no backticks, no explanation. Just the raw JSON object."},
+            {"role": "user", "content": prompt}
+        ],
         "max_tokens": 2000,
-        "temperature": 0.7
+        "temperature": 0.3
     }
     resp = requests.post(
         "https://api.groq.com/openai/v1/chat/completions",
@@ -161,8 +164,8 @@ def call_groq(prompt, key):
     )
     resp.raise_for_status()
     raw = resp.json()['choices'][0]['message']['content']
-    # Remove control characters that break JSON parsing
     raw = re.sub(r'[\x00-\x1f\x7f]', ' ', raw)
+    raw = raw.replace('```json','').replace('```','').strip()
     return raw
 
 def get_gemini_data(research_context, g_key, price_context="", sentiment_mood="NEUTRAL", sentiment_score=5, trending_tokens=None):
@@ -199,28 +202,35 @@ Return ONLY a valid JSON object. No markdown fences. No extra text:
 
 IMPORTANT: For tokens_to_watch use the TRENDING tokens provided above — those are what people are actually searching right now."""
 
-    # Updated fallback chain with working models only
+    groq_key = os.getenv("GROQ")
+
+    # 7-model fallback chain — tries each until one works
     attempts = [
-        ("gemini-2.5-flash",        "gemini", g_key),
-        ("gemini-2.0-flash",        "gemini", g_key),
-        ("groq-llama-3.3-70b",      "groq",   os.getenv("GROQ")),
-        ("gemini-2.0-flash-lite",   "gemini", g_key),
+        ("gemini-2.5-flash",      "gemini", g_key,    None),
+        ("gemini-2.0-flash",      "gemini", g_key,    None),
+        ("groq-llama-3.3-70b",    "groq",   groq_key, "llama-3.3-70b-versatile"),
+        ("groq-llama-3.1-8b",     "groq",   groq_key, "llama-3.1-8b-instant"),
+        ("gemini-2.0-flash-lite", "gemini", g_key,    None),
+        ("groq-gemma2-9b",        "groq",   groq_key, "gemma2-9b-it"),
+        ("gemini-1.5-flash-8b",   "gemini", g_key,    None),
     ]
 
-    for model_name, provider, key in attempts:
+    for model_name, provider, key, groq_model in attempts:
         try:
             print(f"Trying: {model_name}")
             if provider == "groq":
-                raw = call_groq(prompt, key)
+                raw = call_groq(prompt, key, groq_model)
             else:
                 raw = call_gemini(prompt, key, model_name)
             print(f"Response: {len(raw)} chars")
-            # Clean control characters before parsing
             raw_clean = re.sub(r'[\x00-\x1f\x7f]', ' ', raw)
+            raw_clean = raw_clean.replace('```json','').replace('```','').strip()
             match = re.search(r'\{.*\}', raw_clean, re.DOTALL)
             if not match:
                 raise ValueError("No JSON found")
             data = json.loads(match.group(0))
+            if not data.get('title') or not data.get('news_bullets'):
+                raise ValueError("Missing required fields")
             print(f"SUCCESS with {model_name}: {data.get('title','no title')}")
             return data
         except Exception as e:
