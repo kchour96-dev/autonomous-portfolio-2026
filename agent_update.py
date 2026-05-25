@@ -319,3 +319,680 @@ def write_seo_files():
     with open("robots.txt", "w") as f:
         f.write("User-agent: *\nAllow: /\nSitemap: https://autonomous-portfolio-2026.live/sitemap.xml\n")
     print("SEO files updated.")
+
+# ─────────────────────────────────────────────
+# BUILD HTML — Premium Style with Live Price JS
+# ─────────────────────────────────────────────
+def build_html(data, final_history, date_str, price_context="", sentiment_mood="NEUTRAL", sentiment_score=5, trending_tokens=None, btc=None, eth=None, sol=None):
+    if btc is None: btc = {}
+    if eth is None: eth = {}
+    if sol is None: sol = {}
+
+    color        = data.get('color', '#dc2626')
+    threat       = data.get('threat_level', 'Unknown')
+    title        = data.get('title', 'Intelligence Report')
+    news_bullets = data.get('news_bullets', [])
+    threat_txt   = data.get('threat', '')
+    opp_txt      = data.get('opportunity', '')
+    threat_score = data.get('threat_score', 5)
+    opp_score    = data.get('opportunity_score', 5)
+    deep_raw     = data.get('deep_analysis', '')
+    tokens       = data.get('tokens_to_watch', [])
+    critic       = data.get('critic', '')
+
+    threat_colors = {"Critical":"#dc2626","High":"#f97316","Medium":"#eab308","Low":"#22c55e"}
+    threat_color  = threat_colors.get(threat, "#94a3b8")
+    threat_label  = {"Critical":"● CRITICAL THREAT","High":"● HIGH THREAT","Medium":"● MEDIUM THREAT","Low":"● LOW THREAT"}.get(threat, "● UNKNOWN")
+
+    try: ts = int(str(threat_score))
+    except: ts = 5
+    try: os_ = int(str(opp_score))
+    except: os_ = 5
+
+    t_bar = min(ts, 10) * 10
+    o_bar = min(os_, 10) * 10
+
+    if ts >= 7:
+        bias_label = "📉 BEARISH BIAS"; bias_desc = "High threat — short-term selling pressure likely"; bias_color = "#ef4444"
+    elif os_ >= 7:
+        bias_label = "📈 BULLISH BIAS"; bias_desc = "Strong opportunity — mid-term buying interest"; bias_color = "#22c55e"
+    else:
+        bias_label = "⚖️ MIXED SIGNALS"; bias_desc = "Wait for clarity before acting"; bias_color = "#eab308"
+
+    bullets_html = ""
+    for i, b in enumerate(news_bullets, 1):
+        bullets_html += f'<div class="flex gap-5 items-start group/item p-4 rounded-2xl hover:bg-white/[0.02] transition duration-300"><span class="mt-1 flex-shrink-0 w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 text-sm font-bold">{i}</span><p class="text-lg text-slate-300 leading-relaxed">{b}</p></div>'
+
+    tokens_html = ""
+    for i, t in enumerate(tokens):
+        if t.strip():
+            tokens_html += f'<span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10 text-base"><span class="w-2 h-2 rounded-full bg-red-400 blink" style="animation-delay:{i*0.3}s"></span>{t.strip()}</span>\n'
+
+    deep_paras = [p.strip() for p in deep_raw.split('\n') if p.strip()]
+    para_titles = ["Root Cause Analysis", "Market Impact", "Mid-Term Outlook"]
+    deep_html = ""
+    for i, para in enumerate(deep_paras[:3]):
+        ptitle = para_titles[i] if i < len(para_titles) else f"Analysis {i+1}"
+        deep_html += f'<div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]"><h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-500"></span>{ptitle}</h4><p>{para}</p></div>'
+
+    trending_html = ""
+    if trending_tokens:
+        for t in trending_tokens[:5]:
+            trending_html += f'<span class="text-[11px] mono px-3 py-1 rounded-full bg-white/5 text-slate-400 border border-white/10">{t}</span>\n'
+
+    btc_change = btc.get('usd_24h_change', 0) or 0
+    eth_change = eth.get('usd_24h_change', 0) or 0
+    sol_change = sol.get('usd_24h_change', 0) or 0
+    btc_color = "#22c55e" if btc_change >= 0 else "#ef4444"
+    eth_color = "#22c55e" if eth_change >= 0 else "#ef4444"
+    sol_color = "#22c55e" if sol_change >= 0 else "#ef4444"
+    btc_price = f"${btc.get('usd',0):,}" if btc.get('usd') else "—"
+    eth_price = f"${eth.get('usd',0):,}" if eth.get('usd') else "—"
+    sol_price = f"${sol.get('usd',0):,}" if sol.get('usd') else "—"
+    sent_color = "#22c55e" if sentiment_mood == "BULLISH" else "#ef4444"
+    sent_width = sentiment_score * 10
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Lab 2026 — {title}</title>
+    <meta name="description" content="Real-time crypto and Web3 intelligence. Threat score, opportunity signals, tokens to watch — updated every 2 hours by AI.">
+    <meta name="keywords" content="crypto intelligence, web3 security, DeFi signals, AI research dashboard, blockchain 2026">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="{title} — Autonomous Lab 2026">
+    <meta property="og:description" content="Threat: {threat_score}/10 | Opportunity: {opp_score}/10 — Live crypto intelligence">
+    <meta property="og:url" content="https://autonomous-portfolio-2026.live">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{title} — Autonomous Lab 2026">
+    <link rel="canonical" href="https://autonomous-portfolio-2026.live/">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3639279484055527" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{{box-sizing:border-box}}
+        body{{background:#06070f;color:#f1f5f9;font-family:'Space Grotesk',sans-serif;margin:0;font-size:18px;line-height:1.7;-webkit-font-smoothing:antialiased}}
+        .mono{{font-family:'JetBrains Mono',monospace}}
+        .glass{{background:rgba(15,23,42,0.4);border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(24px) saturate(1.2);-webkit-backdrop-filter:blur(24px) saturate(1.2);box-shadow:0 4px 24px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.04)}}
+        .glass-hover:hover{{background:rgba(15,23,42,0.5);border-color:rgba(255,255,255,0.1);transform:translateY(-2px)}}
+        .score-bar{{height:6px;background:rgba(255,255,255,0.04);border-radius:99px;overflow:hidden}}
+        .score-fill{{height:100%;border-radius:99px;transition:width 1.5s cubic-bezier(0.4,0,0.2,1)}}
+        @keyframes pulse{{0%,100%{{opacity:1;box-shadow:0 0 12px currentColor}}50%{{opacity:0.4;box-shadow:0 0 4px currentColor}}}}
+        .blink{{animation:pulse 2.5s ease-in-out infinite}}
+        @keyframes fadeUp{{from{{opacity:0;transform:translateY(30px)}}to{{opacity:1;transform:translateY(0)}}}}
+        .fadein{{animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards}}
+        .fadein-delay-1{{animation-delay:0.15s;opacity:0}}
+        .fadein-delay-2{{animation-delay:0.3s;opacity:0}}
+        .fadein-delay-3{{animation-delay:0.45s;opacity:0}}
+        .fadein-delay-4{{animation-delay:0.6s;opacity:0}}
+        @keyframes shimmer{{0%{{background-position:-200% 0}}100%{{background-position:200% 0}}}}
+        .shimmer{{background:linear-gradient(90deg,transparent,rgba(255,255,255,0.03),transparent);background-size:200% 100%;animation:shimmer 8s infinite}}
+        @keyframes countUp{{from{{opacity:0;transform:translateY(20px) scale(0.8)}}to{{opacity:1;transform:translateY(0) scale(1)}}}}
+        .count-number{{animation:countUp 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards}}
+        ::-webkit-scrollbar{{width:6px}}
+        ::-webkit-scrollbar-thumb{{background:rgba(255,255,255,0.1);border-radius:99px}}
+        .tag{{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:99px;font-size:0.875rem;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:0.05em;transition:all 0.3s ease;cursor:default}}
+        .tag:hover{{transform:scale(1.05)}}
+        .btn-primary{{position:relative;overflow:hidden;transition:all 0.3s ease}}
+        #deepdive{{max-height:0;overflow:hidden;opacity:0;transition:max-height 0.6s cubic-bezier(0.4,0,0.2,1),opacity 0.5s ease}}
+        #deepdive.active{{max-height:1200px;opacity:1}}
+        .bg-grid{{background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:80px 80px}}
+        .status-dot{{width:10px;height:10px;border-radius:50%;display:inline-block}}
+        .archive-item{{transition:all 0.3s ease;border-left:3px solid transparent}}
+        .archive-item:hover{{background:rgba(255,255,255,0.02);border-left-color:rgba(220,38,38,0.6);padding-left:20px}}
+        .gradient-text{{background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}}
+        .big-number{{font-size:clamp(3rem,8vw,5rem);font-weight:800;line-height:1;letter-spacing:-0.04em}}
+        .section-label{{font-size:0.75rem;font-family:'JetBrains Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:#94a3b8}}
+        .card-header{{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.04)}}
+        .highlight-box{{background:rgba(220,38,38,0.04);border:1px solid rgba(220,38,38,0.12);border-radius:16px;padding:24px}}
+        .price-up{{color:#22c55e}}
+        .price-down{{color:#ef4444}}
+        @keyframes priceFlash{{0%{{background:rgba(34,197,94,0.2)}}100%{{background:transparent}}}}
+        .price-updated{{animation:priceFlash 1s ease}}
+    </style>
+</head>
+<body class="min-h-screen bg-grid">
+
+<!-- TOP STATUS BAR -->
+<div class="w-full border-b border-white/[0.04] bg-[#06070f]/90 backdrop-blur-xl sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <span class="status-dot blink bg-red-500"></span>
+            <span class="text-xs mono font-semibold text-slate-400 uppercase tracking-widest" id="terminal-live-status">AI Agent Pipeline Online</span>
+        </div>
+        <div class="flex items-center gap-4 text-xs mono text-slate-500">
+            <span class="hidden sm:inline">Last AI Sync: {date_str}</span>
+            <span class="px-3 py-1.5 rounded-lg font-bold tracking-wider" style="background:{threat_color}18;color:{threat_color};border:1px solid {threat_color}33">{threat_label}</span>
+        </div>
+    </div>
+</div>
+
+<div class="p-4 md:p-8 lg:p-12">
+
+<!-- HEADER -->
+<header class="max-w-7xl mx-auto mb-16 fadein">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 pb-10 border-b border-white/[0.06]">
+        <div class="space-y-4">
+            <div class="flex items-center gap-4 mb-3">
+                <div class="h-px w-16 bg-gradient-to-r from-red-500 to-transparent"></div>
+                <span class="text-xs mono font-bold text-red-400 uppercase tracking-[0.3em]">Intelligence Dashboard</span>
+            </div>
+            <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.9]">
+                <span class="gradient-text">AUTONOMOUS</span><br>
+                <span class="text-red-600">LAB<span class="text-slate-600 font-light">.2026</span></span>
+            </h1>
+            <p class="text-base text-slate-500 max-w-xl leading-relaxed mt-4">Real-time autonomous intelligence pipeline monitoring crypto security threats, Web3 vulnerabilities, and market signals.</p>
+        </div>
+        <div class="flex items-center gap-4 bg-white/[0.02] border border-white/[0.06] rounded-2xl px-6 py-4">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 blink" style="animation-duration:3s"></span>
+            <div>
+                <p class="text-[10px] mono text-slate-500 uppercase tracking-widest mb-1">System Status</p>
+                <p class="text-sm font-bold text-emerald-400 uppercase tracking-wide">Operational</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+    <!-- LEFT COLUMN -->
+    <div class="lg:col-span-8 space-y-8">
+
+        <!-- HERO CARD -->
+        <section class="glass rounded-3xl p-8 md:p-12 relative overflow-hidden fadein fadein-delay-1 group">
+            <div class="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 transition duration-700" style="background:{color}0d"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-8">
+                    <span class="px-4 py-2 rounded-xl text-xs mono font-bold uppercase tracking-widest" style="background:{threat_color}18;border:1px solid {threat_color}33;color:{threat_color}">● {threat} Alert</span>
+                    <span class="text-xs mono text-slate-500 uppercase tracking-widest">Today's Intelligence Brief</span>
+                </div>
+                <h2 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-8 leading-[1.05]">{title}</h2>
+                <div class="space-y-2">{bullets_html}</div>
+            </div>
+        </section>
+
+        <!-- SIGNAL CARDS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 fadein fadein-delay-2">
+            <div class="glass rounded-3xl p-8 relative overflow-hidden group glass-hover transition-all duration-300">
+                <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-700 via-red-500 to-red-400"></div>
+                <div class="card-header" style="border-color:rgba(239,68,68,0.1)">
+                    <div><p class="section-label text-red-400 mb-1">Threat Signal</p><p class="text-sm text-slate-500">Systemic Risk Assessment</p></div>
+                </div>
+                <div class="flex items-baseline gap-2 mb-2">
+                    <span class="big-number text-red-400 count-number" data-target="{threat_score}">0</span>
+                    <span class="text-2xl text-slate-600 font-light">/10</span>
+                </div>
+                <div class="score-bar mb-6 relative"><div class="score-fill bg-gradient-to-r from-red-700 via-red-500 to-red-400" style="width:0%" data-width="{t_bar}%"></div></div>
+                <p class="text-base text-slate-400 leading-relaxed">{threat_txt}</p>
+            </div>
+            <div class="glass rounded-3xl p-8 relative overflow-hidden group glass-hover transition-all duration-300">
+                <div class="absolute top-0 left-0 w-full h-1.5" style="background:linear-gradient(to right,{color}99,{color})"></div>
+                <div class="card-header" style="border-color:{color}1a">
+                    <div><p class="section-label mb-1" style="color:{color}">Opportunity Signal</p><p class="text-sm text-slate-500">Market Positioning</p></div>
+                </div>
+                <div class="flex items-baseline gap-2 mb-2">
+                    <span class="big-number count-number" style="color:{color}" data-target="{opp_score}">0</span>
+                    <span class="text-2xl text-slate-600 font-light">/10</span>
+                </div>
+                <div class="score-bar mb-6 relative"><div class="score-fill" style="width:0%;background:linear-gradient(to right,{color}99,{color})" data-width="{o_bar}%"></div></div>
+                <p class="text-base text-slate-400 leading-relaxed">{opp_txt}</p>
+            </div>
+        </div>
+
+        <!-- TOKENS -->
+        <div class="glass rounded-3xl p-8 md:p-10 fadein fadein-delay-3">
+            <div class="card-header">
+                <div><p class="section-label mb-1">🪙 Tokens To Watch</p><p class="text-sm text-slate-500">AI-identified from trending data</p></div>
+                <span class="text-xs mono text-slate-600 uppercase tracking-widest px-3 py-1 rounded-lg bg-white/[0.02] border border-white/[0.04]">Research Only</span>
+            </div>
+            <div class="flex flex-wrap gap-4 mb-6">{tokens_html}</div>
+            <div class="highlight-box"><p class="text-sm text-slate-500 leading-relaxed"><span class="text-red-400 font-bold">Note:</span> AI pattern recognition based on current threat landscape and trending data. Not financial advice.</p></div>
+        </div>
+
+        <!-- DEEP ANALYSIS -->
+        <div class="glass rounded-3xl overflow-hidden fadein fadein-delay-3">
+            <div class="p-8 md:p-10">
+                <div class="flex justify-between items-center">
+                    <div><p class="section-label mb-1">📊 Deep Analysis</p><p class="text-sm text-slate-500">Expanded technical breakdown</p></div>
+                    <button id="deepbtn" onclick="toggleDeepDive()" class="btn-primary text-sm mono font-bold uppercase tracking-widest px-6 py-3 rounded-2xl border border-white/10 hover:border-white/30 transition bg-white/[0.02] hover:bg-white/[0.05] text-slate-300 flex items-center gap-2">
+                        <span>Read Analysis</span>
+                        <svg class="w-4 h-4 transition-transform" id="deep-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="deepdive" class="px-8 md:px-10 pb-10 text-base text-slate-400 leading-relaxed border-t border-white/[0.04]">
+                <div class="pt-8 space-y-5">{deep_html}</div>
+            </div>
+        </div>
+
+        <!-- CONTRARIAN -->
+        <div class="glass rounded-3xl p-8 md:p-10 border-l-4 border-yellow-500/30 relative overflow-hidden fadein fadein-delay-3">
+            <div class="absolute -right-8 -top-8 w-40 h-40 bg-yellow-500/5 rounded-full blur-3xl"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-6"><span class="text-2xl">🤔</span><p class="section-label text-yellow-500">Contrarian View</p></div>
+                <blockquote class="text-2xl md:text-3xl text-slate-200 font-light italic leading-relaxed border-l-4 border-yellow-500/20 pl-6">"{critic}"</blockquote>
+                <div class="mt-6 flex items-center gap-3 pt-6 border-t border-white/[0.04]">
+                    <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center"><span class="text-yellow-500 text-lg">🧠</span></div>
+                    <div><p class="text-sm font-bold text-slate-300">AI Critic Model</p><p class="text-xs mono text-slate-500 uppercase tracking-widest">Groq / Llama 3.3 70b</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHARE -->
+        <div class="glass rounded-3xl p-8 md:p-10 flex flex-wrap items-center justify-between gap-6 fadein fadein-delay-4">
+            <div><p class="section-label mb-1">📢 Share This Report</p><p class="text-base text-slate-500">Found this useful? Share it with your network.</p></div>
+            <a href="https://twitter.com/intent/tweet?text={title}%20%E2%80%94%20Threat%3A%20{threat_score}%2F10%20%7C%20Opportunity%3A%20{opp_score}%2F10%0A%0Ahttps%3A%2F%2Fautonomous-portfolio-2026.live%20%23crypto%20%23web3%20%23AI"
+               target="_blank" class="btn-primary flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest text-white shadow-xl" style="background:#1d9bf0;box-shadow:0 8px 24px rgba(29,155,240,0.2)">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                Share on X
+            </a>
+        </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="lg:col-span-4 space-y-8">
+
+        <!-- SIGNAL SUMMARY -->
+        <div class="glass rounded-3xl p-8 text-center relative overflow-hidden">
+            <div class="absolute inset-0 shimmer pointer-events-none"></div>
+            <p class="section-label mb-8">Signal Summary</p>
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="rounded-2xl p-6" style="background:linear-gradient(to bottom,{color}0d,transparent);border:1px solid {color}1a">
+                    <p class="big-number mb-2 count-number" style="color:{color}" data-target="{opp_score}">0</p>
+                    <p class="text-xs mono text-slate-500 uppercase tracking-widest font-bold">Opportunity</p>
+                    <div class="mt-4 h-1.5 w-16 mx-auto rounded-full overflow-hidden" style="background:{color}33"><div class="h-full rounded-full" style="width:{o_bar}%;background:{color}"></div></div>
+                </div>
+                <div class="rounded-2xl p-6 bg-gradient-to-b from-red-500/5 to-transparent border border-red-500/10">
+                    <p class="big-number text-red-400 mb-2 count-number" data-target="{threat_score}">0</p>
+                    <p class="text-xs mono text-slate-500 uppercase tracking-widest font-bold">Threat</p>
+                    <div class="mt-4 h-1.5 w-16 mx-auto bg-red-500/20 rounded-full overflow-hidden"><div class="h-full bg-red-400 rounded-full" style="width:{t_bar}%"></div></div>
+                </div>
+            </div>
+            <div class="pt-6 border-t border-white/[0.04]"><p class="text-xs mono text-slate-600 uppercase tracking-widest">{date_str}</p></div>
+        </div>
+
+        <!-- LIVE MARKET — refreshes every 5 minutes via JS -->
+        <div class="glass rounded-3xl p-8" id="live-market-card">
+            <div class="card-header">
+                <span class="text-lg">📈</span>
+                <p class="section-label">Live Prices</p>
+                <span class="ml-auto text-[10px] mono text-slate-600" id="price-update-time">Loading...</span>
+            </div>
+            <div id="price-rows" class="space-y-3 mb-6">
+                <div class="flex justify-between items-center p-3 rounded-xl hover:bg-white/[0.02] transition">
+                    <span class="text-sm mono font-bold text-slate-400">BTC</span>
+                    <span class="text-sm mono font-bold" id="btc-price" style="color:{btc_color}">{btc_price} <span class="text-xs" id="btc-change">({btc_change:+.1f}%)</span></span>
+                </div>
+                <div class="flex justify-between items-center p-3 rounded-xl hover:bg-white/[0.02] transition">
+                    <span class="text-sm mono font-bold text-slate-400">ETH</span>
+                    <span class="text-sm mono font-bold" id="eth-price" style="color:{eth_color}">{eth_price} <span class="text-xs" id="eth-change">({eth_change:+.1f}%)</span></span>
+                </div>
+                <div class="flex justify-between items-center p-3 rounded-xl hover:bg-white/[0.02] transition">
+                    <span class="text-sm mono font-bold text-slate-400">SOL</span>
+                    <span class="text-sm mono font-bold" id="sol-price" style="color:{sol_color}">{sol_price} <span class="text-xs" id="sol-change">({sol_change:+.1f}%)</span></span>
+                </div>
+                <div class="flex justify-between items-center p-3 rounded-xl hover:bg-white/[0.02] transition">
+                    <span class="text-sm mono font-bold text-slate-400">BNB</span>
+                    <span class="text-sm mono font-bold" id="bnb-price">—</span>
+                </div>
+            </div>
+            <div class="pt-4 border-t border-white/[0.04] mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs mono text-slate-500 uppercase">News Sentiment</span>
+                    <span class="text-xs mono font-bold" style="color:{sent_color}">{sentiment_mood}</span>
+                </div>
+                <div class="score-bar"><div class="score-fill" style="width:{sent_width}%;background:{sent_color}"></div></div>
+            </div>
+            <div>
+                <p class="text-xs mono text-slate-500 uppercase mb-3">🔥 Trending Now</p>
+                <div class="flex flex-wrap gap-2" id="trending-tokens">{trending_html if trending_html else '<span class="text-xs mono text-slate-600 italic">Loading...</span>'}</div>
+            </div>
+            <p class="text-[10px] mono text-slate-700 mt-4">via CoinGecko • updates every 5 min • not financial advice</p>
+        </div>
+
+        <!-- MARKET BIAS -->
+        <div class="glass rounded-3xl p-8" style="border:1px solid {bias_color}1a">
+            <div class="card-header" style="border-color:{bias_color}1a">
+                <span class="text-lg">📊</span>
+                <p class="section-label" style="color:{bias_color}">Market Bias This Cycle</p>
+            </div>
+            <div class="rounded-2xl p-6 mb-6 text-center border" style="background:{bias_color}0a;border-color:{bias_color}1a">
+                <p class="section-label mb-3">Combined Reading</p>
+                <p class="text-3xl font-bold mb-2" style="color:{bias_color}">{bias_label}</p>
+                <p class="text-base text-slate-400">{bias_desc}</p>
+            </div>
+            <div class="space-y-3 mb-6">
+                <div class="flex items-center justify-between rounded-xl px-5 py-4 hover:bg-white/[0.02] transition" style="background:{threat_color}08;border:1px solid {threat_color}18">
+                    <div><p class="section-label text-red-400 mb-1">🔴 Threat {threat_score}/10</p><p class="text-base text-slate-300">Possible <span class="font-bold text-red-400">selling pressure</span></p></div>
+                    <span class="text-2xl font-bold text-red-400">↓</span>
+                </div>
+                <div class="flex items-center justify-between rounded-xl px-5 py-4 hover:bg-white/[0.02] transition" style="background:{color}08;border:1px solid {color}18">
+                    <div><p class="section-label mb-1" style="color:{color}">💡 Opportunity {opp_score}/10</p><p class="text-base text-slate-300">Some tokens may see <span class="font-bold" style="color:{color}">buying interest</span></p></div>
+                    <span class="text-2xl font-bold" style="color:{color}">→</span>
+                </div>
+            </div>
+            <div class="rounded-xl p-4" style="background:{bias_color}08;border:1px solid {bias_color}18">
+                <p class="text-sm leading-relaxed" style="color:{bias_color}99">⚠️ <strong style="color:{bias_color}">News sentiment only.</strong> Price can move opposite to news. Never trade futures based on this alone.</p>
+            </div>
+        </div>
+
+        <!-- SIGNAL ARCHIVE -->
+        <div class="glass rounded-3xl p-8">
+            <div class="card-header"><p class="section-label">📁 Signal Archive</p><span class="text-xs mono text-slate-600">History</span></div>
+            <div class="max-h-[480px] overflow-y-auto pr-2 space-y-2"><!-- H_S -->{final_history}<!-- H_E --></div>
+        </div>
+
+        <!-- AI STACK -->
+        <div class="glass rounded-3xl p-8 bg-gradient-to-b from-white/[0.02] to-transparent border border-white/[0.04]">
+            <p class="section-label mb-6">AI Stack</p>
+            <div class="space-y-3 text-sm mono text-slate-500">
+                <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition"><span class="w-2 h-2 rounded-full bg-slate-600"></span><span>RSS: HackerNews / Krebs / CoinDesk / CoinTelegraph</span></div>
+                <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition"><span class="w-2 h-2 rounded-full bg-slate-600"></span><span>Research: Tavily Search API</span></div>
+                <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition"><span class="w-2 h-2 rounded-full bg-slate-600"></span><span>Brain: Gemini 2.5 Flash</span></div>
+                <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition"><span class="w-2 h-2 rounded-full bg-slate-600"></span><span>Critic: Llama 3.3 via Groq</span></div>
+                <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition"><span class="w-2 h-2 rounded-full bg-slate-600"></span><span>Prices: CoinGecko Live (5min)</span></div>
+                <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition"><span class="w-2 h-2 rounded-full bg-slate-600"></span><span>Notify: Telegram Bot</span></div>
+                <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition"><span class="w-2 h-2 rounded-full bg-slate-600"></span><span>SEO: Dev.to Auto-Publish</span></div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-white/[0.04]"><p class="text-xs text-slate-700 uppercase tracking-[0.3em] text-center font-bold">Free AI Pipeline // 2026</p></div>
+        </div>
+
+        <!-- DISCLAIMER -->
+        <div class="rounded-3xl p-6 bg-yellow-500/[0.03] border border-yellow-500/10">
+            <div class="flex items-start gap-4">
+                <span class="text-yellow-500/60 text-2xl">⚠️</span>
+                <p class="text-base text-yellow-500/60 leading-relaxed">AI-generated for research and education only. Not financial advice. Always do your own research.</p>
+            </div>
+        </div>
+
+        <!-- SUPPORT -->
+        <div class="glass rounded-3xl p-8 border border-yellow-500/10 relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-yellow-500/5 rounded-full blur-3xl"></div>
+            <div class="relative z-10">
+                <div class="card-header" style="border-color:rgba(234,179,8,0.1)">
+                    <span class="text-yellow-400 text-xl">💰</span>
+                    <p class="section-label text-yellow-400">Support This Lab</p>
+                </div>
+                <p class="text-base text-slate-400 leading-relaxed mb-6">If this dashboard saved you time or helped you spot an opportunity — support the autonomous work.</p>
+                <div class="rounded-2xl p-6 bg-white/[0.02] border border-white/[0.06] mb-4">
+                    <p class="text-xs mono text-slate-500 uppercase mb-3 tracking-widest font-bold">USDT (BEP20 / BSC Network)</p>
+                    <p class="text-sm mono text-yellow-400 break-all leading-relaxed select-all bg-yellow-500/5 p-3 rounded-xl border border-yellow-500/10">0x30ce31b427707335343b43708a35b20955f1763c2</p>
+                    <button onclick="navigator.clipboard.writeText('0x30ce31b427707335343b43708a35b20955f1763c2');this.innerHTML='✅ Copied!';setTimeout(()=>this.innerHTML='Copy Address',2000)"
+                        class="mt-4 text-sm mono font-bold uppercase px-6 py-3 rounded-xl border border-white/10 hover:border-yellow-500/50 hover:text-yellow-400 transition text-slate-500 bg-white/[0.02] w-full">
+                        Copy Address
+                    </button>
+                </div>
+                <div class="flex items-center gap-2 p-3 rounded-xl bg-yellow-500/[0.03] border border-yellow-500/10">
+                    <span class="text-yellow-500/60">⚠️</span>
+                    <p class="text-xs text-yellow-500/60">BSC network only. Send USDT BEP20.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABOUT -->
+        <div class="glass rounded-3xl p-8">
+            <p class="section-label mb-6">👤 About</p>
+            <div class="space-y-5 text-base text-slate-400 leading-relaxed">
+                <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
+                    <p>Built by <span class="text-white font-bold text-lg">Kchour</span>, a developer from <span class="text-white font-bold text-lg">Phnom Penh, Cambodia</span> — experimenting with autonomous AI systems and real-time intelligence pipelines.</p>
+                </div>
+                <p class="text-slate-500">This lab runs a fully automated multi-agent pipeline — updated every 2 hours, entirely free, entirely autonomous.</p>
+            </div>
+            <div class="flex flex-col gap-3 mt-8">
+                <a href="https://github.com/kchour96-dev/autonomous-portfolio-2026" target="_blank"
+                   class="inline-flex items-center justify-center gap-3 text-sm mono font-bold uppercase tracking-widest px-6 py-4 rounded-2xl border border-white/10 hover:border-white/30 transition text-slate-400 hover:text-white bg-white/[0.02]">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    View on GitHub →
+                </a>
+                <a href="https://t.me/AII2026futher" target="_blank"
+                   class="inline-flex items-center justify-center gap-3 text-sm mono font-bold uppercase tracking-widest px-6 py-4 rounded-2xl border border-blue-500/20 hover:border-blue-500/40 transition text-blue-400 bg-blue-500/[0.03]">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.329-.913.489-1.302.481-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                    📢 Join Telegram →
+                </a>
+            </div>
+        </div>
+
+    </aside>
+</main>
+
+<!-- FOOTER -->
+<footer class="max-w-7xl mx-auto mt-20 pt-10 border-t border-white/[0.04]">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-6 text-sm mono text-slate-700">
+            <span class="font-bold">AUTONOMOUS-PORTFOLIO-2026.LIVE</span>
+            <span class="hidden md:inline text-slate-800">|</span>
+            <span class="hidden md:inline">AI AGENT PIPELINE</span>
+        </div>
+        <div class="flex items-center gap-6 text-sm mono text-slate-700">
+            <span>AI Sync: {date_str}</span>
+            <span class="text-slate-800">|</span>
+            <span class="text-slate-600 font-bold uppercase tracking-wider">Not Financial Advice</span>
+        </div>
+    </div>
+</footer>
+
+</div>
+
+<script>
+    // ── DEEP DIVE TOGGLE ──
+    function toggleDeepDive() {{
+        const d = document.getElementById('deepdive');
+        const b = document.getElementById('deepbtn');
+        const icon = document.getElementById('deep-icon');
+        if (d.classList.contains('active')) {{
+            d.classList.remove('active');
+            b.querySelector('span').innerText = 'Read Analysis';
+            icon.style.transform = 'rotate(0deg)';
+        }} else {{
+            d.classList.add('active');
+            b.querySelector('span').innerText = 'Close Analysis';
+            icon.style.transform = 'rotate(180deg)';
+        }}
+    }}
+
+    // ── NUMBER COUNTER ──
+    function animateNumbers() {{
+        document.querySelectorAll('.count-number').forEach(counter => {{
+            const target = parseInt(counter.getAttribute('data-target')) || 0;
+            const duration = 1500;
+            const start = performance.now();
+            function update(t) {{
+                const p = Math.min((t - start) / duration, 1);
+                counter.innerText = Math.floor((1 - Math.pow(1-p, 3)) * target);
+                if (p < 1) requestAnimationFrame(update);
+                else counter.innerText = target;
+            }}
+            requestAnimationFrame(update);
+        }});
+    }}
+
+    // ── SCORE BARS ──
+    function animateBars() {{
+        document.querySelectorAll('.score-fill[data-width]').forEach(bar => {{
+            setTimeout(() => {{ bar.style.width = bar.getAttribute('data-width'); }}, 300);
+        }});
+    }}
+
+    // ── LIVE PRICE UPDATE — every 5 minutes via CoinGecko ──
+    async function fetchLivePrices() {{
+        try {{
+            const res = await fetch(
+                'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin&vs_currencies=usd&include_24hr_change=true'
+            );
+            const data = await res.json();
+
+            function updatePrice(elId, changeElId, coin, data) {{
+                const el = document.getElementById(elId);
+                const changeEl = document.getElementById(changeElId);
+                if (!el || !data[coin]) return;
+                const price = data[coin].usd;
+                const change = data[coin].usd_24h_change || 0;
+                const color = change >= 0 ? '#22c55e' : '#ef4444';
+                el.style.color = color;
+                el.childNodes[0].textContent = '$' + price.toLocaleString();
+                if (changeEl) changeEl.textContent = '(' + (change >= 0 ? '+' : '') + change.toFixed(1) + '%)';
+                el.classList.remove('price-updated');
+                void el.offsetWidth;
+                el.classList.add('price-updated');
+            }}
+
+            updatePrice('btc-price', 'btc-change', 'bitcoin', data);
+            updatePrice('eth-price', 'eth-change', 'ethereum', data);
+            updatePrice('sol-price', 'sol-change', 'solana', data);
+
+            // BNB
+            const bnbEl = document.getElementById('bnb-price');
+            if (bnbEl && data.binancecoin) {{
+                const bnbChange = data.binancecoin.usd_24h_change || 0;
+                bnbEl.style.color = bnbChange >= 0 ? '#22c55e' : '#ef4444';
+                bnbEl.textContent = '$' + data.binancecoin.usd.toLocaleString() + ' (' + (bnbChange >= 0 ? '+' : '') + bnbChange.toFixed(1) + '%)';
+            }}
+
+            // Update timestamp
+            const timeEl = document.getElementById('price-update-time');
+            if (timeEl) {{
+                const now = new Date();
+                timeEl.textContent = 'Updated ' + now.toLocaleTimeString();
+            }}
+        }} catch(e) {{
+            console.log('Price fetch failed:', e);
+        }}
+    }}
+
+    // ── TERMINAL STATUS ROTATOR ──
+    const agentProcesses = [
+        "Analyzing security vectors via Gemini Brain...",
+        "Evaluating systemic risk via Llama 3.3...",
+        "Parsing active exploits from CoinDesk RSS...",
+        "Scraping background articles via Tavily...",
+        "Compiling real-time sentiment metrics...",
+        "Fetching live prices from CoinGecko...",
+        "Validating trending token signals..."
+    ];
+    setInterval(() => {{
+        const el = document.getElementById('terminal-live-status');
+        if(el) {{
+            el.style.opacity = '0';
+            setTimeout(() => {{
+                el.innerText = agentProcesses[Math.floor(Math.random() * agentProcesses.length)];
+                el.style.opacity = '1';
+            }}, 300);
+        }}
+    }}, 8000);
+
+    // ── INIT ──
+    window.addEventListener('load', () => {{
+        setTimeout(() => {{ animateNumbers(); animateBars(); }}, 500);
+        fetchLivePrices();                          // fetch immediately on load
+        setInterval(fetchLivePrices, 5 * 60 * 1000); // then every 5 minutes
+    }});
+
+    document.querySelectorAll('.archive-item').forEach(item => {{
+        item.addEventListener('click', function() {{
+            this.style.background = 'rgba(220,38,38,0.05)';
+            setTimeout(() => {{ this.style.background = ''; }}, 300);
+        }});
+    }});
+</script>
+</body>
+</html>"""
+
+# ─────────────────────────────────────────────
+# MAIN
+# ─────────────────────────────────────────────
+def run_production_agent():
+    g_key = os.getenv("GEMINI")
+    t_key = os.getenv("TAVILY")
+
+    if not g_key:
+        print("FATAL: GEMINI secret not set. Aborting.")
+        return
+
+    # Backup
+    old_content = ""
+    if os.path.exists("index.html"):
+        shutil.copy("index.html", "index.html.bak")
+        with open("index.html", "r", encoding="utf-8") as f:
+            old_content = f.read()
+
+    # Run all data pipelines
+    rss_context                                      = get_rss_context()
+    price_context, btc, eth, sol                     = get_price_context()
+    trending_tokens                                  = get_trending_tokens()
+    coindesk_headlines, sentiment_mood, sentiment_score = get_coindesk_sentiment()
+    research = get_research(rss_context + " " + coindesk_headlines, t_key)
+
+    # Avoid duplicate stories
+    last_title = ""
+    if "<!-- H_S -->" in old_content:
+        try:
+            hist  = old_content.split("<!-- H_S -->")[1].split("<!-- H_E -->")[0]
+            match = re.search(r"tracking-tight'>(.*?)</p>", hist)
+            if match:
+                last_title = match.group(1)
+                print(f"Last story: {last_title}")
+        except: pass
+
+    full_context = research
+    if last_title:
+        full_context += f"\n\nIMPORTANT: Last report was about '{last_title}'. Pick a DIFFERENT story today."
+
+    data = get_gemini_data(full_context, g_key, price_context, sentiment_mood, sentiment_score, trending_tokens)
+
+    if not data:
+        print("All models failed. Keeping old site.")
+        if os.path.exists("index.html.bak"):
+            shutil.copy("index.html.bak", "index.html")
+        return
+
+    # Build archive
+    history_html = ""
+    if "<!-- H_S -->" in old_content and "<!-- H_E -->" in old_content:
+        history_html = old_content.split("<!-- H_S -->")[1].split("<!-- H_E -->")[0]
+
+    date_str  = datetime.now().strftime("%d %b %Y | %H:%M UTC")
+    ts = int(str(data.get('threat_score', 5))) if str(data.get('threat_score', 5)).isdigit() else 5
+    os_ = int(str(data.get('opportunity_score', 5))) if str(data.get('opportunity_score', 5)).isdigit() else 5
+    new_entry = (
+        f"<div class='archive-item rounded-xl p-4 cursor-pointer'>"
+        f"<p class='text-xs mono text-slate-500 mb-2'>{date_str}</p>"
+        f"<p class='text-base font-bold text-slate-200 uppercase tracking-tight'>{data.get('title','Update')}</p>"
+        f"<div class='flex gap-4 mt-3 text-xs mono font-bold'>"
+        f"<span class='text-red-400'>⚠️ {ts}/10</span>"
+        f"<span style='color:{data.get('color','#3b82f6')}'>💡 {os_}/10</span>"
+        f"</div></div>"
+    )
+    final_history = (new_entry + history_html)[:6000]
+
+    # Build and write HTML
+    html = build_html(data, final_history, date_str, price_context, sentiment_mood, sentiment_score, trending_tokens, btc, eth, sol)
+
+    try:
+        with open("index.html", "w", encoding="utf-8") as f:
+            f.write(html)
+        print("index.html written successfully.")
+    except Exception as e:
+        print(f"Write failed: {e}")
+        if os.path.exists("index.html.bak"):
+            shutil.copy("index.html.bak", "index.html")
+        return
+
+    if os.path.exists("index.html.bak"):
+        os.remove("index.html.bak")
+
+    write_seo_files()
+    post_to_devto(data)
+    send_telegram(
+        data.get('title',''),
+        data.get('threat',''),
+        data.get('opportunity',''),
+        data.get('threat_score','?'),
+        data.get('opportunity_score','?')
+    )
+    print("✅ Production sync complete!")
+
+if __name__ == "__main__":
+    run_production_agent()
