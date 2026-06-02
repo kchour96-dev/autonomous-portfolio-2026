@@ -318,6 +318,12 @@ def write_seo_files():
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://autonomous-portfolio-2026.live/about.html</loc>
+    <lastmod>{date_today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://autonomous-portfolio-2026.live/privacy.html</loc>
     <lastmod>{date_today}</lastmod>
     <changefreq>monthly</changefreq>
@@ -472,10 +478,12 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
             <span class="status-dot blink bg-red-500"></span>
             <span class="text-xs mono font-semibold text-slate-400 uppercase tracking-widest" id="terminal-live-status">AI Agent Pipeline Online</span>
         </div>
-        <div class="flex items-center gap-4 text-xs mono text-slate-500">
-            <span class="hidden sm:inline">Last AI Sync: {date_str}</span>
-            <span class="px-3 py-1.5 rounded-lg font-bold tracking-wider" style="background:{threat_color}18;color:{threat_color};border:1px solid {threat_color}33">{threat_label}</span>
-        </div>
+        <div class="flex items-center gap-6 text-xs mono text-slate-500">
+                <span class="hidden sm:inline">Last AI Sync: {date_str}</span>
+                <a href="/about.html" class="hidden sm:inline hover:text-white transition uppercase tracking-widest">About</a>
+                <a href="/privacy.html" class="hidden sm:inline hover:text-white transition uppercase tracking-widest">Privacy</a>
+                <span class="px-3 py-1.5 rounded-lg font-bold tracking-wider" style="background:{threat_color}18;color:{threat_color};border:1px solid {threat_color}33">{threat_label}</span>
+            </div>
     </div>
 </div>
 
@@ -857,8 +865,9 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
             const bnbEl = document.getElementById('bnb-price');
             if (bnbEl && data.binancecoin) {{
                 const bnbChange = data.binancecoin.usd_24h_change || 0;
+                const bnbPrice = data.binancecoin.usd || 0;
                 bnbEl.style.color = bnbChange >= 0 ? '#22c55e' : '#ef4444';
-                bnbEl.textContent = '$' + data.binancecoin.usd.toLocaleString() + ' (' + (bnbChange >= 0 ? '+' : '') + bnbChange.toFixed(1) + '%)';
+                bnbEl.textContent = '$' + bnbPrice.toLocaleString() + ' (' + (bnbChange >= 0 ? '+' : '') + bnbChange.toFixed(1) + '%)';
             }}
 
             // Update timestamp
@@ -958,10 +967,23 @@ def run_production_agent():
             shutil.copy("index.html.bak", "index.html")
         return
 
-    # Build archive
+    # Build archive — clean extraction to prevent HTML corruption
     history_html = ""
     if "<!-- H_S -->" in old_content and "<!-- H_E -->" in old_content:
-        history_html = old_content.split("<!-- H_S -->")[1].split("<!-- H_E -->")[0]
+        raw_history = old_content.split("<!-- H_S -->")[1].split("<!-- H_E -->")[0]
+        # Only keep clean archive-item divs — strip any corrupted entries
+        clean_entries = re.findall(
+            r"<div class='archive-item[^>]*>.*?</div>",
+            raw_history, re.DOTALL
+        )
+        # Filter out any entries containing raw code/HTML artifacts
+        valid_entries = []
+        for entry in clean_entries:
+            # Skip entries that contain raw JavaScript or CSS code
+            if any(bad in entry for bad in ['setTimeout', 'innerHTML', 'class="mt-4', 'border-white', 'function(']):
+                continue
+            valid_entries.append(entry)
+        history_html = "".join(valid_entries)
 
     date_str  = datetime.now().strftime("%d %b %Y | %H:%M UTC")
     ts = int(str(data.get('threat_score', 5))) if str(data.get('threat_score', 5)).isdigit() else 5
