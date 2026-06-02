@@ -700,7 +700,7 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
         <!-- SIGNAL ARCHIVE -->
         <div class="glass rounded-3xl p-8">
             <div class="card-header"><p class="section-label">📁 Signal Archive</p><span class="text-xs mono text-slate-600">History</span></div>
-            <div class="max-h-[480px] overflow-y-auto pr-2 space-y-2"><!-- H_S -->{final_history}<!-- H_E --></div>
+            <div class="max-h-[480px] overflow-y-auto pr-2 space-y-2" id="archive-container"><!-- H_S -->{final_history}<!-- H_E --></div>
         </div>
 
         <!-- AI STACK -->
@@ -723,30 +723,6 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
             <div class="flex items-start gap-4">
                 <span class="text-yellow-500/60 text-2xl">⚠️</span>
                 <p class="text-base text-yellow-500/60 leading-relaxed">AI-generated for research and education only. Not financial advice. Always do your own research.</p>
-            </div>
-        </div>
-
-        <!-- SUPPORT -->
-        <div class="glass rounded-3xl p-8 border border-yellow-500/10 relative overflow-hidden">
-            <div class="absolute -right-10 -top-10 w-40 h-40 bg-yellow-500/5 rounded-full blur-3xl"></div>
-            <div class="relative z-10">
-                <div class="card-header" style="border-color:rgba(234,179,8,0.1)">
-                    <span class="text-yellow-400 text-xl">💰</span>
-                    <p class="section-label text-yellow-400">Support This Lab</p>
-                </div>
-                <p class="text-base text-slate-400 leading-relaxed mb-6">If this dashboard saved you time or helped you spot an opportunity — support the autonomous work.</p>
-                <div class="rounded-2xl p-6 bg-white/[0.02] border border-white/[0.06] mb-4">
-                    <p class="text-xs mono text-slate-500 uppercase mb-3 tracking-widest font-bold">USDT (BEP20 / BSC Network)</p>
-                    <p class="text-sm mono text-yellow-400 break-all leading-relaxed select-all bg-yellow-500/5 p-3 rounded-xl border border-yellow-500/10">0x30ce31b427707335343b43708a35b20955f1763c2</p>
-                    <button onclick="navigator.clipboard.writeText('0x30ce31b427707335343b43708a35b20955f1763c2');this.innerHTML='✅ Copied!';setTimeout(()=>this.innerHTML='Copy Address',2000)"
-                        class="mt-4 text-sm mono font-bold uppercase px-6 py-3 rounded-xl border border-white/10 hover:border-yellow-500/50 hover:text-yellow-400 transition text-slate-500 bg-white/[0.02] w-full">
-                        Copy Address
-                    </button>
-                </div>
-                <div class="flex items-center gap-2 p-3 rounded-xl bg-yellow-500/[0.03] border border-yellow-500/10">
-                    <span class="text-yellow-500/60">⚠️</span>
-                    <p class="text-xs text-yellow-500/60">BSC network only. Send USDT BEP20.</p>
-                </div>
             </div>
         </div>
 
@@ -776,6 +752,32 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
     </aside>
 </main>
 
+<!-- DONATION SECTION — Moved to full width below main grid, away from archive -->
+<div class="max-w-7xl mx-auto mt-8">
+    <div class="glass rounded-3xl p-8 border border-yellow-500/10 relative overflow-hidden">
+        <div class="absolute -right-10 -top-10 w-60 h-60 bg-yellow-500/5 rounded-full blur-3xl"></div>
+        <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8">
+            <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-yellow-400 text-2xl">💰</span>
+                    <p class="section-label text-yellow-400">Support This Lab</p>
+                </div>
+                <p class="text-base text-slate-400 leading-relaxed">If this dashboard saved you time or helped you spot an opportunity — support the autonomous work.</p>
+            </div>
+            <div class="flex-1 w-full">
+                <div class="rounded-2xl p-5 bg-white/[0.02] border border-white/[0.06]">
+                    <p class="text-xs mono text-slate-500 uppercase mb-2 tracking-widest font-bold">USDT (BEP20 / BSC Network)</p>
+                    <p class="text-sm mono text-yellow-400 break-all leading-relaxed select-all bg-yellow-500/5 p-3 rounded-xl border border-yellow-500/10 mb-3" id="wallet-addr">0x30ce31b427707335343b43708a35b20955f1763c2</p>
+                    <button id="copy-btn" class="text-sm mono font-bold uppercase px-6 py-3 rounded-xl border border-white/10 hover:border-yellow-500/50 hover:text-yellow-400 transition text-slate-500 bg-white/[0.02] w-full">
+                        Copy Address
+                    </button>
+                </div>
+                <p class="text-xs text-yellow-500/50 mt-2 text-center">⚠️ BSC network only. Send USDT BEP20.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- FOOTER -->
 <footer class="max-w-7xl mx-auto mt-20 pt-10 border-t border-white/[0.04]">
     <div class="flex flex-col md:flex-row justify-between items-center gap-6">
@@ -795,6 +797,20 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 </div>
 
 <script>
+    // ── COPY WALLET ADDRESS ──
+    const copyBtn = document.getElementById('copy-btn');
+    if (copyBtn) {{
+        copyBtn.addEventListener('click', function() {{
+            const addr = document.getElementById('wallet-addr').textContent.trim();
+            navigator.clipboard.writeText(addr).then(() => {{
+                copyBtn.innerText = '✅ Copied!';
+                setTimeout(() => {{ copyBtn.innerText = 'Copy Address'; }}, 2000);
+            }}).catch(() => {{
+                copyBtn.innerText = 'Copy failed — try manually';
+            }});
+        }});
+    }}
+
     // ── DEEP DIVE TOGGLE ──
     function toggleDeepDive() {{
         const d = document.getElementById('deepdive');
