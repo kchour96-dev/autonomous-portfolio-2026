@@ -456,8 +456,8 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
         #deepdive.active{{max-height:1200px;opacity:1}}
         .bg-grid{{background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:80px 80px}}
         .status-dot{{width:10px;height:10px;border-radius:50%;display:inline-block}}
-        .archive-item{{transition:all 0.3s ease;border-left:3px solid transparent}}
-        .archive-item:hover{{background:rgba(255,255,255,0.02);border-left-color:rgba(220,38,38,0.6);padding-left:20px}}
+        .archive-item{{transition:all 0.3s ease;border-radius:12px;padding:12px 16px;cursor:pointer}}
+        .archive-item:hover{{background:rgba(255,255,255,0.03);padding-left:20px}}
         .gradient-text{{background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}}
         .big-number{{font-size:clamp(3rem,8vw,5rem);font-weight:800;line-height:1;letter-spacing:-0.04em}}
         .section-label{{font-size:0.75rem;font-family:'JetBrains Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:#94a3b8}}
@@ -769,10 +769,17 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
                     <p class="text-xs mono text-slate-500 uppercase mb-2 tracking-widest font-bold">USDT (BEP20 / BSC Network)</p>
                     <p class="text-sm mono text-yellow-400 break-all leading-relaxed select-all bg-yellow-500/5 p-3 rounded-xl border border-yellow-500/10 mb-3" id="wallet-addr">0x30ce31b427707335343b43708a35b20955f1763c2</p>
                     <button id="copy-btn" class="text-sm mono font-bold uppercase px-6 py-3 rounded-xl border border-white/10 hover:border-yellow-500/50 hover:text-yellow-400 transition text-slate-500 bg-white/[0.02] w-full">
-                        Copy Address
+                        Copy USDT Address
                     </button>
                 </div>
-                <p class="text-xs text-yellow-500/50 mt-2 text-center">⚠️ BSC network only. Send USDT BEP20.</p>
+                <div class="rounded-2xl p-5 mt-3 bg-white/[0.02] border border-white/[0.06]">
+                    <p class="text-xs mono text-slate-500 uppercase mb-2 tracking-widest font-bold">BNB (BEP20 / BSC Network)</p>
+                    <p class="text-sm mono text-yellow-400 break-all leading-relaxed select-all bg-yellow-500/5 p-3 rounded-xl border border-yellow-500/10 mb-3" id="bnb-addr">0x30ce31b427707335343b43708a35b20955f1763c2</p>
+                    <button id="copy-bnb-btn" class="text-sm mono font-bold uppercase px-6 py-3 rounded-xl border border-white/10 hover:border-yellow-500/50 hover:text-yellow-400 transition text-slate-500 bg-white/[0.02] w-full">
+                        Copy BNB Address
+                    </button>
+                </div>
+                <p class="text-xs text-yellow-500/50 mt-2 text-center">⚠️ BSC network only.</p>
             </div>
         </div>
     </div>
@@ -804,9 +811,17 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
             const addr = document.getElementById('wallet-addr').textContent.trim();
             navigator.clipboard.writeText(addr).then(() => {{
                 copyBtn.innerText = '✅ Copied!';
-                setTimeout(() => {{ copyBtn.innerText = 'Copy Address'; }}, 2000);
-            }}).catch(() => {{
-                copyBtn.innerText = 'Copy failed — try manually';
+                setTimeout(() => {{ copyBtn.innerText = 'Copy USDT Address'; }}, 2000);
+            }});
+        }});
+    }}
+    const copyBnbBtn = document.getElementById('copy-bnb-btn');
+    if (copyBnbBtn) {{
+        copyBnbBtn.addEventListener('click', function() {{
+            const addr = document.getElementById('bnb-addr').textContent.trim();
+            navigator.clipboard.writeText(addr).then(() => {{
+                copyBnbBtn.innerText = '✅ Copied!';
+                setTimeout(() => {{ copyBnbBtn.innerText = 'Copy BNB Address'; }}, 2000);
             }});
         }});
     }}
@@ -983,23 +998,28 @@ def run_production_agent():
             shutil.copy("index.html.bak", "index.html")
         return
 
-    # Build archive — clean extraction to prevent HTML corruption
+    # Build archive — aggressive clean to prevent corruption
     history_html = ""
     if "<!-- H_S -->" in old_content and "<!-- H_E -->" in old_content:
         raw_history = old_content.split("<!-- H_S -->")[1].split("<!-- H_E -->")[0]
-        # Only keep clean archive-item divs — strip any corrupted entries
         clean_entries = re.findall(
-            r"<div class='archive-item[^>]*>.*?</div>",
+            r"<div class='archive-item[^>]*>.*?</div>\s*</div>",
             raw_history, re.DOTALL
         )
-        # Filter out any entries containing raw code/HTML artifacts
         valid_entries = []
         for entry in clean_entries:
-            # Skip entries that contain raw JavaScript or CSS code
-            if any(bad in entry for bad in ['setTimeout', 'innerHTML', 'class="mt-4', 'border-white', 'function(']):
+            # Skip any entry with code artifacts
+            if any(bad in entry for bad in [
+                'setTimeout', 'innerHTML', 'class="mt-4',
+                'border-white', 'function(', 'onclick',
+                'px-6 py-3', 'hover:border', 'transition text'
+            ]):
+                continue
+            # Must have a date pattern to be valid
+            if not re.search(r'\d{2} \w+ \d{4}', entry):
                 continue
             valid_entries.append(entry)
-        history_html = "".join(valid_entries)
+        history_html = "".join(valid_entries[:20])  # Max 20 entries
 
     date_str  = datetime.now().strftime("%d %b %Y | %H:%M UTC")
     ts = int(str(data.get('threat_score', 5))) if str(data.get('threat_score', 5)).isdigit() else 5
