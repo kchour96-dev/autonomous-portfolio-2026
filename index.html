@@ -1,297 +1,41 @@
-<h2 class="text-4xl">[PASTE YOUR CURRENT HEADLINE HERE]</h2>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autonomous Lab 2026 — Intelligence Dashboard</title>
-    <meta name="description" content="Real-time crypto and Web3 intelligence. Threat score, opportunity signals, tokens to watch — updated every 2 hours by AI.">
-    <meta name="keywords" content="crypto intelligence, web3 security, DeFi signals, AI research dashboard, blockchain 2026">
-    <meta name="robots" content="index, follow">
+    <meta name="description" content="Real-time crypto and Web3 intelligence.">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3639279484055527" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        *{box-sizing:border-box}
-        body{background:#06070f;color:#f1f5f9;font-family:'Space Grotesk',sans-serif;margin:0;font-size:18px;line-height:1.7;-webkit-font-smoothing:antialiased}
-        .mono{font-family:'JetBrains Mono',monospace}
-        .glass{background:rgba(15,23,42,0.4);border:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(24px) saturate(1.2);-webkit-backdrop-filter:blur(24px) saturate(1.2);box-shadow:0 4px 24px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.04)}
-        .glass-hover:hover{background:rgba(15,23,42,0.5);border-color:rgba(255,255,255,0.1);transform:translateY(-2px)}
-        .score-bar{height:6px;background:rgba(255,255,255,0.04);border-radius:99px;overflow:hidden}
-        .score-fill{height:100%;border-radius:99px;transition:width 1.5s cubic-bezier(0.4,0,0.2,1)}
-        @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 12px currentColor}50%{opacity:0.4;box-shadow:0 0 4px currentColor}}
-        .blink{animation:pulse 2.5s ease-in-out infinite}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-        .fadein{animation:fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards}
-        .fadein-delay-1{animation-delay:0.15s;opacity:0}
-        .fadein-delay-2{animation-delay:0.3s;opacity:0}
-        .fadein-delay-3{animation-delay:0.45s;opacity:0}
-        .fadein-delay-4{animation-delay:0.6s;opacity:0}
-        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-        .shimmer{background:linear-gradient(90deg,transparent,rgba(255,255,255,0.03),transparent);background-size:200% 100%;animation:shimmer 8s infinite}
-        @keyframes countUp{from{opacity:0;transform:translateY(20px) scale(0.8)}to{opacity:1;transform:translateY(0) scale(1)}}
-        .count-number{animation:countUp 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards}
-        ::-webkit-scrollbar{width:6px}
-        ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:99px}
-        .tag{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:99px;font-size:0.875rem;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:0.05em;transition:all 0.3s ease;cursor:default}
-        .tag:hover{transform:scale(1.05)}
-        .btn-primary{position:relative;overflow:hidden;transition:all 0.3s ease}
-        #deepdive{max-height:0;overflow:hidden;opacity:0;transition:max-height 0.6s cubic-bezier(0.4,0,0.2,1),opacity 0.5s ease}
-        #deepdive.active{max-height:2000px;opacity:1}
-        .bg-grid{background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:80px 80px}
-        .status-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
-        .archive-item{transition:all 0.3s ease;border-radius:12px;padding:12px 16px;cursor:pointer}
-        .archive-item:hover{background:rgba(255,255,255,0.03);padding-left:20px}
-        .gradient-text{background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .big-number{font-size:clamp(3rem,8vw,5rem);font-weight:800;line-height:1;letter-spacing:-0.04em}
-        .section-label{font-size:0.75rem;font-family:'JetBrains Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:#94a3b8}
-        .card-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.04)}
-        .highlight-box{background:rgba(220,38,38,0.04);border:1px solid rgba(220,38,38,0.12);border-radius:16px;padding:24px}
-        .price-up{color:#22c55e}
-        .price-down{color:#ef4444}
-        @keyframes priceFlash{0%{background:rgba(34,197,94,0.2)}100%{background:transparent}}
-        .price-updated{animation:priceFlash 1s ease}
-    </style>
-</head>
+    </head>
 <body class="min-h-screen bg-grid">
 
-<div class="w-full border-b border-white/[0.04] bg-[#06070f]/90 backdrop-blur-xl sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-4">
-            <span class="status-dot blink bg-red-500"></span>
-            <span class="text-xs mono font-semibold text-slate-400 uppercase tracking-widest" id="terminal-live-status">AI Agent Pipeline Online</span>
-        </div>
-        <div class="flex items-center gap-6 text-xs mono text-slate-500">
-                <span class="hidden sm:inline">Last AI Sync: 07 Jun 2026 | 17:24 UTC</span>
-                <a href="/about.html" class="hidden sm:inline hover:text-white transition uppercase tracking-widest">About</a>
-                <a href="/privacy.html" class="hidden sm:inline hover:text-white transition uppercase tracking-widest">Privacy</a>
-                <a href="/terms.html" class="hidden sm:inline hover:text-white transition uppercase tracking-widest">Terms</a>
-            </div>
-    </div>
-</div>
-
-<div class="p-4 md:p-8 lg:p-12">
-
-<header class="max-w-7xl mx-auto mb-16 fadein">
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 pb-10 border-b border-white/[0.06]">
-        <div class="space-y-4">
-            <div class="flex items-center gap-4 mb-3">
-                <div class="h-px w-16 bg-gradient-to-r from-red-500 to-transparent"></div>
-                <span class="text-xs mono font-bold text-red-400 uppercase tracking-[0.3em]">Intelligence Dashboard</span>
-            </div>
-            <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.9]">
-                <span class="gradient-text">AUTONOMOUS</span><br>
-                <span class="text-red-600">LAB<span class="text-slate-600 font-light">.2026</span></span>
-            </h1>
-            <p class="text-base text-slate-500 max-w-xl leading-relaxed mt-4">Real-time autonomous intelligence pipeline monitoring crypto security threats, Web3 vulnerabilities, and market signals.</p>
-        </div>
-        <div class="flex items-center gap-4 bg-white/[0.02] border border-white/[0.06] rounded-2xl px-6 py-4">
-            <span class="w-3 h-3 rounded-full bg-emerald-500 blink" style="animation-duration:3s"></span>
-            <div>
-                <p class="text-[10px] mono text-slate-500 uppercase tracking-widest mb-1">System Status</p>
-                <p class="text-sm font-bold text-emerald-400 uppercase tracking-wide">Operational</p>
-            </div>
-        </div>
-    </div>
-</header>
-
 <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-
     <div class="lg:col-span-8 space-y-8">
-
-        <section class="glass rounded-3xl p-8 md:p-12 relative overflow-hidden fadein fadein-delay-1 group">
-            <div class="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 transition duration-700" style="background:#2ecc710d"></div>
-            <div class="relative z-10">
-                <div class="flex items-center gap-4 mb-8">
-                    <span class="text-xs mono text-slate-500 uppercase tracking-widest">Today's Intelligence Brief</span>
-                </div>
-                <h2 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-8 leading-[1.05]">AI Chatbot Flaws Expose Account Risks</h2>
-            </div>
+        <section class="glass rounded-3xl p-8 md:p-12">
+            <h2 class="text-4xl md:text-6xl font-bold text-white mb-8">
+                AI Chatbot Flaws Expose Account Risks</h2>
         </section>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 fadein fadein-delay-2">
-            <div class="glass rounded-3xl p-8 relative overflow-hidden group glass-hover transition-all duration-300">
-                <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-700 via-red-500 to-red-400"></div>
-                <div class="card-header" style="border-color:rgba(239,68,68,0.1)">
-                    <div><p class="section-label text-red-400 mb-1">Threat Signal</p></div>
-                </div>
-                <div class="flex items-baseline gap-2 mb-2">
-                    <span class="big-number text-red-400 count-number" data-target="6">0</span><span class="text-2xl text-slate-600 font-light">/10</span>
-                </div>
-            </div>
-            <div class="glass rounded-3xl p-8 relative overflow-hidden group glass-hover transition-all duration-300">
-                <div class="absolute top-0 left-0 w-full h-1.5" style="background:linear-gradient(to right,#2ecc7199,#2ecc71)"></div>
-                <div class="card-header" style="border-color:#2ecc711a">
-                    <div><p class="section-label mb-1" style="color:#2ecc71">Opportunity Signal</p></div>
-                </div>
-                <div class="flex items-baseline gap-2 mb-2">
-                    <span class="big-number count-number" style="color:#2ecc71" data-target="8">0</span><span class="text-2xl text-slate-600 font-light">/10</span>
-                </div>
-            </div>
+        
+        <div id="deepdive" class="active">
+            <p>The reported exploitation of Meta's AI support chatbot...</p>
+            <p>In response to such evolving threats...</p>
+            <p>From a Web3 perspective...</p>
         </div>
-
-        <div class="glass rounded-3xl overflow-hidden fadein fadein-delay-3">
-            <div class="p-8 md:p-10">
-                <div class="flex justify-between items-center">
-                    <div><p class="section-label mb-1">📊 Deep Analysis</p><p class="text-sm text-slate-500">Full technical breakdown</p></div>
-                    <button id="deepbtn" onclick="toggleDeepDive()" class="btn-primary text-sm mono font-bold uppercase tracking-widest px-6 py-3 rounded-2xl border border-white/10 hover:border-white/30 transition bg-white/[0.02] hover:bg-white/[0.05] text-slate-300 flex items-center gap-2">
-                        <span>Collapse ↑</span>
-                        <svg class="w-4 h-4 transition-transform rotate-180" id="deep-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                </div>
-            </div>
-            <div id="deepdive" class="active px-8 md:px-10 pb-10 text-base text-slate-400 leading-relaxed border-t border-white/[0.04]">
-                <div class="pt-8 space-y-5">
-                    <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
-                        <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-red-500"></span>Root Cause Analysis</h4>
-                        <p>The reported exploitation of Meta's AI support chatbot to hijack Instagram accounts underscores a critical vulnerability at the intersection of AI functionality and user security.</p>
-                    </div>
-                    <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
-                        <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span>Market Impact</h4>
-                        <p>In response to such evolving threats, OpenAI's rollout of 'Lockdown Mode' for ChatGPT is a proactive step, offering users an advanced security setting to limit tools.</p>
-                    </div>
-                    <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
-                        <h4 class="text-lg font-bold text-white mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-purple-500"></span>Mid-Term Outlook</h4>
-                        <p>From a Web3 perspective, these incidents serve as a potent reminder for builders and users alike to prioritize security-by-design in all AI integrations.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="glass rounded-3xl p-8 md:p-10 border-l-4 border-yellow-500/30 relative overflow-hidden fadein fadein-delay-3">
-            <div class="absolute -right-8 -top-8 w-40 h-40 bg-yellow-500/5 rounded-full blur-3xl"></div>
-            <div class="relative z-10">
-                <div class="flex items-center gap-3 mb-6"><span class="text-2xl">🤔</span><p class="section-label text-yellow-500">Contrarian View</p></div>
-                <blockquote class="text-2xl md:text-3xl text-slate-200 font-light italic leading-relaxed border-l-4 border-yellow-500/20 pl-6">"While the need for secure AI is clear, the complex and nascent nature of these solutions means many projects may fail to deliver robust protection."</blockquote>
-            </div>
-        </div>
-
+        
+        <blockquote class="text-2xl">Contrarian view text here.</blockquote>
     </div>
 
-    <aside class="lg:col-span-4 space-y-8">
-
-        <div class="glass rounded-3xl p-8">
-            <div class="card-header"><p class="section-label">📁 Signal Archive</p><span class="text-xs mono text-slate-600">History</span></div>
-            <div class="max-h-[480px] overflow-y-auto pr-2 space-y-2" id="archive-container"><div class='archive-item rounded-xl p-4 cursor-pointer'><p class='text-xs mono text-slate-500 mb-2'>07 Jun 2026 | 17:24 UTC</p><p class='text-base font-bold text-slate-200 uppercase tracking-tight'>AI Chatbot Flaws Expose Account Risks</p><div class='flex gap-4 mt-3 text-xs mono font-bold'><span class='text-red-400'>⚠️ 6/10</span><span style='color:#2ecc71'>💡 8/10</span></div></div>
+    <aside class="lg:col-span-4">
+        <div id="archive-container">
+            <div class='archive-item'>...History Items...</div>
             </div>
-        </div>
-
-        <div class="glass rounded-3xl p-8" id="live-market-card">
-            <div class="card-header">
-                <span class="text-lg">📈</span>
-                <p class="section-label">Live Prices</p>
-                <span class="ml-auto text-[10px] mono text-slate-600" id="price-update-time">Loading...</span>
-            </div>
-            <div id="price-rows" class="space-y-3 mb-6">
-                <div class="flex justify-between items-center p-3 rounded-xl hover:bg-white/[0.02] transition">
-                    <span class="text-sm mono font-bold text-slate-400">BTC</span>
-                    <span class="text-sm mono font-bold" id="btc-price" style="color:#22c55e">$-- <span class="text-xs" id="btc-change">(%)</span></span>
-                </div>
-                <div class="flex justify-between items-center p-3 rounded-xl hover:bg-white/[0.02] transition">
-                    <span class="text-sm mono font-bold text-slate-400">ETH</span>
-                    <span class="text-sm mono font-bold" id="eth-price" style="color:#22c55e">$-- <span class="text-xs" id="eth-change">(%)</span></span>
-                </div>
-                <div class="flex justify-between items-center p-3 rounded-xl hover:bg-white/[0.02] transition">
-                    <span class="text-sm mono font-bold text-slate-400">SOL</span>
-                    <span class="text-sm mono font-bold" id="sol-price" style="color:#22c55e">$-- <span class="text-xs" id="sol-change">(%)</span></span>
-                </div>
-            </div>
-            <p class="text-[10px] mono text-slate-700 mt-4">via CoinGecko • updates every 5 min • not financial advice</p>
-        </div>
-
     </aside>
 </main>
 
-<footer class="max-w-7xl mx-auto mt-20 pt-10 border-t border-white/[0.04]">
-    <div class="flex flex-wrap justify-center gap-6 pb-8 text-xs mono text-slate-600">
-        <a href="/about.html" class="hover:text-slate-400 transition uppercase tracking-widest">About</a>
-        <a href="/privacy.html" class="hover:text-slate-400 transition uppercase tracking-widest">Privacy Policy</a>
-        <a href="/terms.html" class="hover:text-slate-400 transition uppercase tracking-widest">Terms of Service</a>
-    </div>
-    <p class="text-center text-xs mono text-slate-700 pb-6">© 2026 Autonomous Lab. AI-generated content for research and educational purposes only. Not financial advice.</p>
-</footer>
-
-</div>
-
 <script>
-    // ── DEEP DIVE TOGGLE ──
-    function toggleDeepDive() {
-        const d = document.getElementById('deepdive');
-        const b = document.getElementById('deepbtn');
-        const icon = document.getElementById('deep-icon');
-        if (d.classList.contains('active')) {
-            d.classList.remove('active');
-            b.querySelector('span').innerText = 'Expand ↓';
-            icon.style.transform = 'rotate(0deg)';
-        } else {
-            d.classList.add('active');
-            b.querySelector('span').innerText = 'Collapse ↑';
-            icon.style.transform = 'rotate(180deg)';
-        }
-    }
-
-    // ── NUMBER COUNTER ──
-    function animateNumbers() {
-        document.querySelectorAll('.count-number').forEach(counter => {
-            const target = parseInt(counter.getAttribute('data-target')) || 0;
-            const duration = 1500;
-            const start = performance.now();
-            function update(t) {
-                const p = Math.min((t - start) / duration, 1);
-                counter.innerText = Math.floor((1 - Math.pow(1-p, 3)) * target);
-                if (p < 1) requestAnimationFrame(update);
-                else counter.innerText = target;
-            }
-            requestAnimationFrame(update);
-        });
-    }
-
-    // ── LIVE PRICE UPDATE — every 5 minutes via CoinGecko ──
-    async function fetchLivePrices() {
-        try {
-            const res = await fetch(
-                'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true'
-            );
-            const data = await res.json();
-
-            function updatePrice(elId, changeElId, coin, data) {
-                const el = document.getElementById(elId);
-                const changeEl = document.getElementById(changeElId);
-                if (!el || !data[coin]) return;
-                const price = data[coin].usd;
-                const change = data[coin].usd_24h_change || 0;
-                const color = change >= 0 ? '#22c55e' : '#ef4444';
-                el.style.color = color;
-                el.childNodes[0].textContent = '$' + price.toLocaleString();
-                if (changeEl) changeEl.textContent = '(' + (change >= 0 ? '+' : '') + change.toFixed(1) + '%)';
-            }
-
-            updatePrice('btc-price', 'btc-change', 'bitcoin', data);
-            updatePrice('eth-price', 'eth-change', 'ethereum', data);
-            updatePrice('sol-price', 'sol-change', 'solana', data);
-
-            // Update timestamp
-            const timeEl = document.getElementById('price-update-time');
-            if (timeEl) {
-                const now = new Date();
-                timeEl.textContent = 'Updated ' + now.toLocaleTimeString();
-            }
-        } catch(e) {
-            console.log('Price fetch failed:', e);
-        }
-    }
-
-    // ── INIT ──
-    window.addEventListener('load', () => {
-        setTimeout(() => { animateNumbers(); }, 500);
-        fetchLivePrices();                                  // fetch immediately on load
-        setInterval(fetchLivePrices, 5 * 60 * 1000); // then every 5 minutes
-    });
-    <h2 class="text-4xl">AI Chatbot Flaws Expose Account Risks</h2>
-
-<div id="archive-container">
-    <div class='archive-item'>...</div>
-    </div>
+    // Keep all your existing JS functions here (toggleDeepDive, animateNumbers, etc.)
+    // Make sure NO HTML tags like <h2...> or <div> exist outside of these <script> tags!
 </script>
 </body>
 </html>
