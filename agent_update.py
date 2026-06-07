@@ -2,7 +2,6 @@ import os
 import requests
 import json
 import re
-import shutil
 from datetime import datetime
 import google.generativeai as genai
 
@@ -37,7 +36,7 @@ def get_price_context():
     except: return {}, {}, {}, {}
 
 # ───────────────────────────────────────────────────────────────────────
-# LAYER 2: AI PROCESSING (GEMINI)
+# LAYER 2: AI PROCESSING
 # ───────────────────────────────────────────────────────────────────────
 
 def analyze_with_ai(rss, price):
@@ -49,10 +48,10 @@ def analyze_with_ai(rss, price):
         response = model.generate_content(prompt)
         text = response.text.replace("```json", "").replace("```", "").strip()
         return json.loads(text)
-    except: return {"title": "Autonomous Update", "threat_score": 5, "opportunity_score": 5, "root_cause": "Analyzing...", "market_impact": "...", "outlook": "...", "contrarian": "..."}
+    except: return {"title": "Update", "threat_score": 5, "opportunity_score": 5, "root_cause": "Analyzing...", "market_impact": "...", "outlook": "...", "contrarian": "..."}
 
 # ───────────────────────────────────────────────────────────────────────
-# LAYER 3: COMPLIANCE & SEO (AdSense Approval)
+# LAYER 3: COMPLIANCE GENERATOR
 # ───────────────────────────────────────────────────────────────────────
 
 def generate_compliance():
@@ -60,9 +59,9 @@ def generate_compliance():
     base = "<style>body{background:#06070f;color:#f1f5f9;font-family:sans-serif;padding:50px;line-height:1.6;} .box{background:#111;padding:30px;border-radius:15px;}</style>"
     
     pages = {
-        "privacy.html": f"<h1>Privacy Policy</h1><div class='box'><p>Last Updated: {d}. This site uses Google AdSense to serve ads. We are an automated AI research lab.</p></div>",
-        "terms.html": f"<h1>Terms of Service</h1><div class='box'><p>Educational purposes only. No financial advice provided. Autonomous pipeline.</p></div>",
-        "about.html": f"<h1>System Architecture</h1><div class='box'><p>Autonomous Lab 2026 utilizes an automated AI pipeline tracking Web3 security events.</p></div>"
+        "privacy.html": f"<h1>Privacy Policy</h1><div class='box'><p>Last Updated: {d}. This site uses Google AdSense to serve ads. Automated AI research lab.</p></div>",
+        "terms.html": f"<h1>Terms of Service</h1><div class='box'><p>Educational purposes only. Not financial advice.</p></div>",
+        "about.html": f"<h1>System Architecture</h1><div class='box'><p>Autonomous Lab 2026 uses a headless AI pipeline to track security intelligence.</p></div>"
     }
     
     for fn, content in pages.items():
@@ -73,17 +72,16 @@ def generate_compliance():
         f.write('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://autonomous-portfolio-2026.live/</loc></url></urlset>')
 
 # ───────────────────────────────────────────────────────────────────────
-# LAYER 4: PIPELINE
+# LAYER 4: MAIN PIPELINE
 # ───────────────────────────────────────────────────────────────────────
 
 def main():
-    date_str = datetime.utcnow().strftime("%d %b %Y | %H:%M UTC")
     data = analyze_with_ai(get_rss_context(), get_price_context())
     
     with open("index.html", "r", encoding="utf-8") as f:
         html = f.read()
 
-    # Apply data markers
+    # Fixed regex patterns to match the markers I gave you previously
     html = re.sub(r".*?", f"{data.get('title')}", html, flags=re.DOTALL)
     html = re.sub(r".*?", f"{data.get('root_cause')}", html, flags=re.DOTALL)
     html = re.sub(r".*?", f"{data.get('market_impact')}", html, flags=re.DOTALL)
@@ -98,29 +96,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# [ADD THIS TO THE END OF YOUR AGENT_UPDATE.PY SCRIPT]
-
-def deploy_compliance_stack():
-    """Forces generation of mandatory AdSense compliance files."""
-    # 1. Generate Sitemap (Crucial for AdSense discovery)
-    sitemap = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://autonomous-portfolio-2026.live/</loc></url></urlset>'
-    with open("sitemap.xml", "w") as f: f.write(sitemap)
-    
-    # 2. Generate Legal Pages
-    pages = {
-        "privacy.html": "<h1>Privacy Policy</h1><p>We use Google AdSense cookies for ad delivery. This is an autonomous research lab.</p>",
-        "terms.html": "<h1>Terms of Service</h1><p>Educational purpose only. Not financial advice.</p>"
-    }
-    for name, content in pages.items():
-        with open(name, "w") as f:
-            f.write(f"<html><body>{content}</body></html>")
-
-# Update your main() function:
-def main():
-    # ... (Your AI analysis logic) ...
-    # ... (Your index.html writing logic) ...
-    
-    # TRIGGER THIS AFTER index.html IS WRITTEN
-    deploy_compliance_stack()
-    print("✓ Compliance stack deployed for AdSense crawler.")
