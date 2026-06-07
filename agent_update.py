@@ -386,6 +386,7 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
             tokens_html += f'<span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10 text-base"><span class="w-2 h-2 rounded-full bg-red-400 blink" style="animation-delay:{i*0.3}s"></span>{t.strip()}</span>\n'
 
     analyst_note = data.get('analyst_note', f'Based on current threat patterns, this situation warrants careful monitoring of {", ".join(tokens[:2]) if tokens else "key assets"} over the next 48 hours.')
+    deep_paras = [p.strip() for p in deep_raw.split('\n') if p.strip()]
     para_titles = ["Root Cause Analysis", "Market Impact", "Mid-Term Outlook"]
     deep_html = ""
     for i, para in enumerate(deep_paras[:3]):
