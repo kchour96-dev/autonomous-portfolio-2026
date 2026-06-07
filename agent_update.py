@@ -98,3 +98,29 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# [ADD THIS TO THE END OF YOUR AGENT_UPDATE.PY SCRIPT]
+
+def deploy_compliance_stack():
+    """Forces generation of mandatory AdSense compliance files."""
+    # 1. Generate Sitemap (Crucial for AdSense discovery)
+    sitemap = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://autonomous-portfolio-2026.live/</loc></url></urlset>'
+    with open("sitemap.xml", "w") as f: f.write(sitemap)
+    
+    # 2. Generate Legal Pages
+    pages = {
+        "privacy.html": "<h1>Privacy Policy</h1><p>We use Google AdSense cookies for ad delivery. This is an autonomous research lab.</p>",
+        "terms.html": "<h1>Terms of Service</h1><p>Educational purpose only. Not financial advice.</p>"
+    }
+    for name, content in pages.items():
+        with open(name, "w") as f:
+            f.write(f"<html><body>{content}</body></html>")
+
+# Update your main() function:
+def main():
+    # ... (Your AI analysis logic) ...
+    # ... (Your index.html writing logic) ...
+    
+    # TRIGGER THIS AFTER index.html IS WRITTEN
+    deploy_compliance_stack()
+    print("✓ Compliance stack deployed for AdSense crawler.")
