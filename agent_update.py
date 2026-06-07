@@ -195,6 +195,7 @@ Return ONLY a valid JSON object. No markdown fences. No extra text:
   "opportunity_score": 6,
   "threat_level": "Medium",
   "deep_analysis": "Three paragraphs of expert analysis separated by newlines",
+  "analyst_note": "One authoritative sentence synthesis from a senior analyst perspective",
   "tokens_to_watch": ["USE_TRENDING_TOKENS_FROM_ABOVE", "SECOND_TRENDING_TOKEN", "THIRD_TRENDING_TOKEN"],
   "critic": "One sentence contrarian view why the opportunity might be wrong",
   "color": "#hexcolor matching the mood"
@@ -384,7 +385,7 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
         if t.strip():
             tokens_html += f'<span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10 text-base"><span class="w-2 h-2 rounded-full bg-red-400 blink" style="animation-delay:{i*0.3}s"></span>{t.strip()}</span>\n'
 
-    deep_paras = [p.strip() for p in deep_raw.split('\n') if p.strip()]
+    analyst_note = data.get('analyst_note', f'Based on current threat patterns, this situation warrants careful monitoring of {", ".join(tokens[:2]) if tokens else "key assets"} over the next 48 hours.')
     para_titles = ["Root Cause Analysis", "Market Impact", "Mid-Term Outlook"]
     deep_html = ""
     for i, para in enumerate(deep_paras[:3]):
@@ -453,7 +454,7 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
         .tag:hover{{transform:scale(1.05)}}
         .btn-primary{{position:relative;overflow:hidden;transition:all 0.3s ease}}
         #deepdive{{max-height:0;overflow:hidden;opacity:0;transition:max-height 0.6s cubic-bezier(0.4,0,0.2,1),opacity 0.5s ease}}
-        #deepdive.active{{max-height:1200px;opacity:1}}
+        #deepdive.active{{max-height:2000px;opacity:1}}
         .bg-grid{{background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:80px 80px}}
         .status-dot{{width:10px;height:10px;border-radius:50%;display:inline-block}}
         .archive-item{{transition:all 0.3s ease;border-radius:12px;padding:12px 16px;cursor:pointer}}
@@ -482,6 +483,7 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
                 <span class="hidden sm:inline">Last AI Sync: {date_str}</span>
                 <a href="/about.html" class="hidden sm:inline hover:text-white transition uppercase tracking-widest">About</a>
                 <a href="/privacy.html" class="hidden sm:inline hover:text-white transition uppercase tracking-widest">Privacy</a>
+                <a href="/terms.html" class="hidden sm:inline hover:text-white transition uppercase tracking-widest">Terms</a>
                 <span class="px-3 py-1.5 rounded-lg font-bold tracking-wider" style="background:{threat_color}18;color:{threat_color};border:1px solid {threat_color}33">{threat_label}</span>
             </div>
     </div>
@@ -569,18 +571,32 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
             <div class="highlight-box"><p class="text-sm text-slate-500 leading-relaxed"><span class="text-red-400 font-bold">Note:</span> AI pattern recognition based on current threat landscape and trending data. Not financial advice.</p></div>
         </div>
 
-        <!-- DEEP ANALYSIS -->
+        <!-- ANALYST NOTE — Always visible for AdSense crawlers -->
+        <div class="glass rounded-3xl p-8 md:p-10 border-l-4 fadein fadein-delay-3" style="border-color:{color}">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background:{color}20;border:1px solid {color}40">
+                    <span class="text-lg">✍️</span>
+                </div>
+                <div>
+                    <p class="section-label mb-0" style="color:{color}">Analyst's Note</p>
+                    <p class="text-xs text-slate-600 mono">Senior Intelligence Synthesis</p>
+                </div>
+            </div>
+            <p class="text-xl text-slate-200 leading-relaxed font-medium">{analyst_note}</p>
+        </div>
+
+        <!-- DEEP ANALYSIS — Visible by default for SEO/AdSense -->
         <div class="glass rounded-3xl overflow-hidden fadein fadein-delay-3">
             <div class="p-8 md:p-10">
                 <div class="flex justify-between items-center">
-                    <div><p class="section-label mb-1">📊 Deep Analysis</p><p class="text-sm text-slate-500">Expanded technical breakdown</p></div>
+                    <div><p class="section-label mb-1">📊 Deep Analysis</p><p class="text-sm text-slate-500">Full technical breakdown</p></div>
                     <button id="deepbtn" onclick="toggleDeepDive()" class="btn-primary text-sm mono font-bold uppercase tracking-widest px-6 py-3 rounded-2xl border border-white/10 hover:border-white/30 transition bg-white/[0.02] hover:bg-white/[0.05] text-slate-300 flex items-center gap-2">
-                        <span>Read Analysis</span>
-                        <svg class="w-4 h-4 transition-transform" id="deep-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <span>Collapse ↑</span>
+                        <svg class="w-4 h-4 transition-transform rotate-180" id="deep-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                 </div>
             </div>
-            <div id="deepdive" class="px-8 md:px-10 pb-10 text-base text-slate-400 leading-relaxed border-t border-white/[0.04]">
+            <div id="deepdive" class="active px-8 md:px-10 pb-10 text-base text-slate-400 leading-relaxed border-t border-white/[0.04]">
                 <div class="pt-8 space-y-5">{deep_html}</div>
             </div>
         </div>
@@ -787,7 +803,7 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 
 <!-- FOOTER -->
 <footer class="max-w-7xl mx-auto mt-20 pt-10 border-t border-white/[0.04]">
-    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
         <div class="flex items-center gap-6 text-sm mono text-slate-700">
             <span class="font-bold">AUTONOMOUS-PORTFOLIO-2026.LIVE</span>
             <span class="hidden md:inline text-slate-800">|</span>
@@ -799,6 +815,14 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
             <span class="text-slate-600 font-bold uppercase tracking-wider">Not Financial Advice</span>
         </div>
     </div>
+    <div class="flex flex-wrap justify-center gap-6 pb-8 text-xs mono text-slate-600">
+        <a href="/about.html" class="hover:text-slate-400 transition uppercase tracking-widest">About</a>
+        <a href="/privacy.html" class="hover:text-slate-400 transition uppercase tracking-widest">Privacy Policy</a>
+        <a href="/terms.html" class="hover:text-slate-400 transition uppercase tracking-widest">Terms of Service</a>
+        <a href="https://t.me/AII2026futher" target="_blank" class="hover:text-slate-400 transition uppercase tracking-widest">Telegram</a>
+        <a href="https://github.com/kchour96-dev/autonomous-portfolio-2026" target="_blank" class="hover:text-slate-400 transition uppercase tracking-widest">GitHub</a>
+    </div>
+    <p class="text-center text-xs mono text-slate-700 pb-6">© 2026 Autonomous Lab. AI-generated content for research and educational purposes only. Not financial advice.</p>
 </footer>
 
 </div>
@@ -833,11 +857,11 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
         const icon = document.getElementById('deep-icon');
         if (d.classList.contains('active')) {{
             d.classList.remove('active');
-            b.querySelector('span').innerText = 'Read Analysis';
+            b.querySelector('span').innerText = 'Expand ↓';
             icon.style.transform = 'rotate(0deg)';
         }} else {{
             d.classList.add('active');
-            b.querySelector('span').innerText = 'Close Analysis';
+            b.querySelector('span').innerText = 'Collapse ↑';
             icon.style.transform = 'rotate(180deg)';
         }}
     }}
