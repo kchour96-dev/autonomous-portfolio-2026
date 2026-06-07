@@ -49,55 +49,52 @@ def analyze_with_ai(rss, price):
         response = model.generate_content(prompt)
         text = response.text.replace("```json", "").replace("```", "").strip()
         return json.loads(text)
-    except: return {"title": "Update", "threat_score": 5, "opportunity_score": 5}
+    except: return {"title": "Autonomous Update", "threat_score": 5, "opportunity_score": 5, "root_cause": "Analyzing...", "market_impact": "...", "outlook": "...", "contrarian": "..."}
 
 # ───────────────────────────────────────────────────────────────────────
-# LAYER 3: ADSENSE COMPLIANCE
+# LAYER 3: COMPLIANCE & SEO (AdSense Approval)
 # ───────────────────────────────────────────────────────────────────────
 
-def generate_adsense_compliance():
-    """Generates mandatory compliance pages and sitemap for AdSense."""
+def generate_compliance():
     d = datetime.utcnow().strftime("%d %b %Y")
-    base = "<style>body{background:#06070f;color:#f1f5f9;font-family:sans-serif;padding:50px;} .box{background:#111;padding:30px;border-radius:15px;}</style>"
+    base = "<style>body{background:#06070f;color:#f1f5f9;font-family:sans-serif;padding:50px;line-height:1.6;} .box{background:#111;padding:30px;border-radius:15px;}</style>"
     
     pages = {
-        "privacy.html": f"<h1>Privacy Policy</h1><div class='box'><p>Last Updated: {d}. We use Google AdSense to serve ads. This site is an AI experiment.</p></div>",
-        "terms.html": f"<h1>Terms of Service</h1><div class='box'><p>This site is for educational purposes only. Not financial advice.</p></div>",
-        "about.html": f"<h1>System Architecture</h1><div class='box'><p>Autonomous Lab 2026 runs on a headless AI pipeline updating security intelligence every 2 hours.</p></div>"
+        "privacy.html": f"<h1>Privacy Policy</h1><div class='box'><p>Last Updated: {d}. This site uses Google AdSense to serve ads. We are an automated AI research lab.</p></div>",
+        "terms.html": f"<h1>Terms of Service</h1><div class='box'><p>Educational purposes only. No financial advice provided. Autonomous pipeline.</p></div>",
+        "about.html": f"<h1>System Architecture</h1><div class='box'><p>Autonomous Lab 2026 utilizes an automated AI pipeline tracking Web3 security events.</p></div>"
     }
     
-    for filename, content in pages.items():
-        with open(filename, "w", encoding="utf-8") as f:
+    for fn, content in pages.items():
+        with open(fn, "w", encoding="utf-8") as f:
             f.write(f"<html><head>{base}</head><body>{content}<br><a href='/'>Back to Dashboard</a></body></html>")
 
     with open("sitemap.xml", "w") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://autonomous-portfolio-2026.live/</loc></url></urlset>')
 
 # ───────────────────────────────────────────────────────────────────────
-# LAYER 4: MAIN PIPELINE
+# LAYER 4: PIPELINE
 # ───────────────────────────────────────────────────────────────────────
 
 def main():
     date_str = datetime.utcnow().strftime("%d %b %Y | %H:%M UTC")
     data = analyze_with_ai(get_rss_context(), get_price_context())
     
-    if os.path.exists("index.html"):
-        with open("index.html", "r", encoding="utf-8") as f:
-            html = f.read()
-    else: return
+    with open("index.html", "r", encoding="utf-8") as f:
+        html = f.read()
 
-    # Inject data into markers (H_S/H_E are your archive markers in index.html)
-    ts = data.get('threat_score', 5)
-    os_ = data.get('opportunity_score', 5)
+    # Apply data markers
+    html = re.sub(r".*?", f"{data.get('title')}", html, flags=re.DOTALL)
+    html = re.sub(r".*?", f"{data.get('root_cause')}", html, flags=re.DOTALL)
+    html = re.sub(r".*?", f"{data.get('market_impact')}", html, flags=re.DOTALL)
+    html = re.sub(r".*?", f"{data.get('outlook')}", html, flags=re.DOTALL)
+    html = re.sub(r".*?", f"{data.get('contrarian')}", html, flags=re.DOTALL)
     
-    # Save files
-    try:
-        with open("index.html", "w", encoding="utf-8") as f:
-            f.write(html) # Ensure 'html' variable is updated with your regex logic
-        generate_adsense_compliance()
-        print("✓ Pipeline Success")
-    except Exception as e:
-        print(f"Error: {e}")
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html)
+        
+    generate_compliance()
+    print("✓ Deployment complete.")
 
 if __name__ == "__main__":
     main()
