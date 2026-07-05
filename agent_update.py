@@ -108,7 +108,7 @@ def get_coindesk_sentiment():
         return "", "NEUTRAL", 5
 
 # ─────────────────────────────────────────────
-# LAYER 1B: POSITIVE NEWS DISCOVERY (NEW)
+# LAYER 1B: POSITIVE NEWS DISCOVERY
 # ─────────────────────────────────────────────
 def get_positive_crypto_news():
     """Auto-discover positive news from free APIs - NO AUTH NEEDED"""
@@ -374,6 +374,182 @@ Return ONLY this JSON (no markdown, no backticks):
     return None
 
 # ─────────────────────────────────────────────
+# EXTRACT: Preserve static sections from old HTML
+# ─────────────────────────────────────────────
+def extract_preserved_sections(old_html):
+    """Extract and preserve static sections from old HTML"""
+    preserved = {
+        'google_ads': '',
+        'privacy_links': '',
+        'donation_links': '',
+        'about_section': '',
+        'head_custom': ''
+    }
+    
+    try:
+        # Extract Google Analytics/Ads
+        ads_match = re.search(r'<script async src="https://pagead2\.googlesyndication\.com[^>]*>.*?</script>', old_html, re.DOTALL)
+        if ads_match:
+            preserved['google_ads'] = ads_match.group(0)
+            print("✓ Preserved: Google Ads script")
+    except:
+        pass
+    
+    try:
+        # Extract privacy/about links (look for comment markers or footer links)
+        privacy_match = re.search(r'<!-- PRIVACY -->.*?<!-- /PRIVACY -->', old_html, re.DOTALL)
+        if privacy_match:
+            preserved['privacy_links'] = privacy_match.group(0)
+            print("✓ Preserved: Privacy section")
+    except:
+        pass
+    
+    try:
+        # Extract donation/BNB invite links
+        donation_match = re.search(r'<!-- DONATE -->.*?<!-- /DONATE -->', old_html, re.DOTALL)
+        if donation_match:
+            preserved['donation_links'] = donation_match.group(0)
+            print("✓ Preserved: Donation section")
+    except:
+        pass
+    
+    try:
+        # Extract any custom head content (between <!-- CUSTOM_HEAD --> markers)
+        head_match = re.search(r'<!-- CUSTOM_HEAD -->.*?<!-- /CUSTOM_HEAD -->', old_html, re.DOTALL)
+        if head_match:
+            preserved['head_custom'] = head_match.group(0)
+            print("✓ Preserved: Custom head section")
+    except:
+        pass
+    
+    return preserved
+
+# ─────────────────────────────────────────────
+# UPDATE HTML: Smart patching instead of rebuild
+# ─────────────────────────────────────────────
+def update_html_content(old_html, data, final_history, date_str, price_context="", 
+                       sentiment_mood="NEUTRAL", sentiment_score=5, trending_tokens=None, 
+                       btc=None, eth=None, sol=None, preserved=None):
+    """Update ONLY dynamic content in existing HTML template"""
+    if btc is None: btc = {}
+    if eth is None: eth = {}
+    if sol is None: sol = {}
+    if preserved is None: preserved = {}
+
+    html = old_html
+    
+    # Update metadata
+    title = data.get('title', 'Intelligence Report')
+    threat_score = int(str(data.get('threat_score', 5))) if str(data.get('threat_score', 5)).isdigit() else 5
+    opp_score = int(str(data.get('opportunity_score', 5))) if str(data.get('opportunity_score', 5)).isdigit() else 5
+    
+    html = re.sub(r'<title>.*?</title>', f'<title>Autonomous Lab 2026 — {title}</title>', html)
+    html = re.sub(r'<meta name="description"[^>]*>', f'<meta name="description" content="Real-time crypto intelligence: Threat {threat_score}/10 | Opportunity {opp_score}/10">', html)
+    html = re.sub(r'(<meta property="og:title"[^>]*content=")[^"]*', f'\\1{title} — Autonomous Lab', html)
+    html = re.sub(r'(<meta property="og:description"[^>]*content=")[^"]*', f'\\1Threat: {threat_score}/10 | Opportunity: {opp_score}/10', html)
+    
+    # Restore Google Ads if lost
+    if preserved.get('google_ads') and '<script async src="https://pagead2.googlesyndication.com' not in html:
+        html = html.replace('</head>', f"{preserved['google_ads']}\n</head>")
+        print("✓ Restored: Google Ads script")
+    
+    # Update main hero title
+    html = re.sub(
+        r'<h2 class="text-4xl font-bold mb-6 text-white">.*?</h2>',
+        f'<h2 class="text-4xl font-bold mb-6 text-white">{title}</h2>',
+        html, count=1
+    )
+    
+    # Update threat score
+    html = re.sub(
+        r'(<p class="text-xs uppercase text-red-400 mb-2">Threat</p>.*?<p class="text-4xl font-bold text-red-400 count-number">)\d+',
+        f'\\1{threat_score}',
+        html, flags=re.DOTALL, count=1
+    )
+    
+    # Update opportunity score
+    html = re.sub(
+        r'(<p class="text-xs uppercase mb-2" style="color:[^"]*">Opportunity</p>.*?<p class="text-4xl font-bold count-number"[^>]*>)\d+',
+        f'\\1{opp_score}',
+        html, flags=re.DOTALL, count=1
+    )
+    
+    # Update threat text
+    threat_txt = data.get('threat', '')
+    html = re.sub(
+        r'(<p class="text-xs uppercase text-red-400 mb-2">Threat</p>.*?<p class="text-sm text-slate-400 mt-3">).*?(?=</p>)',
+        f'\\1{threat_txt}',
+        html, flags=re.DOTALL, count=1
+    )
+    
+    # Update opportunity text
+    opp_txt = data.get('opportunity', '')
+    html = re.sub(
+        r'(<p class="text-xs uppercase mb-2" style="color:[^"]*">Opportunity</p>.*?<p class="text-4xl font-bold count-number"[^>]*>\d+.*?<p class="text-sm text-slate-400 mt-3">).*?(?=</p>)',
+        f'\\1{opp_txt}',
+        html, flags=re.DOTALL, count=1
+    )
+    
+    # Update prices
+    if btc.get('usd'):
+        btc_color = "#22c55e" if btc.get('usd_24h_change', 0) >= 0 else "#ef4444"
+        btc_change = btc.get('usd_24h_change', 0) or 0
+        html = re.sub(
+            r'(<span>BTC</span><span style="color:[^"]*">)\$[^<]+</span>',
+            f'<span style="color:{btc_color}">${btc.get("usd",0):,.0f} {btc_change:+.1f}%</span>',
+            html, count=1
+        )
+    
+    if eth.get('usd'):
+        eth_color = "#22c55e" if eth.get('usd_24h_change', 0) >= 0 else "#ef4444"
+        eth_change = eth.get('usd_24h_change', 0) or 0
+        html = re.sub(
+            r'(<span>ETH</span><span style="color:[^"]*">)\$[^<]+</span>',
+            f'<span style="color:{eth_color}">${eth.get("usd",0):,.0f} {eth_change:+.1f}%</span>',
+            html, count=1
+        )
+    
+    if sol.get('usd'):
+        sol_color = "#22c55e" if sol.get('usd_24h_change', 0) >= 0 else "#ef4444"
+        sol_change = sol.get('usd_24h_change', 0) or 0
+        html = re.sub(
+            r'(<span>SOL</span><span style="color:[^"]*">)\$[^<]+</span>',
+            f'<span style="color:{sol_color}">${sol.get("usd",0):,.2f} {sol_change:+.1f}%</span>',
+            html, count=1
+        )
+    
+    # Update sentiment
+    sent_color = "#22c55e" if sentiment_mood == "BULLISH" else "#ef4444"
+    sent_width = min(sentiment_score * 10, 100)
+    html = re.sub(
+        r'(<p class="text-2xl font-bold mb-3" style="color:[^"]*">)BULLISH|BEARISH|NEUTRAL',
+        f'\\1{sentiment_mood}',
+        html, count=1
+    )
+    html = re.sub(
+        r'(style="background: linear-gradient\(to right[^"]*\) 0%, )#[a-f0-9]{6}',
+        f'\\1{sent_color}',
+        html, count=1
+    )
+    
+    # Update archive history with markers
+    if '<!-- H_S -->' in html and '<!-- H_E -->' in html:
+        html = re.sub(
+            r'(<!-- H_S -->).*?(<!-- H_E -->)',
+            f'\\1{final_history}\\2',
+            html, flags=re.DOTALL
+        )
+    
+    # Update footer date
+    html = re.sub(
+        r'• \d{1,2} \w+ \d{4} \| \d{2}:\d{2} UTC •',
+        f'• {date_str} •',
+        html
+    )
+    
+    return html
+
+# ─────────────────────────────────────────────
 # NOTIFY: Telegram
 # ─────────────────────────────────────────────
 def send_telegram(title, threat, opportunity, threat_score, opp_score):
@@ -467,11 +643,11 @@ def write_seo_files():
     print("✓ SEO files updated")
 
 # ─────────────────────────────────────────────
-# BUILD HTML
+# BUILD HTML (template only, for first run)
 # ─────────────────────────────────────────────
 def build_html(data, final_history, date_str, price_context="", sentiment_mood="NEUTRAL", 
                sentiment_score=5, trending_tokens=None, btc=None, eth=None, sol=None):
-    """Build complete HTML page"""
+    """Build complete HTML page (used only for initial creation)"""
     if btc is None: btc = {}
     if eth is None: eth = {}
     if sol is None: sol = {}
@@ -497,9 +673,6 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
     try: os_ = int(str(opp_score))
     except: os_ = 5
 
-    t_bar = min(ts, 10) * 10
-    o_bar = min(os_, 10) * 10
-
     if ts >= 7:
         bias_label = "📉 BEARISH BIAS"; bias_desc = "High threat — short-term selling pressure"; bias_color = "#ef4444"
     elif os_ >= 7:
@@ -509,7 +682,7 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 
     bullets_html = ""
     for i, b in enumerate(news_bullets, 1):
-        bullets_html += f'<div class="flex gap-5 items-start group/item p-4 rounded-2xl hover:bg-white/[0.02]"><span class="mt-1 flex-shrink-0 w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-xs font-bold">{i}</span><p class="text-base text-slate-300">{b}</p></div>'
+        bullets_html += f'<div class="flex gap-5 items-start group/item p-4 rounded-2xl hover:bg-white/[0.02]"><span class="mt-1 flex-shrink-0 w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-sm font-bold">{i}</span><p class="text-slate-300">{b}</p></div>'
 
     tokens_html = ""
     for i, t in enumerate(tokens):
@@ -669,7 +842,7 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
             <div class="glass p-6">
                 <p class="text-xs uppercase font-bold mb-3">📁 Archive</p>
                 <div class="max-h-80 overflow-y-auto text-xs space-y-2 text-slate-400">
-                    {final_history if final_history else '<p>No history yet</p>'}
+                    <!-- H_S -->{final_history}<!-- H_E -->
                 </div>
             </div>
 
@@ -704,13 +877,18 @@ def run_production_agent():
         print("❌ FATAL: GEMINI key not set. Aborting.")
         return
 
-    # BACKUP
+    # BACKUP & EXTRACT
     old_content = ""
+    preserved = {}
     if os.path.exists("index.html"):
         shutil.copy("index.html", "index.html.bak")
         with open("index.html", "r", encoding="utf-8") as f:
             old_content = f.read()
         print("✓ Backup created")
+        
+        # Extract preserved sections
+        preserved = extract_preserved_sections(old_content)
+        print("✓ Preserved sections extracted")
 
     # LAYER 1: Fetch all data sources
     print("\n[LAYER 1] Gathering intelligence...\n")
@@ -731,7 +909,7 @@ def run_production_agent():
     if "<!-- H_S -->" in old_content:
         try:
             hist = old_content.split("<!-- H_S -->")[1].split("<!-- H_E -->")[0]
-            match = re.search(r"tracking-tight'>(.*?)</p>", hist)
+            match = re.search(r"'font-bold text-slate-200'>([^<]+)", hist)
             if match:
                 last_title = match.group(1)
                 print(f"ℹ Last story: {last_title[:50]}")
@@ -783,15 +961,23 @@ def run_production_agent():
     )
     final_history = (new_entry + history_html)[:8000]
 
-    # BUILD & WRITE
-    print("\n[LAYER 6] Building HTML...\n")
-    html = build_html(data, final_history, date_str, price_context, sentiment_mood, 
-                     sentiment_score, trending_tokens, btc, eth, sol)
+    # UPDATE or BUILD HTML
+    print("\n[LAYER 6] Updating/Building HTML...\n")
+    if old_content:
+        # Use smart patching for existing HTML
+        html = update_html_content(old_content, data, final_history, date_str, price_context, 
+                                  sentiment_mood, sentiment_score, trending_tokens, btc, eth, sol, preserved)
+        print("✓ HTML patched (content updated, UI preserved)")
+    else:
+        # Build from scratch for first run
+        html = build_html(data, final_history, date_str, price_context, sentiment_mood, 
+                         sentiment_score, trending_tokens, btc, eth, sol)
+        print("✓ HTML built from template")
 
     try:
         with open("index.html", "w", encoding="utf-8") as f:
             f.write(html)
-        print("✓ index.html written successfully")
+        print("✓ index.html updated successfully")
     except Exception as e:
         print(f"❌ Write failed: {e}")
         if os.path.exists("index.html.bak"):
