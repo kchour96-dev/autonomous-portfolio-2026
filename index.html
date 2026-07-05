@@ -33,42 +33,6 @@
 </head>
 <body class="min-h-screen ui-locked">
 
-<!-- STRUCTURAL VALIDATION SCRIPT - RUNS BEFORE RENDER -->
-<script>
-(function validateStructure() {
-    const CRITICAL_ELEMENTS = {
-        donation: '[data-protected="donation"]',
-        ads: 'script[src*="googlesyndication"]',
-        archive: '[data-protected="archive"]'
-    };
-    
-    const validation = {
-        passed: true,
-        issues: [],
-        timestamp: new Date().toISOString()
-    };
-    
-    // Check critical elements exist
-    Object.entries(CRITICAL_ELEMENTS).forEach(([name, selector]) => {
-        if (!document.querySelector(selector)) {
-            validation.issues.push(`Missing critical element: ${name}`);
-            validation.passed = false;
-        }
-    });
-    
-    // If validation fails, abort content update
-    if (!validation.passed) {
-        console.error('STRUCTURAL VALIDATION FAILED:', validation);
-        document.body.innerHTML = '<div style="color:red;padding:20px;font-family:monospace;">⚠️ STRUCTURAL VALIDATION FAILED - UPDATES ABORTED<br>' + validation.issues.join('<br>') + '</div>';
-        return false;
-    }
-    
-    // Store validation result
-    window.__VALIDATION__ = validation;
-    return true;
-})();
-</script>
-
 <div class="w-full border-b border-white/10 bg-[#06070f]/90 sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
@@ -205,10 +169,59 @@
     <p>© 2026 Autonomous Lab • 05 Jul 2026 | 04:19 UTC • <a href="https://github.com/kchour96-dev" class="hover:text-white">GitHub</a></p>
 </footer>
 
-<!-- CONTENT UPDATE VALIDATOR - PREVENTS STRUCTURAL CHANGES -->
+<!-- CONTENT UPDATE VALIDATOR - RUNS AFTER DOM IS READY -->
 <script>
-(function initContentOnlyUpdates() {
-    // Whitelist: only these elements can have content updates
+(function initSafetyGuards() {
+    // Wait for DOM to be fully loaded
+    function validateStructure() {
+        const CRITICAL_ELEMENTS = {
+            donation: '[data-protected="donation"]',
+            archive: '[data-protected="archive"]',
+            ads: 'script[src*="googlesyndication"]'
+        };
+        
+        const validation = {
+            passed: true,
+            issues: [],
+            timestamp: new Date().toISOString(),
+            elements: {}
+        };
+        
+        // Check critical elements exist
+        Object.entries(CRITICAL_ELEMENTS).forEach(([name, selector]) => {
+            const element = document.querySelector(selector);
+            validation.elements[name] = !!element;
+            if (!element) {
+                validation.issues.push(`Missing critical element: ${name}`);
+                validation.passed = false;
+            }
+        });
+        
+        // Store validation result
+        window.__VALIDATION__ = validation;
+        
+        if (validation.passed) {
+            console.log('✅ STRUCTURAL VALIDATION PASSED');
+            console.log('✅ All critical elements present');
+            console.log('✅ Content-only update policy active');
+            console.log('✅ Donation section protected');
+            console.log('✅ Google Ads protected');
+            console.log('✅ Archive history protected');
+        } else {
+            console.error('⚠️ STRUCTURAL VALIDATION FAILED:', validation);
+        }
+        
+        return validation.passed;
+    }
+    
+    // Run validation when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', validateStructure);
+    } else {
+        validateStructure();
+    }
+    
+    // Initialize content-only update policy
     const CONTENT_ONLY_SELECTORS = [
         '[data-content-only="threat"]',
         '[data-content-only="opportunity"]',
@@ -222,7 +235,6 @@
         '[data-content-only="trending"]'
     ];
     
-    // Protected elements - NEVER update
     const PROTECTED_ELEMENTS = [
         '[data-protected="donation"]',      // Donation section
         '[data-protected="archive"]',       // Archive history
@@ -235,15 +247,13 @@
         protected: PROTECTED_ELEMENTS,
         uiLocked: true,
         validateUpdate: function(updateData) {
-            // Reject any update that modifies UI structure
             if (updateData.modifiesDOM !== false) {
-                console.warn('UPDATE BLOCKED: UI structure changes not allowed');
+                console.warn('🚫 UPDATE BLOCKED: UI structure changes not allowed');
                 return false;
             }
-            // Reject updates to protected elements
             for (let selector of this.protected) {
                 if (updateData.targets && updateData.targets.includes(selector)) {
-                    console.warn('UPDATE BLOCKED: Protected element modified -', selector);
+                    console.warn('🚫 UPDATE BLOCKED: Protected element modified -', selector);
                     return false;
                 }
             }
@@ -251,13 +261,8 @@
         }
     };
     
-    console.log('✅ Content-only update policy initialized');
-    console.log('✅ UI locked - no structural changes allowed');
-    console.log('✅ BNB Wallet & Binance Referral Added');
-    console.log('✅ Donation section permanently protected');
-    console.log('✅ Google Ads protected');
-    console.log('✅ Archive history protected');
-    console.log('✅ Auto-abort on structural issues enabled');
+    console.log('🔒 Safety guards initialized');
+    console.log('✅ BNB Wallet & Binance Referral Active');
 })();
 </script>
 
