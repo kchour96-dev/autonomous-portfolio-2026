@@ -6,6 +6,71 @@ import shutil
 from datetime import datetime
 
 # ─────────────────────────────────────────────
+# CRITICAL: UI PROTECTION LAYER
+# ─────────────────────────────────────────────
+def verify_html_structure(html_before, html_after):
+    """
+    CRITICAL SAFEGUARD: Verify that HTML structure is NOT changed by updates.
+    Aborts if any structural elements are missing.
+    """
+    critical_elements = [
+        '<div class="glass p-8 border-l-4"',  # Analyst Note
+        '<!-- DONATE -->',  # Donation section start
+        '<!-- /DONATE -->',  # Donation section end
+        '<script async src="https://pagead2.googlesyndication.com',  # Google Ads
+        '<!-- H_S -->',  # Archive history start
+        '<!-- H_E -->',  # Archive history end
+        '<footer class="mt-16',  # Footer
+        'AUTONOMOUS LAB',  # Main branding
+        '.glass',  # Styling classes
+    ]
+    
+    print("\n[VERIFICATION] Checking HTML structure integrity...")
+    missing = []
+    for element in critical_elements:
+        if element not in html_after:
+            missing.append(element)
+            print(f"  ❌ MISSING: {element[:50]}...")
+    
+    if missing:
+        print(f"\n🚨 CRITICAL ERROR: {len(missing)} structural elements missing!")
+        print("   Agent update ABORTED to prevent UI corruption.")
+        print("   Reverting to backup...\n")
+        return False
+    
+    print("  ✅ All critical elements present")
+    return True
+
+def validate_dynamic_updates(html_before, html_after):
+    """
+    Verify that ONLY dynamic content changed, NOT the HTML structure.
+    Dynamic fields: title, scores, prices, sentiment, archive
+    """
+    print("\n[VALIDATION] Checking update integrity...")
+    
+    # Extract key structural sections that should NOT change
+    sections = {
+        'head_open': r'<head>',
+        'glass_panels': r'class="glass',
+        'sidebar_count': len(re.findall(r'<!-- (PRICES|SENTIMENT|TRENDING|DONATE|DISCLAIMER) -->', html_before)),
+        'footer': r'<footer',
+    }
+    
+    for key, pattern in sections.items():
+        if key == 'sidebar_count':
+            new_count = len(re.findall(r'<!-- (PRICES|SENTIMENT|TRENDING|DONATE|DISCLAIMER) -->', html_after))
+            if new_count != pattern:
+                print(f"  ⚠️ Sidebar structure changed: {pattern} → {new_count}")
+                return False
+        else:
+            if not re.search(pattern, html_after):
+                print(f"  ❌ Missing structural element: {key}")
+                return False
+    
+    print("  ✅ Structure integrity verified")
+    return True
+
+# ─────────────────────────────────────────────
 # LAYER 1: RSS — Real world news
 # ─────────────────────────────────────────────
 def get_rss_context():
@@ -846,6 +911,21 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
                 </div>
             </div>
 
+            <!-- DONATE -->
+            <div class="glass p-6 border-l-4" style="border-color:#f59e0b">
+                <p class="text-xs uppercase font-bold mb-3" style="color:#f59e0b">💰 Support the Lab</p>
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <p class="text-slate-400 mb-1">Smart Chain (BEP20/ERC20)</p>
+                        <p class="font-mono text-slate-200 break-all">0x30ce31b427707335343b43708a35b2095f1763c2</p>
+                    </div>
+                    <a href="https://www.binance.com/activity/referral-entry/CPA?ref=CPA_00LPXS1YYG" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400 hover:bg-yellow-500/30 transition text-xs font-bold">
+                        📊 Create Account (Binance Ref)
+                    </a>
+                </div>
+            </div>
+            <!-- /DONATE -->
+
             <!-- DISCLAIMER -->
             <div class="glass p-4 border-yellow-500/20">
                 <p class="text-xs text-yellow-600">⚠️ AI-generated research. Not financial advice.</p>
@@ -974,6 +1054,17 @@ def run_production_agent():
                          sentiment_score, trending_tokens, btc, eth, sol)
         print("✓ HTML built from template")
 
+    # CRITICAL: Verify HTML integrity before writing
+    print("\n[LAYER 7] Quality assurance checks...\n")
+    if not verify_html_structure(old_content, html):
+        print("🚨 Aborting update due to structural integrity failure.")
+        if os.path.exists("index.html.bak"):
+            shutil.copy("index.html.bak", "index.html")
+        return
+    
+    if not validate_dynamic_updates(old_content, html):
+        print("⚠️ Warning: Unexpected changes detected. Proceeding with caution.")
+
     try:
         with open("index.html", "w", encoding="utf-8") as f:
             f.write(html)
@@ -988,7 +1079,7 @@ def run_production_agent():
         os.remove("index.html.bak")
 
     # POST-BUILD
-    print("\n[LAYER 7] Post-build tasks...\n")
+    print("\n[LAYER 8] Post-build tasks...\n")
     write_seo_files()
     post_to_devto(data)
     send_telegram(
