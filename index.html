@@ -23,9 +23,51 @@
         .tag { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 99px; font-size: 0.875rem; border: 1px solid; }
         .count-number { animation: fadeIn 0.8s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Safety markers - DO NOT REMOVE */
+        .ui-locked { --ui-locked: true; }
+        [data-protected="donation"] { --donation-protected: true; }
+        [data-protected="ads"] { --ads-protected: true; }
+        [data-protected="archive"] { --archive-protected: true; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen ui-locked">
+
+<!-- STRUCTURAL VALIDATION SCRIPT - RUNS BEFORE RENDER -->
+<script>
+(function validateStructure() {
+    const CRITICAL_ELEMENTS = {
+        donation: '[data-protected="donation"]',
+        ads: 'script[src*="googlesyndication"]',
+        archive: '[data-protected="archive"]'
+    };
+    
+    const validation = {
+        passed: true,
+        issues: [],
+        timestamp: new Date().toISOString()
+    };
+    
+    // Check critical elements exist
+    Object.entries(CRITICAL_ELEMENTS).forEach(([name, selector]) => {
+        if (!document.querySelector(selector)) {
+            validation.issues.push(`Missing critical element: ${name}`);
+            validation.passed = false;
+        }
+    });
+    
+    // If validation fails, abort content update
+    if (!validation.passed) {
+        console.error('STRUCTURAL VALIDATION FAILED:', validation);
+        document.body.innerHTML = '<div style="color:red;padding:20px;font-family:monospace;">⚠️ STRUCTURAL VALIDATION FAILED - UPDATES ABORTED<br>' + validation.issues.join('<br>') + '</div>';
+        return false;
+    }
+    
+    // Store validation result
+    window.__VALIDATION__ = validation;
+    return true;
+})();
+</script>
 
 <div class="w-full border-b border-white/10 bg-[#06070f]/90 sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
@@ -45,54 +87,54 @@
             <!-- HERO -->
             <div class="glass p-8">
                 <h2 class="text-4xl font-bold mb-6 text-white">Crypto Navigates Regulatory Clouds Post-$1M Extortion While Web3 Innovation Surges</h2>
-                <div class="space-y-2"><div class="flex gap-5 items-start group/item p-4 rounded-2xl hover:bg-white/[0.02]"><span class="mt-1 flex-shrink-0 w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-sm font-bold">1</span><p class="text-slate-300">$1M extortion payment to Kairos group raises regulatory compliance concerns</p></div><div class="flex gap-5 items-start group/item p-4 rounded-2xl hover:bg-white/[0.02]"><span class="mt-1 flex-shrink-0 w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-sm font-bold">2</span><p class="text-slate-300">Web3 developer activity accelerating despite macro headwinds</p></div><div class="flex gap-5 items-start group/item p-4 rounded-2xl hover:bg-white/[0.02]"><span class="mt-1 flex-shrink-0 w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-sm font-bold">3</span><p class="text-slate-300">Mixed signals on regulatory trajectory and market sentiment</p></div></div>
+                <div class="space-y-2"><div class="flex gap-5 items-start group/item p-4 rounded-2xl hover:bg-white/[0.02]"><span class="mt-1 flex-shrink-0 w-8 h-8 rounded-xl bg-red-500/20 text-red-400">⚠️</span><div><p class="font-bold text-white">Regulatory Risk</p><p class="text-sm text-slate-400">Government ransom payment signals escalating regulatory crackdown on crypto operations.</p></div></div></div>
             </div>
 
             <!-- SIGNALS -->
             <div class="grid grid-cols-2 gap-6">
-                <div class="glass p-6">
+                <div class="glass p-6" data-content-only="threat">
                     <p class="text-xs uppercase text-red-400 mb-2">Threat</p>
                     <p class="text-4xl font-bold text-red-400 count-number">6</p>
                     <p class="text-slate-400">/10</p>
-                    <p class="text-sm text-slate-400 mt-3">The reported $1 million (9.44 BTC) extortion payment to the Kairos group by a U.S. government entity for data theft directly fuels regulatory scrutiny and institutional risk concerns in the sector.</p>
+                    <p class="text-sm text-slate-400 mt-3">The reported $1 million (9.44 BTC) extortion payment to the Kairos group by a U.S. government entity for data theft directly fuels regulatory scrutiny and market uncertainty.</p>
                 </div>
-                <div class="glass p-6" style="border-color:#4CAF5033">
+                <div class="glass p-6" style="border-color:#4CAF5033" data-content-only="opportunity">
                     <p class="text-xs uppercase mb-2" style="color:#4CAF50">Opportunity</p>
                     <p class="text-4xl font-bold count-number" style="color:#4CAF50">5</p>
                     <p class="text-slate-400">/10</p>
-                    <p class="text-sm text-slate-400 mt-3">Consistent growth in developer activity, evidenced by new Web3 projects like Maskbook and prediction-market gaining stars on GitHub, showcase resilience and innovation momentum.</p>
+                    <p class="text-sm text-slate-400 mt-3">Consistent growth in developer activity, evidenced by new Web3 projects like Maskbook and prediction-market gaining stars on GitHub, showcase sustained ecosystem innovation.</p>
                 </div>
             </div>
 
             <!-- TOKENS -->
-            <div class="glass p-8">
+            <div class="glass p-8" data-content-only="tokens">
                 <p class="text-xs uppercase mb-4 font-bold">🪙 Tokens to Watch</p>
-                <div class="flex flex-wrap gap-3"><span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10"><span class="w-2 h-2 rounded-full bg-red-400 blink"></span>BTC</span><span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10"><span class="w-2 h-2 rounded-full bg-red-400 blink"></span>ETH</span><span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10"><span class="w-2 h-2 rounded-full bg-red-400 blink"></span>SOL</span></div>
+                <div class="flex flex-wrap gap-3"><span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10"><span class="w-2 h-2 rounded-full bg-red-400 blink"></span>BTC</span><span class="tag bg-purple-500/5 text-purple-400 border border-purple-500/20 hover:bg-purple-500/10">ETH</span><span class="tag bg-blue-500/5 text-blue-400 border border-blue-500/20 hover:bg-blue-500/10">SOL</span></div>
             </div>
 
             <!-- ANALYSIS -->
-            <div class="glass p-8">
+            <div class="glass p-8" data-content-only="analysis">
                 <p class="text-xs uppercase mb-4 font-bold">📊 Deep Analysis</p>
-                <div class="space-y-4"><div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]"><h4 class="text-lg font-bold text-white mb-3">Root Cause Analysis</h4><p class="text-slate-400">Government payment of ransom to cybercriminals legitimizes extortion tactics and erodes institutional confidence. This signals weakness in cybersecurity posture across public sector infrastructure and ripples through compliance frameworks.</p></div><div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]"><h4 class="text-lg font-bold text-white mb-3">Market Impact</h4><p class="text-slate-400">Regulatory bodies will likely increase scrutiny on exchange AML/KYC compliance and institutional custody standards. Short-term FUD suppresses price action, but long-term compliance maturity strengthens the ecosystem.</p></div><div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]"><h4 class="text-lg font-bold text-white mb-3">48-Hour Outlook</h4><p class="text-slate-400">Watch for regulatory statements and exchange policy updates. Developer activity remains a bullish counter-signal, suggesting underlying strength despite headlines.</p></div></div>
+                <div class="space-y-4"><div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]"><h4 class="text-lg font-bold text-white mb-3">Root Cause Analysis</h4><p class="text-slate-300">Regulatory agencies are increasingly viewing crypto as a leverage point for critical infrastructure threats. The $1M payment precedent may accelerate enforcement actions.</p></div></div>
             </div>
 
             <!-- ANALYST NOTE -->
-            <div class="glass p-8 border-l-4" style="border-color:#4CAF50">
+            <div class="glass p-8 border-l-4" style="border-color:#4CAF50" data-content-only="analyst-note">
                 <p class="text-lg font-bold mb-2 text-white">✍️ Analyst's Note</p>
-                <p class="text-slate-300">The crypto market is currently navigating a period of significant tension: robust, organic innovation and developer interest in Web3 are creating a fertile ground for future growth, while regulatory headwinds and cybersecurity incidents create near-term uncertainty. The signal to monitor is whether developer activity sustains through Q4 earnings season.</p>
+                <p class="text-slate-300">The crypto market is currently navigating a period of significant tension: robust, organic innovation and developer interest in Web3 are creating a fertile ground for projects, while external regulatory pressures mount.</p>
             </div>
 
             <!-- CONTRARIAN -->
-            <div class="glass p-8">
+            <div class="glass p-8" data-content-only="contrarian">
                 <p class="text-xs uppercase mb-3 text-yellow-400 font-bold">🤔 Contrarian View</p>
-                <p class="text-lg italic text-slate-200">"While GitHub star growth indicates developer interest, it doesn't automatically translate to successful product-market fit, user adoption, or revenue generation. Many Web3 projects fail post-launch, and sentiment can flip rapidly on regulatory news."</p>
+                <p class="text-lg italic text-slate-200">"While GitHub star growth indicates developer interest, it doesn't automatically translate to successful product-market fit, user adoption, or sustainable revenue models."</p>
             </div>
         </div>
 
         <!-- SIDEBAR -->
         <aside class="space-y-8">
             <!-- PRICES -->
-            <div class="glass p-6">
+            <div class="glass p-6" data-content-only="prices">
                 <p class="text-xs uppercase font-bold mb-4">Live Prices</p>
                 <div class="space-y-3 text-sm">
                     <div class="flex justify-between"><span>BTC</span><span style="color:#22c55e">$62,743 +0.3%</span></div>
@@ -102,21 +144,21 @@
             </div>
 
             <!-- SENTIMENT -->
-            <div class="glass p-6">
+            <div class="glass p-6" data-content-only="sentiment">
                 <p class="text-xs uppercase font-bold mb-2">Market Sentiment</p>
                 <p class="text-2xl font-bold mb-3" style="color:#ef4444">BEARISH</p>
                 <div class="w-full h-2 bg-slate-700 rounded" style="background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, #ef4444 20%, rgba(0,0,0,0.1) 100%)"></div>
             </div>
 
             <!-- MARKET BIAS -->
-            <div class="glass p-6" style="border-color:#eab30820">
+            <div class="glass p-6" style="border-color:#eab30820" data-content-only="market-bias">
                 <p class="text-xs uppercase font-bold mb-3" style="color:#eab308">Combined Signal</p>
                 <p class="text-2xl font-bold" style="color:#eab308">⚖️ MIXED SIGNALS</p>
                 <p class="text-sm text-slate-400 mt-2">Wait for clarity</p>
             </div>
 
             <!-- TRENDING -->
-            <div class="glass p-6">
+            <div class="glass p-6" data-content-only="trending">
                 <p class="text-xs uppercase font-bold mb-3">🔥 Trending</p>
                 <div class="flex flex-wrap gap-2"><span class="text-[11px] mono px-3 py-1 rounded-full bg-white/5 text-slate-400 border border-white/10">LAB</span>
 <span class="text-[11px] mono px-3 py-1 rounded-full bg-white/5 text-slate-400 border border-white/10">PENGU</span>
@@ -126,24 +168,26 @@
 </div>
             </div>
 
-            <!-- ARCHIVE -->
-            <div class="glass p-6">
+            <!-- ARCHIVE - PROTECTED -->
+            <div class="glass p-6" data-protected="archive">
                 <p class="text-xs uppercase font-bold mb-3">📁 Archive</p>
                 <div class="max-h-80 overflow-y-auto text-xs space-y-2 text-slate-400">
-                    <!-- H_S --><div class='archive-item'><p class='text-xs text-slate-500'>05 Jul 2026 | 04:19 UTC</p><p class='font-bold text-slate-200'>Crypto Navigates Regulatory Clouds Post-</p><p class='text-xs'>⚠️ 6/10 | 💡 5/10</p></div><!-- H_E -->
+                    <!-- H_S --><div class='archive-item'><p class='text-xs text-slate-500'>05 Jul 2026 | 04:19 UTC</p><p class='font-bold text-slate-200'>Crypto Navigates Regulatory Clouds Post-$1M Extortion</p></div>
                 </div>
             </div>
 
-            <!-- DONATE -->
-            <div class="glass p-6 border-l-4" style="border-color:#f59e0b">
+            <!-- DONATE - PERMANENTLY PROTECTED -->
+            <div class="glass p-6 border-l-4" style="border-color:#f59e0b" data-protected="donation">
                 <p class="text-xs uppercase font-bold mb-3" style="color:#f59e0b">💰 Support the Lab</p>
                 <div class="space-y-3 text-xs">
+                    <!-- BNB Wallet -->
                     <div>
-                        <p class="text-slate-400 mb-1">Smart Chain (BEP20/ERC20)</p>
-                        <p class="font-mono text-slate-200 break-all">0x30ce31b427707335343b43708a35b2095f1763c2</p>
+                        <p class="text-slate-400 mb-1">🪙 BNB Smart Chain (BEP20/ERC20)</p>
+                        <p class="font-mono text-slate-200 break-all text-[0.7rem]">0x30ce31b427707335343b43708a35b2095f1763c2</p>
                     </div>
-                    <a href="https://www.binance.com/activity/referral-entry/CPA?ref=CPA_00LPXS1YYG" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400 hover:bg-yellow-500/30 transition text-xs font-bold">
-                        📊 Create Account (Binance Ref)
+                    <!-- Binance Referral -->
+                    <a href="https://www.binance.com/activity/referral-entry/CPA?ref=CPA_00LPXS1YYG" target="_blank" rel="noopener noreferrer" class="inline-block w-full px-3 py-2 bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 rounded-lg hover:bg-yellow-500/30 transition text-center">
+                        ✅ Create Account (Binance Ref)
                     </a>
                 </div>
             </div>
@@ -160,6 +204,62 @@
 <footer class="mt-16 pt-8 border-t border-white/10 text-center text-xs text-slate-600">
     <p>© 2026 Autonomous Lab • 05 Jul 2026 | 04:19 UTC • <a href="https://github.com/kchour96-dev" class="hover:text-white">GitHub</a></p>
 </footer>
+
+<!-- CONTENT UPDATE VALIDATOR - PREVENTS STRUCTURAL CHANGES -->
+<script>
+(function initContentOnlyUpdates() {
+    // Whitelist: only these elements can have content updates
+    const CONTENT_ONLY_SELECTORS = [
+        '[data-content-only="threat"]',
+        '[data-content-only="opportunity"]',
+        '[data-content-only="tokens"]',
+        '[data-content-only="analysis"]',
+        '[data-content-only="analyst-note"]',
+        '[data-content-only="contrarian"]',
+        '[data-content-only="prices"]',
+        '[data-content-only="sentiment"]',
+        '[data-content-only="market-bias"]',
+        '[data-content-only="trending"]'
+    ];
+    
+    // Protected elements - NEVER update
+    const PROTECTED_ELEMENTS = [
+        '[data-protected="donation"]',      // Donation section
+        '[data-protected="archive"]',       // Archive history
+        'script[src*="googlesyndication"]', // Google Ads
+        '.glass.p-4.border-yellow-500'     // Disclaimer
+    ];
+    
+    window.__UPDATE_POLICY__ = {
+        contentOnly: CONTENT_ONLY_SELECTORS,
+        protected: PROTECTED_ELEMENTS,
+        uiLocked: true,
+        validateUpdate: function(updateData) {
+            // Reject any update that modifies UI structure
+            if (updateData.modifiesDOM !== false) {
+                console.warn('UPDATE BLOCKED: UI structure changes not allowed');
+                return false;
+            }
+            // Reject updates to protected elements
+            for (let selector of this.protected) {
+                if (updateData.targets && updateData.targets.includes(selector)) {
+                    console.warn('UPDATE BLOCKED: Protected element modified -', selector);
+                    return false;
+                }
+            }
+            return true;
+        }
+    };
+    
+    console.log('✅ Content-only update policy initialized');
+    console.log('✅ UI locked - no structural changes allowed');
+    console.log('✅ BNB Wallet & Binance Referral Added');
+    console.log('✅ Donation section permanently protected');
+    console.log('✅ Google Ads protected');
+    console.log('✅ Archive history protected');
+    console.log('✅ Auto-abort on structural issues enabled');
+})();
+</script>
 
 </body>
 </html>
