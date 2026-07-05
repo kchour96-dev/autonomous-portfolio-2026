@@ -587,7 +587,7 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
     sent_color = "#22c55e" if sentiment_mood == "BULLISH" else "#ef4444"
     sent_width = min(sentiment_score * 10, 100)
     html = re.sub(
-        r'(<p class="text-2xl font-bold mb-3" style="color:[^"]*">)BULLISH|BEARISH|NEUTRAL',
+        r'(<p class="text-2xl font-bold mb-3" style="color:[^"]*">)(?:BULLISH|BEARISH|NEUTRAL)',
         f'\\1{sentiment_mood}',
         html, count=1
     )
@@ -1043,16 +1043,23 @@ def run_production_agent():
 
     # UPDATE or BUILD HTML
     print("\n[LAYER 6] Updating/Building HTML...\n")
-    if old_content:
-        # Use smart patching for existing HTML
-        html = update_html_content(old_content, data, final_history, date_str, price_context, 
-                                  sentiment_mood, sentiment_score, trending_tokens, btc, eth, sol, preserved)
-        print("✓ HTML patched (content updated, UI preserved)")
-    else:
-        # Build from scratch for first run
-        html = build_html(data, final_history, date_str, price_context, sentiment_mood, 
-                         sentiment_score, trending_tokens, btc, eth, sol)
-        print("✓ HTML built from template")
+    try:
+        if old_content:
+            # Use smart patching for existing HTML
+            html = update_html_content(old_content, data, final_history, date_str, price_context,
+                                      sentiment_mood, sentiment_score, trending_tokens, btc, eth, sol, preserved)
+            print("✓ HTML patched (content updated, UI preserved)")
+        else:
+            # Build from scratch for first run
+            html = build_html(data, final_history, date_str, price_context, sentiment_mood,
+                             sentiment_score, trending_tokens, btc, eth, sol)
+            print("✓ HTML built from template")
+    except Exception as e:
+        print(f"❌ HTML generation failed: {e}")
+        print("   Keeping old site untouched.")
+        if os.path.exists("index.html.bak"):
+            shutil.copy("index.html.bak", "index.html")
+        return
 
     # CRITICAL: Verify HTML integrity before writing
     print("\n[LAYER 7] Quality assurance checks...\n")
