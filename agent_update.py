@@ -510,7 +510,7 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
     
     html = re.sub(r'<title>.*?</title>', f'<title>Autonomous Lab 2026 — {title}</title>', html)
     html = re.sub(r'<meta name="description"[^>]*>', f'<meta name="description" content="Real-time crypto intelligence: Threat {threat_score}/10 | Opportunity {opp_score}/10">', html)
-    html = re.sub(r'(<meta property="og:title"[^>]*content=")[^"]*', f'\\1{title} — Autonomous Lab', html)
+    html = re.sub(r'(<meta property="og:title"[^>]*content=")[^"]*', lambda m: m.group(1) + f'{title} — Autonomous Lab', html)
     html = re.sub(r'(<meta property="og:description"[^>]*content=")[^"]*', f'\\1Threat: {threat_score}/10 | Opportunity: {opp_score}/10', html)
     
     # Restore Google Ads if lost
@@ -528,14 +528,14 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
     # Update threat score
     html = re.sub(
         r'(<p class="text-xs uppercase text-red-400 mb-2">Threat</p>.*?<p class="text-4xl font-bold text-red-400 count-number">)\d+',
-        f'\\1{threat_score}',
+        lambda m: m.group(1) + str(threat_score),
         html, flags=re.DOTALL, count=1
     )
     
     # Update opportunity score
     html = re.sub(
         r'(<p class="text-xs uppercase mb-2" style="color:[^"]*">Opportunity</p>.*?<p class="text-4xl font-bold count-number"[^>]*>)\d+',
-        f'\\1{opp_score}',
+        lambda m: m.group(1) + str(opp_score),
         html, flags=re.DOTALL, count=1
     )
     
@@ -543,7 +543,7 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
     threat_txt = data.get('threat', '')
     html = re.sub(
         r'(<p class="text-xs uppercase text-red-400 mb-2">Threat</p>.*?<p class="text-sm text-slate-400 mt-3">).*?(?=</p>)',
-        f'\\1{threat_txt}',
+        lambda m: m.group(1) + threat_txt,
         html, flags=re.DOTALL, count=1
     )
     
@@ -551,7 +551,7 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
     opp_txt = data.get('opportunity', '')
     html = re.sub(
         r'(<p class="text-xs uppercase mb-2" style="color:[^"]*">Opportunity</p>.*?<p class="text-4xl font-bold count-number"[^>]*>\d+.*?<p class="text-sm text-slate-400 mt-3">).*?(?=</p>)',
-        f'\\1{opp_txt}',
+        lambda m: m.group(1) + opp_txt,
         html, flags=re.DOTALL, count=1
     )
     
@@ -601,7 +601,7 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
     if '<!-- H_S -->' in html and '<!-- H_E -->' in html:
         html = re.sub(
             r'(<!-- H_S -->).*?(<!-- H_E -->)',
-            f'\\1{final_history}\\2',
+            lambda m: m.group(1) + final_history + m.group(2),
             html, flags=re.DOTALL
         )
     
