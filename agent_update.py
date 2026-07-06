@@ -15,11 +15,12 @@ def verify_html_structure(html_before, html_after):
     """
     critical_elements = [
         '<div class="glass p-8 border-l-4"',  # Analyst Note
-        '<!-- DONATE -->',  # Donation section start
+        '<!-- DONATE',  # Donation section start (prefix — tolerant of custom comment text)
         '<!-- /DONATE -->',  # Donation section end
         '<script async src="https://pagead2.googlesyndication.com',  # Google Ads
         '<!-- H_S -->',  # Archive history start
         '<!-- H_E -->',  # Archive history end
+        '<!-- NAV -->',  # About/Privacy/Terms nav
         '<footer class="mt-16',  # Footer
         'AUTONOMOUS LAB',  # Main branding
         '.glass',  # Styling classes
@@ -471,7 +472,7 @@ def extract_preserved_sections(old_html):
     
     try:
         # Extract donation/BNB invite links
-        donation_match = re.search(r'<!-- DONATE -->.*?<!-- /DONATE -->', old_html, re.DOTALL)
+        donation_match = re.search(r'<!-- DONATE[^>]*-->.*?<!-- /DONATE -->', old_html, re.DOTALL)
         if donation_match:
             preserved['donation_links'] = donation_match.group(0)
             print("✓ Preserved: Donation section")
@@ -518,6 +519,33 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
         html = html.replace('</head>', f"{preserved['google_ads']}\n</head>")
         print("✓ Restored: Google Ads script")
     
+    # Restore/ensure permanent nav (About/Privacy/Terms) — self-heals if missing
+    if '<!-- NAV -->' not in html:
+        nav_block = (
+            '    <!-- NAV -->\n'
+            '    <div class="flex justify-center flex-wrap gap-4 mb-3">\n'
+            '        <a href="/about.html" class="hover:text-white">About</a>\n'
+            '        <a href="/privacy.html" class="hover:text-white">Privacy</a>\n'
+            '        <a href="/terms.html" class="hover:text-white">Terms</a>\n'
+            '    </div>\n'
+            '    <!-- /NAV -->\n'
+        )
+        footer_match = re.search(r'(<footer[^>]*>)', html)
+        if footer_match:
+            html = html.replace(footer_match.group(1), footer_match.group(1) + '\n' + nav_block, 1)
+            print("✓ Restored: About/Privacy/Terms nav links")
+    
+    # Restore missing archive end-marker (H_E) — self-heals if it was ever lost/renamed
+    if '<!-- H_S -->' in html and '<!-- H_E -->' not in html:
+        fixed = re.sub(
+            r'(<!-- H_S -->.*?)(\n\s*</div>\s*\n\s*</div>)',
+            lambda m: m.group(1) + '<!-- H_E -->' + m.group(2),
+            html, count=1, flags=re.DOTALL
+        )
+        if fixed != html:
+            html = fixed
+            print("✓ Restored: Archive H_E end-marker")
+    
     # Update main hero title
     html = re.sub(
         r'<h2 class="text-4xl font-bold mb-6 text-white">.*?</h2>',
@@ -560,8 +588,8 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
         btc_color = "#22c55e" if btc.get('usd_24h_change', 0) >= 0 else "#ef4444"
         btc_change = btc.get('usd_24h_change', 0) or 0
         html = re.sub(
-            r'(<span>BTC</span><span style="color:[^"]*">)\$[^<]+</span>',
-            f'<span style="color:{btc_color}">${btc.get("usd",0):,.0f} {btc_change:+.1f}%</span>',
+            r'(<span>BTC</span>)<span style="color:[^"]*">\$[^<]+</span>',
+            lambda m: m.group(1) + f'<span style="color:{btc_color}">${btc.get("usd",0):,.0f} {btc_change:+.1f}%</span>',
             html, count=1
         )
     
@@ -569,8 +597,8 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
         eth_color = "#22c55e" if eth.get('usd_24h_change', 0) >= 0 else "#ef4444"
         eth_change = eth.get('usd_24h_change', 0) or 0
         html = re.sub(
-            r'(<span>ETH</span><span style="color:[^"]*">)\$[^<]+</span>',
-            f'<span style="color:{eth_color}">${eth.get("usd",0):,.0f} {eth_change:+.1f}%</span>',
+            r'(<span>ETH</span>)<span style="color:[^"]*">\$[^<]+</span>',
+            lambda m: m.group(1) + f'<span style="color:{eth_color}">${eth.get("usd",0):,.0f} {eth_change:+.1f}%</span>',
             html, count=1
         )
     
@@ -578,8 +606,8 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
         sol_color = "#22c55e" if sol.get('usd_24h_change', 0) >= 0 else "#ef4444"
         sol_change = sol.get('usd_24h_change', 0) or 0
         html = re.sub(
-            r'(<span>SOL</span><span style="color:[^"]*">)\$[^<]+</span>',
-            f'<span style="color:{sol_color}">${sol.get("usd",0):,.2f} {sol_change:+.1f}%</span>',
+            r'(<span>SOL</span>)<span style="color:[^"]*">\$[^<]+</span>',
+            lambda m: m.group(1) + f'<span style="color:{sol_color}">${sol.get("usd",0):,.2f} {sol_change:+.1f}%</span>',
             html, count=1
         )
     
@@ -935,6 +963,13 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 </div>
 
 <footer class="mt-16 pt-8 border-t border-white/10 text-center text-xs text-slate-600">
+    <!-- NAV -->
+    <div class="flex justify-center flex-wrap gap-4 mb-3">
+        <a href="/about.html" class="hover:text-white">About</a>
+        <a href="/privacy.html" class="hover:text-white">Privacy</a>
+        <a href="/terms.html" class="hover:text-white">Terms</a>
+    </div>
+    <!-- /NAV -->
     <p>© 2026 Autonomous Lab • {date_str} • <a href="https://github.com/kchour96-dev" class="hover:text-white">GitHub</a></p>
 </footer>
 
