@@ -2,10 +2,9 @@ name: AI Agent Production Sync
 
 on:
   schedule:
-    # Runs at minute 17 of odd hours to bypass congested server queues
-    # Phnom Penh: 9:17 AM, 2:17 PM, 7:17 PM, 12:17 AM, 5:17 AM
-    - cron: '17 0,2,4,6,8,10,12,14,16,18,20,22 * * *'
-  # Allows manual runs from the GitHub actions tab
+    # Runs every 1 hour = 24x daily
+    - cron: '0 * * * *'
+  # Allows manual trigger from GitHub Actions tab
   workflow_dispatch:
 
 jobs:
@@ -35,7 +34,6 @@ jobs:
           GROQ: ${{ secrets.GROQ }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
-          # Mapped to match your repository secret "DEV"
           DEV: ${{ secrets.DEV }}
         run: python agent_update.py
 
