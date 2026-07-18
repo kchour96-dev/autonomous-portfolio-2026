@@ -645,24 +645,129 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
 # ─────────────────────────────────────────────
 # NOTIFY: Telegram
 # ─────────────────────────────────────────────
-def send_telegram(title, threat, opportunity, threat_score, opp_score):
-    """Send update to Telegram"""
-    token = os.getenv("TELEGRAM_BOT_TOKEN")
+def send_telegram(title, threat, opportunity, threat_score, opp_score,
+                  btc=None, eth=None, sol=None,
+                  trending=None, gainers=None, market_overview=None, news_bullets=None):
+    """Send punchy news-style update to Telegram channel"""
+    token   = os.getenv("TELEGRAM_BOT_TOKEN")
     chat_id = os.getenv("TELEGRAM_CHANNEL_ID")
     if not token or not chat_id:
         print("ℹ Telegram not configured")
         return
+
+    if btc is None: btc = {}
+    if eth is None: eth = {}
+    if sol is None: sol = {}
+    if trending is None: trending = []
+    if gainers is None: gainers = []
+    if market_overview is None: market_overview = {}
+    if news_bullets is None: news_bullets = []
+
+    # Live prices
+    def fmt_price(coin_data, symbol):
+        p = coin_data.get('usd', 0)
+        c = coin_data.get('usd_24h_change', 0) or 0
+        arrow = "📈" if c >= 0 else "📉"
+        return f"{arrow} *{symbol}* ${p:,} `{c:+.1f}%`"
+
+    btc_line = fmt_price(btc, "BTC")
+    eth_line = fmt_price(eth, "ETH")
+    sol_line = fmt_price(sol, "SOL")
+
+    # Global market cap
+    glb = market_overview.get("global", {})
+    mcap_str = glb.get("total_mcap", "")
+    mcap_chg = glb.get("mcap_change", 0) or 0
+    mcap_arrow = "📈" if mcap_chg >= 0 else "📉"
+    btc_dom = glb.get("btc_dom", "")
+
+    # Top gainer
+    top_gainer = ""
+    if gainers:
+        g = gainers[0]
+        top_gainer = f"🚀 *Top Gainer*: {g['symbol']} `+{g['change']}%`"
+
+    # Hot trending coins
+    trending_line = ""
+    if trending:
+        trending_line = "🔥 *Trending*: " + " · ".join([f"`{t}`" for t in trending[:4]])
+
+    # Top news bullets — full sentence, no truncation
+    bullets_text = ""
+    if news_bullets:
+        bullets_text = "\n\n".join([f"• {b}" for b in news_bullets[:3]])
+
+    # Market Sentiment with percentage
+    try:
+        ts = int(str(threat_score))
+        os_ = int(str(opp_score))
+    except:
+        ts, os_ = 5, 5
+
+    # Convert scores to bullish/bearish sentiment %
+    bull_pct  = round((os_ / 10) * 100)
+    bear_pct  = round((ts  / 10) * 100)
+    if bull_pct > bear_pct:
+        sent_emoji = "🟢"
+        sent_label = "BULLISH"
+        sent_pct   = bull_pct
+    elif bear_pct > bull_pct:
+        sent_emoji = "🔴"
+        sent_label = "BEARISH"
+        sent_pct   = bear_pct
+    else:
+        sent_emoji = "🟡"
+        sent_label = "NEUTRAL"
+        sent_pct   = 50
+
+    # Compose message
     msg = (
-        f"🧠 *AUTONOMOUS LAB UPDATE*\n\n"
-        f"*{title}*\n\n"
-        f"⚠️ Threat [{threat_score}/10]: {threat}\n\n"
-        f"💡 Opportunity [{opp_score}/10]: {opportunity}\n\n"
-        f"🔗 https://autonomous-portfolio-2026.live"
+        f"⚡ *{title}*\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n\n"
+
+        f"💹 *LIVE PRICES*\n"
+        f"{btc_line}\n"
+        f"{eth_line}\n"
+        f"{sol_line}\n"
     )
+
+    if mcap_str:
+        msg += f"\n{mcap_arrow} Market Cap: *{mcap_str}* `{mcap_chg:+.1f}%`"
+        if btc_dom:
+            msg += f" · BTC Dom: *{btc_dom}*"
+        msg += "\n"
+
+    if top_gainer:
+        msg += f"\n{top_gainer}\n"
+
+    if trending_line:
+        msg += f"{trending_line}\n"
+
+    # Market Sentiment block
+    msg += (
+        f"\n{sent_emoji} *Market Sentiment*\n"
+        f"`{sent_label} {sent_pct}%`\n"
+    )
+
+    # Big news section — full text
+    if bullets_text:
+        msg += f"\n📰 *Breaking News*\n{bullets_text}\n"
+
+    msg += (
+        f"\n━━━━━━━━━━━━━━━━━━━━\n"
+        f"🌐 https://autonomous-portfolio-2026.live\n"
+        f"📢 [Join Telegram Channel](https://t.me/AII2026futher)"
+    )
+
     try:
         requests.post(
             f"https://api.telegram.org/bot{token}/sendMessage",
-            data={"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"},
+            data={
+                "chat_id":    chat_id,
+                "text":       msg,
+                "parse_mode": "Markdown",
+                "disable_web_page_preview": "true"
+            },
             timeout=10
         )
         print("✓ Telegram sent")
@@ -1125,11 +1230,18 @@ def run_production_agent():
     write_seo_files()
     post_to_devto(data)
     send_telegram(
-        data.get('title',''),
-        data.get('threat',''),
-        data.get('opportunity',''),
-        data.get('threat_score','?'),
-        data.get('opportunity_score','?')
+        title        = data.get('title',''),
+        threat       = data.get('threat',''),
+        opportunity  = data.get('opportunity',''),
+        threat_score = data.get('threat_score','?'),
+        opp_score    = data.get('opportunity_score','?'),
+        btc          = btc,
+        eth          = eth,
+        sol          = sol,
+        trending     = trending_tokens,
+        gainers      = market_overview.get('gainers', []) if 'market_overview' in dir() else [],
+        market_overview = market_overview if 'market_overview' in dir() else {},
+        news_bullets = data.get('news_bullets', [])
     )
 
     print("\n" + "="*60)
