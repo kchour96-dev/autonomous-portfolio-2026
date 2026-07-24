@@ -355,45 +355,58 @@ def call_groq(prompt, key, model="llama-3.3-70b-versatile"):
 
 def get_gemini_data_balanced(research_context, g_key, price_context="", sentiment_mood="NEUTRAL", 
                              sentiment_score=5, trending_tokens=None, positive_news=""):
-    """ENHANCED: Include BOTH negative research AND positive news for balanced perspective"""
+    """ENHANCED: Deep analysis 5 paragraphs + Southeast Asia angle + unique editorial voice"""
     trending_str = ", ".join(trending_tokens) if trending_tokens else "BTC, ETH, SOL"
     
-    prompt = f"""You are a balanced crypto and Web3 analyst. Generate BOTH threats AND opportunities.
+    prompt = f"""You are a senior crypto analyst writing for Autonomous Lab 2026 — an intelligence platform 
+built by a developer from Phnom Penh, Cambodia. Your reports are read by retail investors and 
+developers across Southeast Asia and emerging markets who need clear, actionable intelligence.
 
-REAL MARKET DATA:
+REAL MARKET DATA RIGHT NOW:
 - Prices: {price_context}
 - Market Sentiment: {sentiment_mood} ({sentiment_score}/10)
 - Trending tokens: {trending_str}
 
-⚠️ THREATS & RESEARCH:
+THREAT RESEARCH:
 {research_context[:2000]}
 
-✅ POSITIVE DEVELOPMENTS:
+POSITIVE DEVELOPMENTS:
 {positive_news}
 
 YOUR TASK:
-Create a BALANCED intelligence report. Consider both risks AND opportunities.
-If good news exists (partnerships, upgrades, adoption), highlight it EQUALLY to threats.
-Be data-driven and realistic.
+Write a DEEP, SUBSTANTIVE intelligence report. This must pass Google's quality standards 
+for original, expert content. Generic summaries are NOT acceptable.
 
-Return ONLY this JSON (no markdown, no backticks):
+RULES:
+1. Title must be SPECIFIC to today's actual news — not generic "Web3 Navigates..." templates
+2. deep_analysis must have EXACTLY 5 paragraphs separated by \\n\\n, each 80-120 words minimum:
+   - Para 1: Root cause — WHY is this happening technically
+   - Para 2: Historical comparison — Has this happened before? What happened then?
+   - Para 3: Southeast Asia / emerging market impact — How does this affect Cambodia, Thailand, Vietnam, retail crypto investors in developing economies
+   - Para 4: Specific market mechanics — price levels, on-chain data, developer activity numbers
+   - Para 5: 48-hour actionable outlook — what to watch, specific signals, what changes the thesis
+3. analyst_note: A single powerful sentence that a Southeast Asia retail investor needs to hear RIGHT NOW
+4. tokens_to_watch: Use ONLY tokens from the trending list provided — never BTC/ETH/SOL unless truly relevant
+5. news_bullets: Each bullet must contain a specific fact, number, or data point — no vague statements
+
+Return ONLY this JSON (no markdown, no backticks, no extra text):
 {{
-  "title": "Balanced headline covering both risks and opportunities",
+  "title": "Specific headline with actual event name and data point",
   "news_bullets": [
-    "First news point with data",
-    "Positive development or opportunity",
-    "Risk or challenge to watch"
+    "Specific fact with number or data point about main story",
+    "Positive development with concrete metric",
+    "Risk or regulatory update with specific jurisdiction or amount"
   ],
-  "threat": "Main systemic risk (specific, data-driven)",
-  "opportunity": "Main opportunity (specific, data-driven)",
+  "threat": "One sentence: specific risk with data (e.g. name of exploit, dollar amount, CVE number)",
+  "opportunity": "One sentence: specific opportunity with data (e.g. token name, % growth, use case)",
   "threat_score": 5,
   "opportunity_score": 6,
-  "threat_level": "Medium",
-  "deep_analysis": "Paragraph 1: Root cause\\nParagraph 2: Market impact\\nParagraph 3: 48-hour outlook",
-  "analyst_note": "Executive summary from senior analyst perspective",
-  "tokens_to_watch": ["TOKEN1", "TOKEN2", "TOKEN3"],
-  "critic": "Contrarian view why opportunity might be wrong",
-  "color": "#hexcolor"
+  "threat_level": "Low or Medium or High or Critical",
+  "deep_analysis": "Para1 root cause 80-120 words\\n\\nPara2 historical comparison 80-120 words\\n\\nPara3 Southeast Asia impact 80-120 words\\n\\nPara4 market mechanics 80-120 words\\n\\nPara5 48h outlook 80-120 words",
+  "analyst_note": "One powerful actionable sentence for Southeast Asia retail investors right now",
+  "tokens_to_watch": ["TRENDING_TOKEN_1", "TRENDING_TOKEN_2", "TRENDING_TOKEN_3"],
+  "critic": "One sentence contrarian view challenging the main narrative",
+  "color": "#hexcolor matching market mood"
 }}"""
 
     groq_key = os.getenv("GROQ")
@@ -645,129 +658,24 @@ def update_html_content(old_html, data, final_history, date_str, price_context="
 # ─────────────────────────────────────────────
 # NOTIFY: Telegram
 # ─────────────────────────────────────────────
-def send_telegram(title, threat, opportunity, threat_score, opp_score,
-                  btc=None, eth=None, sol=None,
-                  trending=None, gainers=None, market_overview=None, news_bullets=None):
-    """Send punchy news-style update to Telegram channel"""
-    token   = os.getenv("TELEGRAM_BOT_TOKEN")
+def send_telegram(title, threat, opportunity, threat_score, opp_score):
+    """Send update to Telegram"""
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
     chat_id = os.getenv("TELEGRAM_CHANNEL_ID")
     if not token or not chat_id:
         print("ℹ Telegram not configured")
         return
-
-    if btc is None: btc = {}
-    if eth is None: eth = {}
-    if sol is None: sol = {}
-    if trending is None: trending = []
-    if gainers is None: gainers = []
-    if market_overview is None: market_overview = {}
-    if news_bullets is None: news_bullets = []
-
-    # Live prices
-    def fmt_price(coin_data, symbol):
-        p = coin_data.get('usd', 0)
-        c = coin_data.get('usd_24h_change', 0) or 0
-        arrow = "📈" if c >= 0 else "📉"
-        return f"{arrow} *{symbol}* ${p:,} `{c:+.1f}%`"
-
-    btc_line = fmt_price(btc, "BTC")
-    eth_line = fmt_price(eth, "ETH")
-    sol_line = fmt_price(sol, "SOL")
-
-    # Global market cap
-    glb = market_overview.get("global", {})
-    mcap_str = glb.get("total_mcap", "")
-    mcap_chg = glb.get("mcap_change", 0) or 0
-    mcap_arrow = "📈" if mcap_chg >= 0 else "📉"
-    btc_dom = glb.get("btc_dom", "")
-
-    # Top gainer
-    top_gainer = ""
-    if gainers:
-        g = gainers[0]
-        top_gainer = f"🚀 *Top Gainer*: {g['symbol']} `+{g['change']}%`"
-
-    # Hot trending coins
-    trending_line = ""
-    if trending:
-        trending_line = "🔥 *Trending*: " + " · ".join([f"`{t}`" for t in trending[:4]])
-
-    # Top news bullets — full sentence, no truncation
-    bullets_text = ""
-    if news_bullets:
-        bullets_text = "\n\n".join([f"• {b}" for b in news_bullets[:3]])
-
-    # Market Sentiment with percentage
-    try:
-        ts = int(str(threat_score))
-        os_ = int(str(opp_score))
-    except:
-        ts, os_ = 5, 5
-
-    # Convert scores to bullish/bearish sentiment %
-    bull_pct  = round((os_ / 10) * 100)
-    bear_pct  = round((ts  / 10) * 100)
-    if bull_pct > bear_pct:
-        sent_emoji = "🟢"
-        sent_label = "BULLISH"
-        sent_pct   = bull_pct
-    elif bear_pct > bull_pct:
-        sent_emoji = "🔴"
-        sent_label = "BEARISH"
-        sent_pct   = bear_pct
-    else:
-        sent_emoji = "🟡"
-        sent_label = "NEUTRAL"
-        sent_pct   = 50
-
-    # Compose message
     msg = (
-        f"⚡ *{title}*\n"
-        f"━━━━━━━━━━━━━━━━━━━━\n\n"
-
-        f"💹 *LIVE PRICES*\n"
-        f"{btc_line}\n"
-        f"{eth_line}\n"
-        f"{sol_line}\n"
+        f"🧠 *AUTONOMOUS LAB UPDATE*\n\n"
+        f"*{title}*\n\n"
+        f"⚠️ Threat [{threat_score}/10]: {threat}\n\n"
+        f"💡 Opportunity [{opp_score}/10]: {opportunity}\n\n"
+        f"🔗 https://autonomous-portfolio-2026.live"
     )
-
-    if mcap_str:
-        msg += f"\n{mcap_arrow} Market Cap: *{mcap_str}* `{mcap_chg:+.1f}%`"
-        if btc_dom:
-            msg += f" · BTC Dom: *{btc_dom}*"
-        msg += "\n"
-
-    if top_gainer:
-        msg += f"\n{top_gainer}\n"
-
-    if trending_line:
-        msg += f"{trending_line}\n"
-
-    # Market Sentiment block
-    msg += (
-        f"\n{sent_emoji} *Market Sentiment*\n"
-        f"`{sent_label} {sent_pct}%`\n"
-    )
-
-    # Big news section — full text
-    if bullets_text:
-        msg += f"\n📰 *Breaking News*\n{bullets_text}\n"
-
-    msg += (
-        f"\n━━━━━━━━━━━━━━━━━━━━\n"
-        f"🌐 https://autonomous-portfolio-2026.live\n"
-        f"📢 [Join Telegram Channel](https://t.me/AII2026futher)"
-    )
-
     try:
         requests.post(
             f"https://api.telegram.org/bot{token}/sendMessage",
-            data={
-                "chat_id":    chat_id,
-                "text":       msg,
-                "parse_mode": "Markdown",
-                "disable_web_page_preview": "true"
-            },
+            data={"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"},
             timeout=10
         )
         print("✓ Telegram sent")
@@ -884,9 +792,15 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 
     tokens_html = ""
     for i, t in enumerate(tokens):
-        if t.strip():
+        t = t.strip()
+        if t:
             delay = i * 0.1
-            tokens_html += f'<span class="tag bg-red-500/5 text-red-400 border border-red-500/20 hover:bg-red-500/10"><span class="w-2 h-2 rounded-full bg-red-400 blink" style="animation-delay:{delay}s"></span>{t}</span>'
+            tokens_html += (
+                f'<span class="tag bg-red-500/5 text-red-400 border border-red-500/20 '
+                f'hover:bg-red-500/10 mr-2 mb-2">'
+                f'<span class="w-2 h-2 rounded-full bg-red-400 blink" style="animation-delay:{delay}s"></span>'
+                f'{t}</span> '
+            )
 
     analyst_note = data.get('analyst_note', f'Monitoring {", ".join(tokens[:2]) if tokens else "market"}.')
     deep_paras = [p.strip() for p in deep_raw.split('\n') if p.strip()]
@@ -918,14 +832,43 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autonomous Lab 2026 — {title}</title>
-    <meta name="description" content="Real-time crypto intelligence: Threat {threat_score}/10 | Opportunity {opp_score}/10">
-    <meta name="keywords" content="crypto, web3, defi, security, ai, blockchain">
+    <title>{title} — Autonomous Lab 2026 | Crypto Intelligence</title>
+    <meta name="description" content="{title}. Real-time crypto and Web3 security intelligence for Southeast Asia investors. Threat {threat_score}/10 | Opportunity {opp_score}/10. Updated hourly by AI.">
+    <meta name="keywords" content="crypto intelligence, web3 security, DeFi threats, {title}, Southeast Asia crypto, Cambodia blockchain, crypto signals 2026">
+    <meta name="author" content="Kchour — Autonomous Lab 2026">
     <meta name="robots" content="index, follow">
-    <meta property="og:title" content="{title} — Autonomous Lab">
-    <meta property="og:description" content="Threat: {threat_score}/10 | Opportunity: {opp_score}/10">
+    <meta property="og:title" content="{title} — Autonomous Lab 2026">
+    <meta property="og:description" content="Threat: {threat_score}/10 | Opportunity: {opp_score}/10 — Real-time crypto intelligence for Southeast Asia">
     <meta property="og:url" content="https://autonomous-portfolio-2026.live">
+    <meta property="og:type" content="article">
+    <meta property="article:author" content="Kchour">
+    <meta property="article:published_time" content="{date_str}">
     <link rel="canonical" href="https://autonomous-portfolio-2026.live/">
+    <!-- Author & Article Schema for Google -->
+    <script type="application/ld+json">
+    {{
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "{title}",
+      "description": "Real-time crypto and Web3 intelligence report covering threat signals, opportunity scores, and market analysis for Southeast Asia investors.",
+      "author": {{
+        "@type": "Person",
+        "name": "Kchour",
+        "url": "https://github.com/kchour96-dev",
+        "description": "Developer from Phnom Penh, Cambodia building autonomous AI intelligence systems"
+      }},
+      "publisher": {{
+        "@type": "Organization",
+        "name": "Autonomous Lab 2026",
+        "url": "https://autonomous-portfolio-2026.live"
+      }},
+      "datePublished": "{date_str}",
+      "dateModified": "{date_str}",
+      "mainEntityOfPage": "https://autonomous-portfolio-2026.live",
+      "about": ["Cryptocurrency", "Web3 Security", "DeFi", "Blockchain", "Southeast Asia Finance"],
+      "inLanguage": "en"
+    }}
+    </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3639279484055527" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
@@ -993,8 +936,16 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 
             <!-- ANALYST NOTE -->
             <div class="glass p-8 border-l-4" style="border-color:{color}">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold text-white">K</div>
+                    <div>
+                        <p class="text-sm font-bold text-white">Kchour</p>
+                        <p class="text-xs text-slate-500">Senior Analyst · Autonomous Lab 2026 · Phnom Penh, Cambodia</p>
+                    </div>
+                    <span class="ml-auto text-xs mono text-slate-600">{date_str}</span>
+                </div>
                 <p class="text-lg font-bold mb-2 text-white">✍️ Analyst's Note</p>
-                <p class="text-slate-300">{analyst_note}</p>
+                <p class="text-slate-300 leading-relaxed">{analyst_note}</p>
             </div>
 
             <!-- CONTRARIAN -->
@@ -1230,18 +1181,11 @@ def run_production_agent():
     write_seo_files()
     post_to_devto(data)
     send_telegram(
-        title        = data.get('title',''),
-        threat       = data.get('threat',''),
-        opportunity  = data.get('opportunity',''),
-        threat_score = data.get('threat_score','?'),
-        opp_score    = data.get('opportunity_score','?'),
-        btc          = btc,
-        eth          = eth,
-        sol          = sol,
-        trending     = trending_tokens,
-        gainers      = market_overview.get('gainers', []) if 'market_overview' in dir() else [],
-        market_overview = market_overview if 'market_overview' in dir() else {},
-        news_bullets = data.get('news_bullets', [])
+        data.get('title',''),
+        data.get('threat',''),
+        data.get('opportunity',''),
+        data.get('threat_score','?'),
+        data.get('opportunity_score','?')
     )
 
     print("\n" + "="*60)
