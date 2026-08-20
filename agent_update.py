@@ -1001,7 +1001,7 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
                 <div class="space-y-3 text-xs">
                     <div>
                         <p class="text-slate-400 mb-1">Smart Chain (BEP20/ERC20)</p>
-                        <p class="font-mono text-slate-200 break-all">0x30ce31b427707335343b43708a35b2095f1763c2</p>
+                        <p class="font-mono text-slate-200 break-all">0x30ce31b427707335343b43708a35b20955f1763c2</p>
                     </div>
                     <a href="https://www.binance.com/activity/referral-entry/CPA?ref=CPA_00LPXS1YYG" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400 hover:bg-yellow-500/30 transition text-xs font-bold">
                         📊 Create Account (Binance Ref)
@@ -1035,7 +1035,199 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 # ─────────────────────────────────────────────
 # MAIN
 # ─────────────────────────────────────────────
-def run_production_agent():
+def get_agent_self_direction(old_content, rss_context, price_context, sentiment_mood, g_key):
+    """
+    LAYER 0: The Agent's Self-Directing Brain.
+    
+    Before writing anything, the agent thinks deeply about:
+    1. What story is most important RIGHT NOW
+    2. What content format will be most useful
+    3. What design element to evolve this run
+    4. What unique angle no other site is covering
+    
+    Returns a 'mission' dict that guides all other layers.
+    """
+    groq_key = os.getenv("GROQ")
+    if not groq_key:
+        return {"mission": "standard", "angle": "Southeast Asia crypto security", "format": "standard", "design_evolution": None}
+    
+    # Extract last 5 archive titles to understand recent patterns
+    recent_titles = []
+    if old_content and "<!-- H_S -->" in old_content:
+        try:
+            hist = old_content.split("<!-- H_S -->")[1].split("<!-- H_E -->")[0]
+            recent_titles = re.findall(r"'font-bold text-slate-200'>([^<]+)", hist)[:5]
+        except: pass
+
+    recent_str = "\n".join([f"- {t}" for t in recent_titles]) if recent_titles else "No recent history"
+
+    prompt = f"""You are the autonomous brain of a crypto intelligence dashboard called Autonomous Lab 2026.
+You run independently and make your own editorial decisions every hour.
+
+CURRENT SITUATION:
+- Live market: {price_context}
+- Sentiment: {sentiment_mood}
+- Latest news: {rss_context[:500]}
+
+YOUR RECENT REPORTS (avoid repetition):
+{recent_str}
+
+YOUR TASK: Think deeply and decide your mission for THIS specific run.
+
+Consider these creative options:
+1. "deep_dive" - Go very deep on ONE specific story with technical detail
+2. "market_alpha" - Focus purely on price action and trading signals  
+3. "southeast_asia" - Cover how today's news specifically impacts Cambodia/Vietnam/Thailand investors
+4. "security_alert" - Urgent security warning format with specific CVE/exploit details
+5. "opportunity_hunt" - Positive focus on best opportunities in current market
+6. "comparison" - Compare two competing narratives in today's news
+7. "beginner_guide" - Explain today's complex story in simple terms for new crypto users
+8. "standard" - Standard balanced intelligence report
+
+Also decide ONE small design/content improvement to make this run unique:
+- "add_price_context" - Reference specific price levels in analysis
+- "add_timestamp_urgency" - Make timing more urgent with specific hours/days
+- "add_question" - End with a thought-provoking question for readers  
+- "add_prediction" - Include a specific 48h price/event prediction
+- "add_comparison" - Compare to historical crypto event
+- None if standard is fine
+
+Return ONLY valid JSON:
+{{
+  "mission": "one of the 8 options above",
+  "mission_reason": "one sentence why this mission fits current market",
+  "angle": "specific unique editorial angle for this run (1 sentence)",
+  "format": "one word describing content tone: urgent|analytical|educational|optimistic|warning",
+  "design_evolution": "one of the design options or null",
+  "special_instruction": "one specific thing Gemini must include that makes this report unique"
+}}"""
+
+    try:
+        headers = {"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"}
+        resp = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            json={{
+                "model": "llama-3.3-70b-versatile",
+                "messages": [
+                    {{"role": "system", "content": "You are an autonomous AI editor. Output ONLY valid JSON. No markdown."}},
+                    {{"role": "user", "content": prompt}}
+                ],
+                "max_tokens": 400,
+                "temperature": 0.9
+            }},
+            headers=headers, timeout=15
+        )
+        resp.raise_for_status()
+        raw = resp.json()['choices'][0]['message']['content']
+        raw = re.sub(r'[\x00-\x1f\x7f]','',raw).replace('```json','').replace('```','').strip()
+        mission = json.loads(re.search(r'\{{.*\}}', raw, re.DOTALL).group(0))
+        print(f"\n🧠 AGENT SELF-DIRECTION:")
+        print(f"   Mission: {mission.get('mission','?').upper()}")
+        print(f"   Reason:  {mission.get('mission_reason','?')}")
+        print(f"   Angle:   {mission.get('angle','?')}")
+        print(f"   Special: {mission.get('special_instruction','?')}")
+        return mission
+    except Exception as e:
+        print(f"⚠ Self-direction failed ({e}), using standard mission")
+        return {{"mission": "standard", "angle": "Southeast Asia crypto intelligence", "format": "analytical", "design_evolution": None, "special_instruction": "Include specific price levels and percentages"}}
+
+
+def build_self_directed_prompt(mission, research_context, price_context, sentiment_mood, trending_tokens, positive_news):
+    """Build a unique Gemini prompt based on agent's self-decided mission"""
+    
+    trending_str = ", ".join(trending_tokens) if trending_tokens else "BTC, ETH, SOL"
+    
+    # Mission-specific instructions
+    mission_instructions = {{
+        "deep_dive": """Go extremely deep on the SINGLE most important story. 
+Spend all 5 paragraphs on it. Include technical details, CVE numbers, exploit mechanics, 
+smart contract vulnerabilities, or specific protocol weaknesses. 
+This should read like a professional security research report.""",
+        
+        "market_alpha": """Focus on PRICE ACTION and TRADING SIGNALS.
+Every paragraph must reference specific price levels, support/resistance, volume data.
+Include: current BTC level and what it means, key levels to watch, specific tokens showing strength/weakness.
+Write for someone who wants to know WHERE TO PUT MONEY in next 48 hours.""",
+        
+        "southeast_asia": """Write ENTIRELY from Southeast Asia perspective.
+How does today's news affect: Cambodia retail investors, Vietnam crypto traders, Thailand DeFi users, 
+Philippines remittance users, Indonesian crypto market. 
+What local exchanges, local regulations, or regional factors are relevant?
+This is your unique angle — NO other site covers crypto from SEA perspective like this.""",
+        
+        "security_alert": """URGENT SECURITY FORMAT. 
+Lead with the specific CVE/exploit/hack. Include: affected systems, attack vector, 
+user action required, estimated funds at risk, similar historical incidents.
+Write like a CERT security advisory that crypto users need to read RIGHT NOW.""",
+        
+        "opportunity_hunt": """Focus on OPPORTUNITIES not threats.
+Find the silver lining, the undervalued angle, the contrarian bullish case.
+Which protocols are gaining despite market pressure? Which tokens are accumulating?
+What are smart money wallets doing? Be specific with data.""",
+        
+        "comparison": """Compare TWO competing narratives in today's news.
+Narrative A vs Narrative B — who is right? What does the data say?
+Structure as: [Story A] vs [Story B], then [Evidence for A], [Evidence for B], 
+then [Your verdict based on data].""",
+        
+        "beginner_guide": """Write for someone NEW to crypto who just heard about today's story.
+No jargon without explanation. Use analogies. 
+Paragraph 1: What happened in simple terms. 
+Paragraph 2: Why it matters (explained like they're 15).
+Paragraph 3: What should a beginner DO about this.
+Paragraph 4: Historical context (has this happened before?).
+Paragraph 5: Southeast Asia specific impact.""",
+        
+        "standard": """Balanced intelligence report covering both risks and opportunities.
+Include Southeast Asia perspective in paragraph 3."""
+    }}
+    
+    instruction = mission_instructions.get(mission.get('mission','standard'), mission_instructions['standard'])
+    special = mission.get('special_instruction', '')
+    angle = mission.get('angle', '')
+    
+    return f"""You are the autonomous intelligence engine of Autonomous Lab 2026 — built by Kchour in Phnom Penh, Cambodia.
+
+THIS RUN'S MISSION: {mission.get('mission','standard').upper()}
+EDITORIAL ANGLE: {angle}
+SPECIAL REQUIREMENT: {special}
+
+{instruction}
+
+LIVE MARKET DATA:
+- Prices: {price_context}
+- Sentiment: {sentiment_mood}
+- Trending: {trending_str}
+
+RESEARCH:
+{research_context[:2000]}
+
+POSITIVE DEVELOPMENTS:
+{positive_news[:500]}
+
+RULES:
+- Title: SPECIFIC with real event name + data point. No generic "Web3 Navigates..." titles
+- deep_analysis: EXACTLY 5 paragraphs separated by \\n\\n, each 80+ words
+- Para 3 must cover Southeast Asia / emerging market impact
+- news_bullets: Each must have a specific fact, number, name, or dollar amount
+- tokens_to_watch: Use trending tokens ({trending_str}) — NOT generic BTC/ETH/SOL unless truly relevant
+- analyst_note: One powerful sentence a Southeast Asia investor needs RIGHT NOW
+
+Return ONLY valid JSON, no markdown, no backticks:
+{{
+  "title": "Specific headline with real event + data",
+  "news_bullets": ["Fact with number", "Positive data point", "Risk with specific detail"],
+  "threat": "Specific risk with CVE/amount/name",
+  "opportunity": "Specific opportunity with token/protocol/percentage",
+  "threat_score": 6,
+  "opportunity_score": 7,
+  "threat_level": "Medium",
+  "deep_analysis": "Para1\\n\\nPara2\\n\\nPara3 SEA focus\\n\\nPara4 mechanics\\n\\nPara5 48h outlook",
+  "analyst_note": "One powerful sentence for SEA retail investors",
+  "tokens_to_watch": ["TRENDING1", "TRENDING2", "TRENDING3"],
+  "critic": "Contrarian view challenging main narrative",
+  "color": "#hexcolor matching mood"
+}}"""
     """Main orchestration function"""
     print("\n" + "="*60)
     print("🤖 AUTONOMOUS LAB AGENT STARTING")
@@ -1069,12 +1261,16 @@ def run_production_agent():
     coindesk_headlines, sentiment_mood, sentiment_score = get_coindesk_sentiment()
     positive_news = get_positive_crypto_news()
     positive_news_text = extract_good_news_for_gemini(positive_news)
-    
-    # LAYER 2: Deep research (optional)
+
+    # LAYER 0: Self-direction — agent decides its own mission
+    print("\n[LAYER 0] Agent self-direction brain...\n")
+    mission = get_agent_self_direction(old_content, rss_context, price_context, sentiment_mood, g_key)
+
+    # LAYER 2: Deep research
     print("\n[LAYER 2] Deep research...\n")
     research = get_research(rss_context + " " + coindesk_headlines, t_key)
 
-    # Check for duplicate stories
+    # LAYER 3: Duplicate check
     print("\n[LAYER 3] Analyzing for duplicates...\n")
     last_title = ""
     if "<!-- H_S -->" in old_content:
@@ -1084,17 +1280,48 @@ def run_production_agent():
             if match:
                 last_title = match.group(1)
                 print(f"ℹ Last story: {last_title[:50]}")
-        except:
-            pass
+        except: pass
 
     full_context = research
     if last_title:
         full_context += f"\n\nIMPORTANT: Last report was '{last_title[:50]}...'. Pick DIFFERENT angle."
 
-    # LAYER 4: Gemini analysis (BALANCED)
-    print("\n[LAYER 4] Gemini analysis (balanced)...\n")
-    data = get_gemini_data_balanced(full_context, g_key, price_context, sentiment_mood, 
-                                   sentiment_score, trending_tokens, positive_news_text)
+    # LAYER 4: Self-directed Gemini analysis
+    print(f"\n[LAYER 4] Gemini — mission: {mission.get('mission','standard').upper()}...\n")
+    self_directed_prompt = build_self_directed_prompt(
+        mission, full_context, price_context,
+        sentiment_mood, trending_tokens, positive_news_text
+    )
+    groq_key = os.getenv("GROQ")
+    attempts = [
+        ("gemini-2.5-flash",      "gemini", g_key,    None),
+        ("gemini-2.0-flash",      "gemini", g_key,    None),
+        ("groq-llama-3.3-70b",    "groq",   groq_key, "llama-3.3-70b-versatile"),
+        ("groq-llama-3.1-8b",     "groq",   groq_key, "llama-3.1-8b-instant"),
+        ("gemini-2.0-flash-lite", "gemini", g_key,    None),
+        ("groq-gemma2-9b",        "groq",   groq_key, "gemma2-9b-it"),
+    ]
+    data = None
+    for model_name, provider, key, groq_model in attempts:
+        try:
+            print(f"   Trying: {model_name}")
+            if provider == "groq":
+                raw = call_groq(self_directed_prompt, key, groq_model)
+            else:
+                raw = call_gemini(self_directed_prompt, key, model_name)
+            raw_clean = re.sub(r'[\x00-\x1f\x7f]',' ',raw).replace('```json','').replace('```','').strip()
+            m = re.search(r'\{.*\}', raw_clean, re.DOTALL)
+            if not m: raise ValueError("No JSON")
+            data = json.loads(m.group(0))
+            if not data.get('title') or not data.get('news_bullets'):
+                raise ValueError("Missing fields")
+            data['_mission'] = mission.get('mission','standard')
+            data['_angle']   = mission.get('angle','')
+            print(f"   ✓ SUCCESS: {data.get('title','')[:60]}")
+            break
+        except Exception as e:
+            print(f"   ✗ {model_name}: {e}")
+            continue
 
     if not data:
         print("\n❌ All models failed. Keeping old site.\n")
