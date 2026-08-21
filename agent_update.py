@@ -414,10 +414,8 @@ Return ONLY this JSON (no markdown, no backticks, no extra text):
     # 7-model fallback chain
     attempts = [
         ("gemini-2.5-flash",      "gemini", g_key,    None),
-        ("gemini-2.0-flash",      "gemini", g_key,    None),
         ("groq-llama-3.3-70b",    "groq",   groq_key, "llama-3.3-70b-versatile"),
         ("groq-llama-3.1-8b",     "groq",   groq_key, "llama-3.1-8b-instant"),
-        ("gemini-2.0-flash-lite", "gemini", g_key,    None),
         ("groq-gemma2-9b",        "groq",   groq_key, "gemma2-9b-it"),
         ("gemini-1.5-flash-8b",   "gemini", g_key,    None),
     ]
@@ -804,9 +802,15 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 
     analyst_note = data.get('analyst_note', f'Monitoring {", ".join(tokens[:2]) if tokens else "market"}.')
     deep_paras = [p.strip() for p in deep_raw.split('\n') if p.strip()]
-    para_titles = ["Root Cause Analysis", "Market Impact", "48-Hour Outlook"]
+    para_titles = [
+        "Root Cause Analysis",
+        "Historical Context",
+        "Southeast Asia Impact",
+        "Market Mechanics",
+        "48-Hour Outlook"
+    ]
     deep_html = ""
-    for i, para in enumerate(deep_paras[:3]):
+    for i, para in enumerate(deep_paras[:5]):
         ptitle = para_titles[i] if i < len(para_titles) else f"Analysis {i+1}"
         deep_html += f'<div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]"><h4 class="text-lg font-bold text-white mb-3">{ptitle}</h4><p class="text-slate-400">{para}</p></div>'
 
@@ -1049,7 +1053,15 @@ def get_agent_self_direction(old_content, rss_context, price_context, sentiment_
     """
     groq_key = os.getenv("GROQ")
     if not groq_key:
-        return {"mission": "standard", "angle": "Southeast Asia crypto security", "format": "standard", "design_evolution": None}
+        print("ℹ GROQ key not configured. Using standard mission.")
+        return {
+            "mission": "standard",
+            "mission_reason": "No Groq key is configured, so the agent is using the safe default mission.",
+            "angle": "Southeast Asia crypto security",
+            "format": "analytical",
+            "design_evolution": None,
+            "special_instruction": "Include specific price levels and percentages."
+        }
     
     # Extract last 5 archive titles to understand recent patterns
     recent_titles = []
@@ -1106,21 +1118,21 @@ Return ONLY valid JSON:
         headers = {"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"}
         resp = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
-            json={{
+            json={
                 "model": "llama-3.3-70b-versatile",
                 "messages": [
-                    {{"role": "system", "content": "You are an autonomous AI editor. Output ONLY valid JSON. No markdown."}},
-                    {{"role": "user", "content": prompt}}
+                    {"role": "system", "content": "You are an autonomous AI editor. Output ONLY valid JSON. No markdown."},
+                    {"role": "user", "content": prompt}
                 ],
                 "max_tokens": 400,
-                "temperature": 0.9
-            }},
+                "temperature": 0.3
+            },
             headers=headers, timeout=15
         )
         resp.raise_for_status()
         raw = resp.json()['choices'][0]['message']['content']
         raw = re.sub(r'[\x00-\x1f\x7f]','',raw).replace('```json','').replace('```','').strip()
-        mission = json.loads(re.search(r'\{{.*\}}', raw, re.DOTALL).group(0))
+        mission = json.loads(re.search(r'\{.*\}', raw, re.DOTALL).group(0))
         print(f"\n🧠 AGENT SELF-DIRECTION:")
         print(f"   Mission: {mission.get('mission','?').upper()}")
         print(f"   Reason:  {mission.get('mission_reason','?')}")
@@ -1129,7 +1141,7 @@ Return ONLY valid JSON:
         return mission
     except Exception as e:
         print(f"⚠ Self-direction failed ({e}), using standard mission")
-        return {{"mission": "standard", "angle": "Southeast Asia crypto intelligence", "format": "analytical", "design_evolution": None, "special_instruction": "Include specific price levels and percentages"}}
+        return {"mission": "standard", "angle": "Southeast Asia crypto intelligence", "format": "analytical", "design_evolution": None, "special_instruction": "Include specific price levels and percentages"}
 
 
 def build_self_directed_prompt(mission, research_context, price_context, sentiment_mood, trending_tokens, positive_news):
@@ -1138,7 +1150,7 @@ def build_self_directed_prompt(mission, research_context, price_context, sentime
     trending_str = ", ".join(trending_tokens) if trending_tokens else "BTC, ETH, SOL"
     
     # Mission-specific instructions
-    mission_instructions = {{
+    mission_instructions = {
         "deep_dive": """Go extremely deep on the SINGLE most important story. 
 Spend all 5 paragraphs on it. Include technical details, CVE numbers, exploit mechanics, 
 smart contract vulnerabilities, or specific protocol weaknesses. 
@@ -1180,7 +1192,7 @@ Paragraph 5: Southeast Asia specific impact.""",
         
         "standard": """Balanced intelligence report covering both risks and opportunities.
 Include Southeast Asia perspective in paragraph 3."""
-    }}
+    }
     
     instruction = mission_instructions.get(mission.get('mission','standard'), mission_instructions['standard'])
     special = mission.get('special_instruction', '')
@@ -1295,10 +1307,8 @@ Return ONLY valid JSON, no markdown, no backticks:
     groq_key = os.getenv("GROQ")
     attempts = [
         ("gemini-2.5-flash",      "gemini", g_key,    None),
-        ("gemini-2.0-flash",      "gemini", g_key,    None),
         ("groq-llama-3.3-70b",    "groq",   groq_key, "llama-3.3-70b-versatile"),
         ("groq-llama-3.1-8b",     "groq",   groq_key, "llama-3.1-8b-instant"),
-        ("gemini-2.0-flash-lite", "gemini", g_key,    None),
         ("groq-gemma2-9b",        "groq",   groq_key, "gemma2-9b-it"),
     ]
     data = None
