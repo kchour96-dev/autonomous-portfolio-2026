@@ -414,8 +414,10 @@ Return ONLY this JSON (no markdown, no backticks, no extra text):
     # 7-model fallback chain
     attempts = [
         ("gemini-2.5-flash",      "gemini", g_key,    None),
+        ("gemini-2.0-flash",      "gemini", g_key,    None),
         ("groq-llama-3.3-70b",    "groq",   groq_key, "llama-3.3-70b-versatile"),
         ("groq-llama-3.1-8b",     "groq",   groq_key, "llama-3.1-8b-instant"),
+        ("gemini-2.0-flash-lite", "gemini", g_key,    None),
         ("groq-gemma2-9b",        "groq",   groq_key, "gemma2-9b-it"),
         ("gemini-1.5-flash-8b",   "gemini", g_key,    None),
     ]
@@ -750,11 +752,12 @@ def write_seo_files():
 # BUILD HTML (template only, for first run)
 # ─────────────────────────────────────────────
 def build_html(data, final_history, date_str, price_context="", sentiment_mood="NEUTRAL", 
-               sentiment_score=5, trending_tokens=None, btc=None, eth=None, sol=None):
-    """Build complete HTML page (used only for initial creation)"""
+               sentiment_score=5, trending_tokens=None, btc=None, eth=None, sol=None, mission=None):
+    """Build complete HTML page"""
     if btc is None: btc = {}
     if eth is None: eth = {}
     if sol is None: sol = {}
+    if mission is None: mission = {}
 
     color        = data.get('color', '#dc2626')
     threat       = data.get('threat_level', 'Unknown')
@@ -767,6 +770,11 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
     deep_raw     = data.get('deep_analysis', '')
     tokens       = data.get('tokens_to_watch', [])
     critic       = data.get('critic', '')
+    analyst_note = data.get('analyst_note', '')
+    mission_label = data.get('_mission', 'standard').upper()
+
+    # Build autonomous extra sections
+    extra_sections_html = build_extra_sections_html(mission, color)
 
     threat_colors = {"Critical":"#dc2626","High":"#f97316","Medium":"#eab308","Low":"#22c55e"}
     threat_color  = threat_colors.get(threat, "#94a3b8")
@@ -802,15 +810,9 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 
     analyst_note = data.get('analyst_note', f'Monitoring {", ".join(tokens[:2]) if tokens else "market"}.')
     deep_paras = [p.strip() for p in deep_raw.split('\n') if p.strip()]
-    para_titles = [
-        "Root Cause Analysis",
-        "Historical Context",
-        "Southeast Asia Impact",
-        "Market Mechanics",
-        "48-Hour Outlook"
-    ]
+    para_titles = ["Root Cause Analysis", "Market Impact", "48-Hour Outlook"]
     deep_html = ""
-    for i, para in enumerate(deep_paras[:5]):
+    for i, para in enumerate(deep_paras[:3]):
         ptitle = para_titles[i] if i < len(para_titles) else f"Analysis {i+1}"
         deep_html += f'<div class="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.04]"><h4 class="text-lg font-bold text-white mb-3">{ptitle}</h4><p class="text-slate-400">{para}</p></div>'
 
@@ -957,6 +959,10 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
                 <p class="text-xs uppercase mb-3 text-yellow-400 font-bold">🤔 Contrarian View</p>
                 <p class="text-lg italic text-slate-200">"{critic}"</p>
             </div>
+
+            <!-- AUTONOMOUS EXTRA SECTIONS — agent picks these each run -->
+            {extra_sections_html}
+
         </div>
 
         <!-- SIDEBAR -->
@@ -1041,27 +1047,164 @@ def build_html(data, final_history, date_str, price_context="", sentiment_mood="
 # ─────────────────────────────────────────────
 def get_agent_self_direction(old_content, rss_context, price_context, sentiment_mood, g_key):
     """
-    LAYER 0: The Agent's Self-Directing Brain.
-    
-    Before writing anything, the agent thinks deeply about:
-    1. What story is most important RIGHT NOW
-    2. What content format will be most useful
-    3. What design element to evolve this run
-    4. What unique angle no other site is covering
-    
-    Returns a 'mission' dict that guides all other layers.
+    LAYER 0: Autonomous self-directing brain.
+    Agent decides its own mission, content type, AND what to put in empty HTML spaces.
+    Runs before everything else every single hour.
     """
     groq_key = os.getenv("GROQ")
     if not groq_key:
-        print("ℹ GROQ key not configured. Using standard mission.")
         return {
             "mission": "standard",
-            "mission_reason": "No Groq key is configured, so the agent is using the safe default mission.",
             "angle": "Southeast Asia crypto security",
             "format": "analytical",
             "design_evolution": None,
-            "special_instruction": "Include specific price levels and percentages."
+            "special_instruction": "Include specific price levels",
+            "extra_sections": ["did_you_know", "market_stat"]
         }
+
+    # Extract recent titles to avoid repetition
+    recent_titles = []
+    if old_content and "<!-- H_S -->" in old_content:
+        try:
+            hist = old_content.split("<!-- H_S -->")[1].split("<!-- H_E -->")[0]
+            recent_titles = re.findall(r"font-bold text-slate-200'>([^<]+)", hist)[:5]
+        except: pass
+
+    recent_str = "\n".join([f"- {t}" for t in recent_titles]) if recent_titles else "No history yet"
+
+    # All available content widgets agent can pick
+    available_widgets = [
+        "did_you_know       — A surprising crypto fact the reader probably doesn't know",
+        "market_stat        — One striking market statistic from today's data",
+        "sea_spotlight      — Spotlight on one Southeast Asia crypto project or development",
+        "quick_quiz         — A single trivia question about today's story with answer",
+        "price_prediction   — Agent's own 24h price direction prediction with reasoning",
+        "risk_meter         — Visual risk assessment: Low/Medium/High with 3 specific reasons",
+        "glossary_term      — Explain one technical term from today's story simply",
+        "timeline           — Key events timeline of today's main story",
+        "compare_table      — Simple 2-column comparison relevant to today's news",
+        "call_to_action     — One specific action readers should take today",
+        "weekly_pattern     — Pattern spotted in this week's price/news data",
+        "hidden_signal      — One non-obvious signal in today's data most people miss",
+    ]
+
+    prompt = f"""You are the autonomous editorial brain of Autonomous Lab 2026.
+You make all decisions independently — what to write, how to write it, what extra content to add.
+
+CURRENT MARKET:
+- {price_context}
+- Sentiment: {sentiment_mood}
+- News: {rss_context[:300]}
+
+RECENT REPORTS (avoid repeating):
+{recent_str}
+
+YOUR DECISIONS:
+
+1. MISSION — pick the best one for current market conditions:
+   deep_dive | market_alpha | southeast_asia | security_alert | opportunity_hunt | comparison | beginner_guide | standard
+
+2. EXTRA CONTENT WIDGETS — pick exactly 2 from this list that would be most valuable RIGHT NOW:
+{chr(10).join(available_widgets)}
+
+3. SPECIAL ANGLE — what unique perspective will make this report different from everything else online?
+
+Return ONLY valid JSON:
+{{
+  "mission": "mission_name",
+  "mission_reason": "one sentence why",
+  "angle": "unique editorial angle for this run",
+  "format": "urgent|analytical|educational|optimistic|warning",
+  "design_evolution": "one small UI improvement idea or null",
+  "special_instruction": "one specific thing that makes this report unique",
+  "extra_sections": ["widget_name_1", "widget_name_2"],
+  "extra_content": {{
+    "widget_name_1": {{"title": "...", "content": "..."}},
+    "widget_name_2": {{"title": "...", "content": "..."}}
+  }}
+}}"""
+
+    try:
+        headers = {"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"}
+        resp = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            json={
+                "model": "llama-3.3-70b-versatile",
+                "messages": [
+                    {"role": "system", "content": "You are an autonomous AI editor. Output ONLY valid JSON. No markdown."},
+                    {"role": "user", "content": prompt}
+                ],
+                "max_tokens": 600,
+                "temperature": 0.95
+            },
+            headers=headers, timeout=15
+        )
+        resp.raise_for_status()
+        raw = resp.json()['choices'][0]['message']['content']
+        raw = re.sub(r'[\x00-\x1f\x7f]','',raw).replace('```json','').replace('```','').strip()
+        mission = json.loads(re.search(r'\{.*\}', raw, re.DOTALL).group(0))
+        print(f"\n🧠 AGENT SELF-DIRECTION:")
+        print(f"   Mission:  {mission.get('mission','?').upper()}")
+        print(f"   Reason:   {mission.get('mission_reason','?')}")
+        print(f"   Angle:    {mission.get('angle','?')[:60]}")
+        print(f"   Widgets:  {mission.get('extra_sections',[])}")
+        print(f"   Special:  {mission.get('special_instruction','?')[:60]}")
+        return mission
+    except Exception as e:
+        print(f"⚠ Self-direction failed ({e}), using standard")
+        return {
+            "mission": "standard",
+            "angle": "Southeast Asia crypto intelligence",
+            "format": "analytical",
+            "design_evolution": None,
+            "special_instruction": "Include specific price levels and percentages",
+            "extra_sections": ["did_you_know", "hidden_signal"],
+            "extra_content": {
+                "did_you_know": {"title": "Did You Know?", "content": "Bitcoin has never been hacked at the protocol level in its 15+ year history — all major losses have come from exchanges, wallets, or user error."},
+                "hidden_signal": {"title": "Hidden Signal", "content": "Watch BTC dominance — when it rises above 60%, altcoins historically underperform for 2-4 weeks."}
+            }
+        }
+
+
+def build_extra_sections_html(mission, color):
+    """Build HTML for agent's self-chosen extra content widgets"""
+    extra_sections = mission.get('extra_sections', [])
+    extra_content  = mission.get('extra_content', {})
+    if not extra_sections or not extra_content:
+        return ""
+
+    widget_icons = {
+        "did_you_know":     "💡",
+        "market_stat":      "📊",
+        "sea_spotlight":    "🌏",
+        "quick_quiz":       "🧠",
+        "price_prediction": "🔮",
+        "risk_meter":       "⚠️",
+        "glossary_term":    "📖",
+        "timeline":         "📅",
+        "compare_table":    "⚖️",
+        "call_to_action":   "🎯",
+        "weekly_pattern":   "📈",
+        "hidden_signal":    "👁️",
+    }
+
+    html_parts = []
+    for widget_key in extra_sections[:2]:
+        widget_data = extra_content.get(widget_key, {})
+        if not widget_data: continue
+        icon    = widget_icons.get(widget_key, "✨")
+        title   = widget_data.get('title', widget_key.replace('_',' ').title())
+        content = widget_data.get('content', '')
+        if not content: continue
+
+        html_parts.append(f"""
+        <div class="glass p-6 fade" style="border-left:3px solid {color}60">
+            <p class="text-xs mono font-bold uppercase tracking-widest mb-3" style="color:{color}">{icon} {title}</p>
+            <p class="text-sm text-slate-300 leading-relaxed">{content}</p>
+            <p class="text-[10px] mono text-slate-700 mt-3 uppercase">Autonomous Lab · AI-Generated</p>
+        </div>""")
+
+    return "\n".join(html_parts)
     
     # Extract last 5 archive titles to understand recent patterns
     recent_titles = []
@@ -1118,21 +1261,21 @@ Return ONLY valid JSON:
         headers = {"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"}
         resp = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
-            json={
+            json={{
                 "model": "llama-3.3-70b-versatile",
                 "messages": [
-                    {"role": "system", "content": "You are an autonomous AI editor. Output ONLY valid JSON. No markdown."},
-                    {"role": "user", "content": prompt}
+                    {{"role": "system", "content": "You are an autonomous AI editor. Output ONLY valid JSON. No markdown."}},
+                    {{"role": "user", "content": prompt}}
                 ],
                 "max_tokens": 400,
-                "temperature": 0.3
-            },
+                "temperature": 0.9
+            }},
             headers=headers, timeout=15
         )
         resp.raise_for_status()
         raw = resp.json()['choices'][0]['message']['content']
         raw = re.sub(r'[\x00-\x1f\x7f]','',raw).replace('```json','').replace('```','').strip()
-        mission = json.loads(re.search(r'\{.*\}', raw, re.DOTALL).group(0))
+        mission = json.loads(re.search(r'\{{.*\}}', raw, re.DOTALL).group(0))
         print(f"\n🧠 AGENT SELF-DIRECTION:")
         print(f"   Mission: {mission.get('mission','?').upper()}")
         print(f"   Reason:  {mission.get('mission_reason','?')}")
@@ -1141,7 +1284,7 @@ Return ONLY valid JSON:
         return mission
     except Exception as e:
         print(f"⚠ Self-direction failed ({e}), using standard mission")
-        return {"mission": "standard", "angle": "Southeast Asia crypto intelligence", "format": "analytical", "design_evolution": None, "special_instruction": "Include specific price levels and percentages"}
+        return {{"mission": "standard", "angle": "Southeast Asia crypto intelligence", "format": "analytical", "design_evolution": None, "special_instruction": "Include specific price levels and percentages"}}
 
 
 def build_self_directed_prompt(mission, research_context, price_context, sentiment_mood, trending_tokens, positive_news):
@@ -1150,7 +1293,7 @@ def build_self_directed_prompt(mission, research_context, price_context, sentime
     trending_str = ", ".join(trending_tokens) if trending_tokens else "BTC, ETH, SOL"
     
     # Mission-specific instructions
-    mission_instructions = {
+    mission_instructions = {{
         "deep_dive": """Go extremely deep on the SINGLE most important story. 
 Spend all 5 paragraphs on it. Include technical details, CVE numbers, exploit mechanics, 
 smart contract vulnerabilities, or specific protocol weaknesses. 
@@ -1192,7 +1335,7 @@ Paragraph 5: Southeast Asia specific impact.""",
         
         "standard": """Balanced intelligence report covering both risks and opportunities.
 Include Southeast Asia perspective in paragraph 3."""
-    }
+    }}
     
     instruction = mission_instructions.get(mission.get('mission','standard'), mission_instructions['standard'])
     special = mission.get('special_instruction', '')
@@ -1240,7 +1383,10 @@ Return ONLY valid JSON, no markdown, no backticks:
   "critic": "Contrarian view challenging main narrative",
   "color": "#hexcolor matching mood"
 }}"""
-    """Main orchestration function"""
+
+
+def run_production_agent():
+    """Main orchestration function — autonomous self-directing agent"""
     print("\n" + "="*60)
     print("🤖 AUTONOMOUS LAB AGENT STARTING")
     print("="*60 + "\n")
@@ -1307,8 +1453,10 @@ Return ONLY valid JSON, no markdown, no backticks:
     groq_key = os.getenv("GROQ")
     attempts = [
         ("gemini-2.5-flash",      "gemini", g_key,    None),
+        ("gemini-2.0-flash",      "gemini", g_key,    None),
         ("groq-llama-3.3-70b",    "groq",   groq_key, "llama-3.3-70b-versatile"),
         ("groq-llama-3.1-8b",     "groq",   groq_key, "llama-3.1-8b-instant"),
+        ("gemini-2.0-flash-lite", "gemini", g_key,    None),
         ("groq-gemma2-9b",        "groq",   groq_key, "gemma2-9b-it"),
     ]
     data = None
