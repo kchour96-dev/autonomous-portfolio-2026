@@ -1292,97 +1292,61 @@ def build_self_directed_prompt(mission, research_context, price_context, sentime
     
     trending_str = ", ".join(trending_tokens) if trending_tokens else "BTC, ETH, SOL"
     
-    # Mission-specific instructions
-    mission_instructions = {{
-        "deep_dive": """Go extremely deep on the SINGLE most important story. 
-Spend all 5 paragraphs on it. Include technical details, CVE numbers, exploit mechanics, 
-smart contract vulnerabilities, or specific protocol weaknesses. 
-This should read like a professional security research report.""",
-        
-        "market_alpha": """Focus on PRICE ACTION and TRADING SIGNALS.
-Every paragraph must reference specific price levels, support/resistance, volume data.
-Include: current BTC level and what it means, key levels to watch, specific tokens showing strength/weakness.
-Write for someone who wants to know WHERE TO PUT MONEY in next 48 hours.""",
-        
-        "southeast_asia": """Write ENTIRELY from Southeast Asia perspective.
-How does today's news affect: Cambodia retail investors, Vietnam crypto traders, Thailand DeFi users, 
-Philippines remittance users, Indonesian crypto market. 
-What local exchanges, local regulations, or regional factors are relevant?
-This is your unique angle — NO other site covers crypto from SEA perspective like this.""",
-        
-        "security_alert": """URGENT SECURITY FORMAT. 
-Lead with the specific CVE/exploit/hack. Include: affected systems, attack vector, 
-user action required, estimated funds at risk, similar historical incidents.
-Write like a CERT security advisory that crypto users need to read RIGHT NOW.""",
-        
-        "opportunity_hunt": """Focus on OPPORTUNITIES not threats.
-Find the silver lining, the undervalued angle, the contrarian bullish case.
-Which protocols are gaining despite market pressure? Which tokens are accumulating?
-What are smart money wallets doing? Be specific with data.""",
-        
-        "comparison": """Compare TWO competing narratives in today's news.
-Narrative A vs Narrative B — who is right? What does the data say?
-Structure as: [Story A] vs [Story B], then [Evidence for A], [Evidence for B], 
-then [Your verdict based on data].""",
-        
-        "beginner_guide": """Write for someone NEW to crypto who just heard about today's story.
-No jargon without explanation. Use analogies. 
-Paragraph 1: What happened in simple terms. 
-Paragraph 2: Why it matters (explained like they're 15).
-Paragraph 3: What should a beginner DO about this.
-Paragraph 4: Historical context (has this happened before?).
-Paragraph 5: Southeast Asia specific impact.""",
-        
-        "standard": """Balanced intelligence report covering both risks and opportunities.
-Include Southeast Asia perspective in paragraph 3."""
-    }}
+    # Mission-specific instructions — regular dict, NOT f-string
+    mission_instructions = {
+        "deep_dive": "Go extremely deep on the SINGLE most important story. Spend all 5 paragraphs on it. Include technical details, CVE numbers, exploit mechanics, smart contract vulnerabilities, or specific protocol weaknesses. This should read like a professional security research report.",
+        "market_alpha": "Focus on PRICE ACTION and TRADING SIGNALS. Every paragraph must reference specific price levels, support/resistance, volume data. Include: current BTC level and what it means, key levels to watch, specific tokens showing strength/weakness. Write for someone who wants to know WHERE TO PUT MONEY in next 48 hours.",
+        "southeast_asia": "Write ENTIRELY from Southeast Asia perspective. How does today's news affect: Cambodia retail investors, Vietnam crypto traders, Thailand DeFi users, Philippines remittance users, Indonesian crypto market. What local exchanges, local regulations, or regional factors are relevant? This is your unique angle — NO other site covers crypto from SEA perspective like this.",
+        "security_alert": "URGENT SECURITY FORMAT. Lead with the specific CVE/exploit/hack. Include: affected systems, attack vector, user action required, estimated funds at risk, similar historical incidents. Write like a CERT security advisory that crypto users need to read RIGHT NOW.",
+        "opportunity_hunt": "Focus on OPPORTUNITIES not threats. Find the silver lining, the undervalued angle, the contrarian bullish case. Which protocols are gaining despite market pressure? Which tokens are accumulating? What are smart money wallets doing? Be specific with data.",
+        "comparison": "Compare TWO competing narratives in today's news. Narrative A vs Narrative B — who is right? What does the data say? Structure as: [Story A] vs [Story B], then [Evidence for A], [Evidence for B], then [Your verdict based on data].",
+        "beginner_guide": "Write for someone NEW to crypto who just heard about today's story. No jargon without explanation. Use analogies. Para 1: What happened simply. Para 2: Why it matters. Para 3: What a beginner should DO. Para 4: Historical context. Para 5: Southeast Asia impact.",
+        "standard": "Balanced intelligence report covering both risks and opportunities. Include Southeast Asia perspective in paragraph 3."
+    }
     
-    instruction = mission_instructions.get(mission.get('mission','standard'), mission_instructions['standard'])
+    instruction = mission_instructions.get(mission.get('mission', 'standard'), mission_instructions['standard'])
     special = mission.get('special_instruction', '')
-    angle = mission.get('angle', '')
+    angle   = mission.get('angle', '')
     
-    return f"""You are the autonomous intelligence engine of Autonomous Lab 2026 — built by Kchour in Phnom Penh, Cambodia.
-
-THIS RUN'S MISSION: {mission.get('mission','standard').upper()}
-EDITORIAL ANGLE: {angle}
-SPECIAL REQUIREMENT: {special}
-
-{instruction}
-
-LIVE MARKET DATA:
-- Prices: {price_context}
-- Sentiment: {sentiment_mood}
-- Trending: {trending_str}
-
-RESEARCH:
-{research_context[:2000]}
-
-POSITIVE DEVELOPMENTS:
-{positive_news[:500]}
-
-RULES:
-- Title: SPECIFIC with real event name + data point. No generic "Web3 Navigates..." titles
-- deep_analysis: EXACTLY 5 paragraphs separated by \\n\\n, each 80+ words
-- Para 3 must cover Southeast Asia / emerging market impact
-- news_bullets: Each must have a specific fact, number, name, or dollar amount
-- tokens_to_watch: Use trending tokens ({trending_str}) — NOT generic BTC/ETH/SOL unless truly relevant
-- analyst_note: One powerful sentence a Southeast Asia investor needs RIGHT NOW
-
-Return ONLY valid JSON, no markdown, no backticks:
-{{
-  "title": "Specific headline with real event + data",
-  "news_bullets": ["Fact with number", "Positive data point", "Risk with specific detail"],
-  "threat": "Specific risk with CVE/amount/name",
-  "opportunity": "Specific opportunity with token/protocol/percentage",
-  "threat_score": 6,
-  "opportunity_score": 7,
-  "threat_level": "Medium",
-  "deep_analysis": "Para1\\n\\nPara2\\n\\nPara3 SEA focus\\n\\nPara4 mechanics\\n\\nPara5 48h outlook",
-  "analyst_note": "One powerful sentence for SEA retail investors",
-  "tokens_to_watch": ["TRENDING1", "TRENDING2", "TRENDING3"],
-  "critic": "Contrarian view challenging main narrative",
-  "color": "#hexcolor matching mood"
-}}"""
+    # Build prompt as regular string concatenation — avoid f-string brace conflicts
+    prompt = (
+        "You are the autonomous intelligence engine of Autonomous Lab 2026 — built by Kchour in Phnom Penh, Cambodia.\n\n"
+        f"THIS RUN'S MISSION: {mission.get('mission','standard').upper()}\n"
+        f"EDITORIAL ANGLE: {angle}\n"
+        f"SPECIAL REQUIREMENT: {special}\n\n"
+        f"{instruction}\n\n"
+        "LIVE MARKET DATA:\n"
+        f"- Prices: {price_context}\n"
+        f"- Sentiment: {sentiment_mood}\n"
+        f"- Trending: {trending_str}\n\n"
+        "RESEARCH:\n"
+        f"{research_context[:2000]}\n\n"
+        "POSITIVE DEVELOPMENTS:\n"
+        f"{positive_news[:500]}\n\n"
+        "RULES:\n"
+        "- Title: SPECIFIC with real event name + data point. No generic titles\n"
+        "- deep_analysis: EXACTLY 5 paragraphs separated by \\n\\n, each 80+ words\n"
+        "- Para 3 must cover Southeast Asia / emerging market impact\n"
+        "- news_bullets: Each must have a specific fact, number, name, or dollar amount\n"
+        f"- tokens_to_watch: Use trending tokens ({trending_str}) — NOT BTC/ETH/SOL unless truly relevant\n"
+        "- analyst_note: One powerful sentence a Southeast Asia investor needs RIGHT NOW\n\n"
+        "Return ONLY valid JSON, no markdown, no backticks:\n"
+        "{\n"
+        '  "title": "Specific headline with real event + data",\n'
+        '  "news_bullets": ["Fact with number", "Positive data point", "Risk with detail"],\n'
+        '  "threat": "Specific risk with CVE/amount/name",\n'
+        '  "opportunity": "Specific opportunity with token/protocol/percentage",\n'
+        '  "threat_score": 6,\n'
+        '  "opportunity_score": 7,\n'
+        '  "threat_level": "Medium",\n'
+        '  "deep_analysis": "Para1\\n\\nPara2\\n\\nPara3 SEA focus\\n\\nPara4 mechanics\\n\\nPara5 48h outlook",\n'
+        '  "analyst_note": "One powerful sentence for SEA retail investors",\n'
+        '  "tokens_to_watch": ["TRENDING1", "TRENDING2", "TRENDING3"],\n'
+        '  "critic": "Contrarian view challenging main narrative",\n'
+        '  "color": "#hexcolor matching mood"\n'
+        "}"
+    )
+    return prompt
 
 
 def run_production_agent():
