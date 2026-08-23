@@ -1482,21 +1482,20 @@ def run_production_agent():
     final_history = (new_entry + history_html)[:8000]
 
     # UPDATE or BUILD HTML
-    print("\n[LAYER 6] Updating/Building HTML...\n")
+    print("\n[LAYER 6] Rebuilding HTML from scratch (full autonomous rebuild)...\n")
     try:
-        if old_content:
-            # Use smart patching for existing HTML
-            html = update_html_content(old_content, data, final_history, date_str, price_context,
-                                      sentiment_mood, sentiment_score, trending_tokens, btc, eth, sol, preserved)
-            print("✓ HTML patched (content updated, UI preserved)")
-        else:
-            # Build from scratch for first run
-            html = build_html(data, final_history, date_str, price_context, sentiment_mood,
-                             sentiment_score, trending_tokens, btc, eth, sol)
-            print("✓ HTML built from template")
+        # ALWAYS rebuild from scratch — agent owns the full UI every run
+        html = build_html(
+            data, final_history, date_str, price_context,
+            sentiment_mood, sentiment_score, trending_tokens,
+            btc, eth, sol, mission
+        )
+        print(f"✓ Full HTML rebuilt (mission: {mission.get('mission','standard').upper()})")
+        print(f"✓ Extra sections: {mission.get('extra_sections', [])}")
     except Exception as e:
         print(f"❌ HTML generation failed: {e}")
-        print("   Keeping old site untouched.")
+        import traceback
+        traceback.print_exc()
         if os.path.exists("index.html.bak"):
             shutil.copy("index.html.bak", "index.html")
         return
