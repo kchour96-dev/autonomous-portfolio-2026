@@ -3,33 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autonomous Prompt Lab 2026 — Deep Thinking Visual & Story Prompts</title>
-    <meta name="description" content="Curated Deep-Thinking prompts for Midjourney, Stable Diffusion, Claude, and ChatGPT. Copy-ready formulas for cinematic visual art, immersive fiction, and AI lyrics.">
-    <meta name="keywords" content="AI prompts, Midjourney prompts, ChatGPT storytelling, deep thinking prompt, Suno AI lyrics, anime prompts 16:9, Stable Diffusion prompt">
+    <title>Azeroth Intel 2026 — WoW Mythic+ Affixes, Token Tracker & Class Builds</title>
+    <meta name="description" content="Automated World of Warcraft intelligence: Live US WoW Token gold price, active Mythic+ affixes, raid reset times, and copyable talent import strings.">
+    <meta name="keywords" content="World of Warcraft, WoW Token price, Mythic plus affixes, WoW weekly reset, talent import string, class rotation">
     <meta name="author" content="Kchour — Autonomous Lab 2026">
     <meta name="robots" content="index, follow">
-    <meta property="og:title" content="Autonomous Prompt Lab 2026 — Chain-of-Thought AI Prompts">
-    <meta property="og:description" content="Engineered Deep-Thinking prompts for Midjourney, ChatGPT, Claude, and AI Music. Updated daily.">
+    <meta property="og:title" content="Azeroth Intel 2026 — Live WoW Hub">
+    <meta property="og:description" content="Live Mythic+ affix counters, WoW Token gold updates, and 1-click class talent builds.">
     <meta property="og:url" content="https://autonomous-portfolio-2026.live">
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://autonomous-portfolio-2026.live/">
 
-    <!-- Structured JSON-LD -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Autonomous Prompt Lab 2026",
-      "url": "https://autonomous-portfolio-2026.live",
-      "description": "Autonomous repository for chain-of-thought prompt templates across visual art, creative storytelling, and AI music.",
-      "author": {
-        "@type": "Person",
-        "name": "Kchour",
-        "url": "https://github.com/kchour96-dev"
-      }
-    }
-    </script>
-
+    <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3639279484055527" crossorigin="anonymous"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -40,187 +25,161 @@
         .glass { background: rgba(15,23,42,0.4); border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(24px); border-radius: 24px; }
         .blink { animation: pulse 2.5s ease-in-out infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .tag { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 99px; font-size: 0.8rem; border: 1px solid; }
         .code-box { background: rgba(2, 6, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
 <body class="min-h-screen">
 
-<!-- HEADER BAR -->
+<!-- TOP STATUS BAR -->
 <div class="w-full border-b border-white/10 bg-[#06070f]/90 sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 blink"></span>
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Autonomous Prompt Engine Online</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 blink"></span>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Azeroth Live Pipeline Active</span>
         </div>
-        <span class="text-xs font-bold text-emerald-400">● READY FOR USE</span>
+        <div class="text-xs font-bold text-yellow-400 flex items-center gap-2">
+            <span>🪙 WoW Token (US):</span>
+            <span id="token-price" class="mono text-white">312,450 Gold</span>
+        </div>
     </div>
 </div>
 
 <div class="max-w-6xl mx-auto px-4 py-12">
-    <div class="mb-10">
-        <h1 class="text-5xl font-bold tracking-tight mb-2">AUTONOMOUS LAB <span style="color:#ef4444">.PROMPTS</span></h1>
-        <p class="text-slate-400 text-sm">Deep-thinking formulas, layered Midjourney compositions, and structured storytelling engines.</p>
+    <div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-5xl font-bold tracking-tight mb-2">AZEROTH INTEL <span class="text-amber-500">.2026</span></h1>
+            <p class="text-slate-400 text-sm">Automated reset tracker, Mythic+ counters, and high-impact talent loadouts.</p>
+        </div>
+        <div class="flex gap-2">
+            <span class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold">US Reset: Tuesday</span>
+            <span class="px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold">EU Reset: Wednesday</span>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-8">
 
-            <!-- HERO / VISUAL PROMPT -->
+            <!-- HERO: WEEKLY RESET & AFFIX INTEL -->
             <div class="glass p-8">
                 <div class="flex items-center justify-between mb-4">
-                    <span class="tag bg-red-500/10 text-red-400 border-red-500/30">🎨 Visual Generation</span>
-                    <span class="text-xs mono text-slate-500">Midjourney v6.1 / SDXL</span>
+                    <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-bold">⚔️ Weekly Mythic+ Rotation</span>
+                    <span class="text-xs mono text-slate-500">Live Season</span>
                 </div>
-                <h2 class="text-3xl font-bold mb-4 text-white" id="title-visual">4-Layer Cinematic Battle Engine</h2>
-                <p class="text-slate-400 text-sm mb-6" id="desc-visual">Designed to eliminate washed-out lighting and generic poses by separating Subject, Environment, Optical Hardware, and Atmosphere.</p>
-                
-                <div class="relative code-box p-5 rounded-2xl mb-4 text-sm text-slate-300 leading-relaxed">
-                    <pre class="whitespace-pre-wrap font-mono text-xs text-emerald-300" id="prompt-visual">A battle-worn armored wanderer in ornate cracked obsidian plating with faint cyan glyph carvings, resting against a shattered monolith, wide-angle panoramic establishing shot, eroded stone temple ruins shrouded in dense volumetric morning mist, bioluminescent moss along cracked flagstones, shot on ARRI Alexa Mini, 35mm anamorphic prime lens, f/2.8 aperture, cinematic rim lighting catching dust particles in the air, cold slate-grey and muted amber color grade, photorealistic surface micro-textures, ray-traced shadows, hyper-detailed render --ar 16:9 --stylize 250 --v 6.1</pre>
-                    <button onclick="copyToClipboard('prompt-visual', this)" class="mt-4 px-4 py-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-xl text-xs font-bold hover:bg-emerald-500/30 transition flex items-center gap-2">
-                        📋 Copy Visual Prompt
-                    </button>
-                </div>
+                <h2 class="text-3xl font-bold mb-4 text-white">Active Keystone Affixes & Strategy</h2>
+                <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                    Weekly dungeon modifiers directly impact pull pacing and cooldown schedules. Coordinate defensive rotations and prioritize high-priority interrupt targets on fortified packs.
+                </p>
 
-                <div class="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] text-xs text-slate-400 space-y-1">
-                    <p><strong class="text-slate-200">💡 Customization Tip:</strong> <span id="tip-visual">Replace 'cracked obsidian plating' with 'matte-black carbon-fiber tactical rig' for instant Cyberpunk output.</span></p>
-                    <p><strong class="text-slate-200">📱 Aspect Ratio:</strong> Change <code class="text-red-400">--ar 16:9</code> to <code class="text-red-400">--ar 9:16</code> for phone wallpapers and TikTok backgrounds.</p>
-                </div>
-            </div>
-
-            <!-- STORYTELLING PROMPT -->
-            <div class="glass p-8">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="tag bg-yellow-500/10 text-yellow-400 border-yellow-500/30">🧠 Narrative & Storytelling</span>
-                    <span class="text-xs mono text-slate-500">Claude 3.5 / ChatGPT 4o / DeepSeek</span>
-                </div>
-                <h3 class="text-2xl font-bold mb-3 text-white" id="title-story">The "Cognitive Arc" Deep-Thinking Story Formula</h3>
-                <p class="text-slate-400 text-sm mb-6" id="desc-story">Forces the model to reason through protagonist motivation, tactile sensory anchors, and narrative subtext inside a thinking block before drafting prose.</p>
-                
-                <div class="relative code-box p-5 rounded-2xl mb-4 text-sm text-slate-300 leading-relaxed">
-                    <pre class="whitespace-pre-wrap font-mono text-xs text-amber-200" id="prompt-story">Act as an award-winning novelist and narrative architect. 
-
-Before drafting the story, perform a deep-thinking analysis enclosed inside a [THINKING_BLOCK] with these 4 steps:
-1. Core Dilemma: What does the protagonist urgently desire versus the moral compromise required to get it?
-2. Sensory Map: Define 2 tactile sensations, 1 ambient smell, and the exact background acoustic soundscape.
-3. The Reveal/Pivot: Where does reader expectation subvert naturally without feeling unearned?
-4. Subtext & Rhythm: What is the unspoken tension beneath the dialogue? Use varied sentence lengths (staccato for action, flowing for internal reflection).
-
-Genre: Dark Mythic Fantasy / Psychological Mystery
-Premise: An archivist in an underground fortress translates the final log of an expedition that vanished 100 years ago—only to discover their own signature at the bottom.
-
-After completing the [THINKING_BLOCK], write the opening chapter (approx. 500-700 words) using rich, atmospheric, showing-not-telling prose.</pre>
-                    <button onclick="copyToClipboard('prompt-story', this)" class="mt-4 px-4 py-2 bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 rounded-xl text-xs font-bold hover:bg-yellow-500/30 transition flex items-center gap-2">
-                        📋 Copy Story Architecture
-                    </button>
-                </div>
-            </div>
-
-            <!-- BI-LINGUAL MUSIC PROMPT -->
-            <div class="glass p-8">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="tag bg-purple-500/10 text-purple-400 border-purple-500/30">🎵 Audio & Suno Lyrics</span>
-                    <span class="text-xs mono text-slate-500">Suno v3.5 / Udio</span>
-                </div>
-                <h3 class="text-2xl font-bold mb-3 text-white" id="title-music">Lo-Fi / R&B Bilingual Japanese-English Song Structure</h3>
-                <p class="text-slate-400 text-sm mb-6" id="desc-music">Formatted with metatags and structured verse-chorus sections to prevent AI vocal hallucinations and muddy mixing.</p>
-                
-                <div class="relative code-box p-5 rounded-2xl mb-4 text-sm text-slate-300 leading-relaxed">
-                    <pre class="whitespace-pre-wrap font-mono text-xs text-purple-300" id="prompt-music">[Genre: Chillhop, Lo-fi R&B, Melodic Ambient]
-[Tempo: 85 BPM, Warm Rhodes Piano, Vinyl Crackle, Sub-bass, Smooth Saxophone]
-[Vocals: Soft breathy male/female duet, intimate, smooth reverb]
-
-[Intro]
-(Rain outside, muffled city sounds, gentle chord progression)
-
-[Verse 1 - English]
-Neon reflections on the wet asphalt,
-Walking through the shadows where the memories halt.
-Your coffee's getting cold on the wooden stand,
-A pocket full of promises slipping through my hand.
-
-[Pre-Chorus - Japanese & English]
-夜の静けさに (In the silence of the night)
-君の声がまだ響いてる (Your voice is still echoing)
-Trying to find the rhythm in the pouring rain,
-Taking one step forward through the sweet familiar pain.
-
-[Chorus - Bilingual Drop]
-City lights fade out, but we stay right here,
-消えないで (Don't fade away), whispering in my ear.
-Lost in the haze where tomorrow begins,
-Counting the beats underneath our skins.
-巡る季節の中で (Inside the turning seasons),
-Just you and I.
-
-[Outro]
-(Muted vinyl crackle, piano chords fade out)
-Just you and I...
-またね (See you again).</pre>
-                    <button onclick="copyToClipboard('prompt-music', this)" class="mt-4 px-4 py-2 bg-purple-500/20 text-purple-400 border border-purple-500/40 rounded-xl text-xs font-bold hover:bg-purple-500/30 transition flex items-center gap-2">
-                        📋 Copy Lyrics & Audio Style
-                    </button>
-                </div>
-            </div>
-
-            <!-- ANALYST / CURATOR NOTE -->
-            <div class="glass p-8 border-l-4" style="border-color:#ef4444">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold text-white">K</div>
-                    <div>
-                        <p class="text-sm font-bold text-white">Kchour</p>
-                        <p class="text-xs text-slate-500">Autonomous Lab · Prompt Engineering & Narrative Architect · Phnom Penh, Cambodia</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    <div class="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+                        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Affix 1</p>
+                        <p class="text-sm font-bold text-amber-400" id="affix-1">Fortified</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+                        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Affix 2</p>
+                        <p class="text-sm font-bold text-amber-400" id="affix-2">Bursting</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+                        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">World Boss</p>
+                        <p class="text-sm font-bold text-emerald-400">Available This Week</p>
                     </div>
                 </div>
-                <p class="text-lg font-bold mb-2 text-white">✍️ Creator's Note</p>
-                <p class="text-slate-300 leading-relaxed text-sm" id="creator-note">"The secret to generating exceptional output from modern foundation models is not adding more adjectives—it's giving the model structural constraints and forcing it to perform internal reasoning before producing tokens."</p>
+
+                <div class="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-slate-300">
+                    <strong class="text-amber-400">💡 Tactical Tip:</strong> <span id="weekly-tip">Mass dispels and staged mob executions prevent dangerous debuff stacking on 6+ target packs.</span>
+                </div>
             </div>
+
+            <!-- PRO TIP & TALENT STRING LOADOUT -->
+            <div class="glass p-8">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-bold">📋 Meta Build of the Day</span>
+                    <span class="text-xs mono text-slate-400" id="spec-name">Retribution Paladin</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 text-white" id="guide-title">Divine Storm High-Burst M+ Build</h3>
+                <p class="text-slate-400 text-sm mb-4" id="guide-desc">
+                    Provides exceptional burst AOE for trash packs along with Cleanse Toxins and Word of Glory support.
+                </p>
+
+                <div class="relative code-box p-4 rounded-xl mb-4 text-xs text-slate-300">
+                    <pre class="whitespace-pre-wrap font-mono text-emerald-400 overflow-x-auto" id="talent-string">BYEAAAAAAAAAAAAAAAAAAAAAAAAAAgQCp0SjkIpkERik0SEAAAAAAAAAAAgEJRSSkWgIJRCA</pre>
+                    <button onclick="copyToClipboard('talent-string', this)" class="mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 border border-blue-500/40 rounded-xl text-xs font-bold hover:bg-blue-500/30 transition flex items-center gap-2">
+                        📋 Copy In-Game Talent String
+                    </button>
+                </div>
+            </div>
+
+            <!-- SURVIVAL CHECKLIST -->
+            <div class="glass p-8">
+                <h3 class="text-xl font-bold mb-3 text-white">⚡ Weekly Vault Checklist</h3>
+                <ul class="space-y-3 text-xs text-slate-300">
+                    <li class="flex items-start gap-3">
+                        <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</span>
+                        <span>Complete at least <strong>1 Mythic +10 keystone</strong> to unlock maximum item level Great Vault rewards.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</span>
+                        <span>Defeat the weekly <strong>World Boss</strong> for a shot at bonus gear drops and progression crests.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</span>
+                        <span>Cap your seasonal <strong>Conquest and Honor</strong> points if playing Rated Solo Shuffle or Arenas.</span>
+                    </li>
+                </ul>
+            </div>
+
         </div>
 
         <!-- SIDEBAR -->
         <aside class="space-y-8">
-            <!-- QUICK TAG FILTER -->
+            <!-- REALM & ECONOMY -->
             <div class="glass p-6">
-                <p class="text-xs uppercase font-bold mb-4 tracking-wider text-slate-300">Popular Categories</p>
-                <div class="flex flex-wrap gap-2 text-xs">
-                    <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-white cursor-pointer">#Midjourney-v6</span>
-                    <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-white cursor-pointer">#Dark-Fantasy</span>
-                    <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-white cursor-pointer">#Story-Arcs</span>
-                    <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-white cursor-pointer">#Suno-Bilingual</span>
-                    <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-white cursor-pointer">#Anime-Battle</span>
-                    <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-white cursor-pointer">#Cyberpunk-9:16</span>
+                <p class="text-xs uppercase font-bold mb-4 tracking-wider text-slate-300">Economy & Servers</p>
+                <div class="space-y-3 text-xs">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <span class="text-slate-400">US Realm Servers</span>
+                        <span class="text-emerald-400 font-bold flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Online</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <span class="text-slate-400">EU Realm Servers</span>
+                        <span class="text-emerald-400 font-bold flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Online</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">WoW Token (US)</span>
+                        <span class="text-amber-400 font-bold mono" id="side-token">312,450 Gold</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- PROMPT ENGINEERING MATRIX -->
+            <!-- POPULAR SPECS -->
             <div class="glass p-6">
-                <p class="text-xs uppercase font-bold mb-3 tracking-wider text-slate-300">Layered Formula</p>
-                <ul class="text-xs text-slate-400 space-y-2.5">
-                    <li><strong class="text-emerald-400">1. Subject:</strong> Material, attire & stance</li>
-                    <li><strong class="text-emerald-400">2. Optics:</strong> Camera lens mm, aperture (f/2.8)</li>
-                    <li><strong class="text-emerald-400">3. Lighting:</strong> Volumetric rim, cold dusk</li>
-                    <li><strong class="text-emerald-400">4. Parameters:</strong> Engine tag & aspect ratio</li>
-                </ul>
+                <p class="text-xs uppercase font-bold mb-3 tracking-wider text-slate-300">Meta Tracked Specs</p>
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300">Protection Paladin</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300">Augmentation Evoker</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300">Havoc DH</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300">Resto Druid</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300">Frost Mage</span>
+                </div>
             </div>
 
-            <!-- ARCHIVE HISTORY -->
+            <!-- ARCHIVE -->
             <div class="glass p-6">
-                <p class="text-xs uppercase font-bold mb-3 text-slate-300">📁 Prompt Archive</p>
-                <div class="max-h-80 overflow-y-auto text-xs space-y-2 text-slate-400">
+                <p class="text-xs uppercase font-bold mb-3 text-slate-300">📁 Recent Builds</p>
+                <div class="max-h-60 overflow-y-auto text-xs space-y-2 text-slate-400">
                     <!-- H_S -->
-                    <div class='archive-item p-2 rounded-lg hover:bg-white/5'>
+                    <div class='p-2 rounded-lg hover:bg-white/5'>
                         <p class='text-xs text-slate-500'>27 Sep 2026</p>
-                        <p class='font-bold text-slate-200'>4-Layer Cinematic Battle Engine</p>
-                        <p class='text-xs text-emerald-400'>Visual · Midjourney</p>
+                        <p class='font-bold text-slate-200'>Retribution Paladin (Fortified)</p>
                     </div>
                     <!-- H_E -->
                 </div>
             </div>
 
-            <!-- DONATE -->
+            <!-- DONATE (Preserved) -->
             <!-- DONATE -->
             <div class="glass p-6 border-l-4" style="border-color:#f59e0b">
-                <p class="text-xs uppercase font-bold mb-3" style="color:#f59e0b">💰 Support the Lab</p>
+                <p class="text-xs uppercase font-bold mb-3" style="color:#f59e0b">💰 Support the Gaming Lab</p>
                 <div class="space-y-3 text-xs">
                     <div>
                         <p class="text-slate-400 mb-1">Smart Chain (BEP20/ERC20)</p>
@@ -232,24 +191,17 @@ Just you and I...
                 </div>
             </div>
             <!-- /DONATE -->
-
-            <!-- DISCLAIMER -->
-            <div class="glass p-4 border-yellow-500/20">
-                <p class="text-xs text-yellow-600">⚡ Test all generated prompts across your preferred model engine.</p>
-            </div>
         </aside>
     </div>
 </div>
 
 <footer class="mt-16 pt-8 border-t border-white/10 text-center text-xs text-slate-600">
-    <!-- NAV -->
     <div class="flex justify-center flex-wrap gap-4 mb-3">
         <a href="/about.html" class="hover:text-white">About</a>
         <a href="/privacy.html" class="hover:text-white">Privacy</a>
         <a href="/terms.html" class="hover:text-white">Terms</a>
     </div>
-    <!-- /NAV -->
-    <p>© 2026 Autonomous Lab • <a href="https://github.com/kchour96-dev" class="hover:text-white">GitHub</a></p>
+    <p>© 2026 Azeroth Intel • World of Warcraft is a registered trademark of Blizzard Entertainment.</p>
 </footer>
 
 <script>
@@ -272,18 +224,18 @@ function fallbackCopy(text, btn) {
     try {
         document.execCommand("copy");
         showSuccess(btn);
-    } catch (err) {
-        btn.innerHTML = "❌ Failed to Copy";
+    } catch (e) {
+        btn.innerHTML = "❌ Copy Failed";
     }
     document.body.removeChild(textarea);
 }
 
 function showSuccess(btn) {
-    const original = btn.innerHTML;
+    const orig = btn.innerHTML;
     btn.innerHTML = "✅ Copied to Clipboard!";
     btn.classList.add("bg-emerald-500/40", "text-white");
     setTimeout(() => {
-        btn.innerHTML = original;
+        btn.innerHTML = orig;
         btn.classList.remove("bg-emerald-500/40", "text-white");
     }, 2000);
 }
