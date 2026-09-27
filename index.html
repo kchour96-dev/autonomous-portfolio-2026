@@ -24,8 +24,6 @@
         .font-wow { font-family: 'Cinzel', serif; }
         .mono { font-family: 'JetBrains Mono', monospace; }
         .glass { background: rgba(13, 17, 30, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 20px; }
-        .glass-gold { background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.3); }
-        .glass-paladin { background: rgba(245, 140, 186, 0.04); border: 1px solid rgba(245, 140, 186, 0.3); }
         .blink { animation: pulse 2.2s ease-in-out infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
         .code-box { background: rgba(3, 7, 18, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); font-family: 'JetBrains Mono', monospace; }
@@ -56,19 +54,20 @@
 
 <div class="max-w-6xl mx-auto px-4 py-8">
 
-    <!-- CINEMATIC HERO BANNER -->
-    <div class="relative w-full rounded-3xl overflow-hidden mb-10 border border-white/10 shadow-2xl">
-        <img src="https://images.blz-contentstack.com/v3/assets/blt3452e3b114fab0cd/blt8ba965c4048ca052/65b1613eb2e5d7001bb0552b/WoW_Midnight_Announce_KeyArt_1920x1080.jpg" 
+    <!-- CINEMATIC HERO BANNER (FIXED FOR NO BROKEN IMAGES) -->
+    <div class="relative w-full rounded-3xl overflow-hidden mb-10 border border-white/10 shadow-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 min-h-[220px]">
+        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1920&q=80" 
              alt="World of Warcraft Cinematic Banner" 
-             class="w-full h-64 md:h-72 object-cover object-center brightness-75">
+             class="w-full h-60 md:h-72 object-cover object-center brightness-75 transition duration-700 hover:scale-105"
+             onerror="this.style.display='none'">
         <div class="absolute inset-0 bg-gradient-to-t from-[#05060b] via-[#05060b]/60 to-transparent"></div>
         <div class="absolute bottom-6 left-6 right-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
                 <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 text-[11px] font-bold uppercase tracking-wider">
-                    Season Active • Live Reset
+                    Season Active • Live Keystones
                 </span>
-                <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 font-wow tracking-wide">AZEROTH INTEL</h1>
-                <p class="text-slate-300 text-xs md:text-sm mt-1">High-impact Mythic+ affixes, weekly push ratings, and class combat strings.</p>
+                <h1 class="text-3xl md:text-5xl font-extrabold text-white mt-2 font-wow tracking-wide">AZEROTH INTEL</h1>
+                <p class="text-slate-300 text-xs md:text-sm mt-1">Live affix counters, push week tiers, and competitive class loadouts.</p>
             </div>
             <div class="flex gap-2">
                 <span class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold">US Reset: Tuesday</span>
@@ -84,30 +83,30 @@
             <div class="glass p-7 border-l-4" style="border-left-color: #f59e0b;">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2">
-                        <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-bold">⚔️ Weekly Mythic+ Modifiers</span>
+                        <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-bold">⚔️ Weekly Keystone Modifiers</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-xs text-slate-400">Push Week Grade:</span>
-                        <span class="px-2.5 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold">Tier S (8.5/10)</span>
+                        <span class="text-xs text-slate-400">Push Grade:</span>
+                        <span class="px-2.5 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-bold" id="push-grade">Tier S (8.5/10)</span>
                     </div>
                 </div>
                 
                 <h2 class="text-2xl md:text-3xl font-bold mb-3 text-white">Active Keystone Affixes & Strategy</h2>
-                <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                <p class="text-slate-300 text-sm leading-relaxed mb-6" id="affix-strategy">
                     This week favors coordinated burst AoE and crowd control. Stagger lethal mob kills to keep healer mana stable and mitigate dangerous affix spikes.
                 </p>
 
-                <!-- AFFIX CARDS WITH REAL WOW CDN ICONS -->
+                <!-- AFFIX CARDS -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                     <div class="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] flex items-center gap-3">
-                        <img src="https://wow.zamimg.com/images/wow/icons/large/ability_toughness.jpg" alt="Fortified" class="wow-icon">
+                        <img src="https://wow.zamimg.com/images/wow/icons/large/ability_toughness.jpg" alt="Affix 1" class="wow-icon">
                         <div>
                             <p class="text-[10px] uppercase tracking-wider text-slate-400">Affix 1</p>
                             <p class="text-sm font-bold text-amber-400" id="affix-1">Fortified</p>
                         </div>
                     </div>
                     <div class="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] flex items-center gap-3">
-                        <img src="https://wow.zamimg.com/images/wow/icons/large/ability_ironmaidens_swarmingblood.jpg" alt="Bursting" class="wow-icon">
+                        <img src="https://wow.zamimg.com/images/wow/icons/large/ability_ironmaidens_swarmingblood.jpg" alt="Affix 2" class="wow-icon">
                         <div>
                             <p class="text-[10px] uppercase tracking-wider text-slate-400">Affix 2</p>
                             <p class="text-sm font-bold text-amber-400" id="affix-2">Bursting</p>
@@ -131,20 +130,29 @@
                 </div>
             </div>
 
-            <!-- PRO BUILD & TALENT STRING LOADOUT (PALADIN PINK ACCENT) -->
-            <div class="glass p-7 glass-paladin">
+            <!-- FEATURED SPEC CARD (DYNAMIC CLASS GLOW) -->
+            <div class="glass p-7" id="spec-card" style="border-left: 4px solid #F58CBA;">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-2.5">
-                        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_auraoflight.jpg" alt="Paladin Icon" class="w-8 h-8 rounded-lg border border-[#F58CBA]/50">
-                        <span class="px-3 py-1 rounded-full bg-[#F58CBA]/10 text-[#F58CBA] border border-[#F58CBA]/30 text-xs font-bold">📋 Meta Build of the Day</span>
-                    </div>
-                    <span class="text-xs mono text-[#F58CBA] font-bold" id="spec-name">Retribution Paladin</span>
+                    <span class="px-3 py-1 rounded-full bg-white/10 text-white border border-white/20 text-xs font-bold">📋 Meta Build of the Day</span>
+                    <span class="text-xs mono font-bold text-amber-300" id="spec-name">Retribution Paladin</span>
                 </div>
 
                 <h3 class="text-2xl font-bold mb-2 text-white" id="guide-title">Divine Storm High-Burst M+ Build</h3>
                 <p class="text-slate-300 text-sm mb-4 leading-relaxed" id="guide-desc">
                     Maximizes holy damage burst windows during 2-minute cooldowns while providing Cleanse Toxins utility for the party.
                 </p>
+
+                <!-- STAT PRIORITY & CONSUMABLES -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 text-xs">
+                    <div class="p-3 rounded-lg bg-black/40 border border-white/5">
+                        <p class="text-[10px] uppercase tracking-wider text-slate-400 mb-0.5">Stat Priority</p>
+                        <span class="text-amber-400 font-bold" id="stat-priority">Item Level > Haste >= Mastery > Crit</span>
+                    </div>
+                    <div class="p-3 rounded-lg bg-black/40 border border-white/5">
+                        <p class="text-[10px] uppercase tracking-wider text-slate-400 mb-0.5">Recommended Consumables</p>
+                        <span class="text-emerald-400 font-bold" id="consumables">Flask of Chaos • Tempered Potion</span>
+                    </div>
+                </div>
 
                 <!-- TALENT IMPORT BOX -->
                 <div class="relative code-box p-4 rounded-xl mb-4 text-xs text-slate-300">
@@ -153,20 +161,20 @@
                         <span class="text-emerald-400">Verified Loadout</span>
                     </div>
                     <pre class="whitespace-pre-wrap font-mono text-emerald-400 overflow-x-auto text-[11px]" id="talent-string">BYEAAAAAAAAAAAAAAAAAAAAAAAAAAgQCp0SjkIpkERik0SEAAAAAAAAAAAgEJRSSkWgIJRCA</pre>
-                    <button onclick="copyToClipboard('talent-string', this)" class="mt-4 px-4 py-2.5 bg-[#F58CBA]/20 text-[#F58CBA] border border-[#F58CBA]/40 rounded-xl text-xs font-bold hover:bg-[#F58CBA]/30 transition flex items-center gap-2">
+                    <button onclick="copyToClipboard('talent-string', this)" class="mt-4 px-4 py-2.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-xl text-xs font-bold hover:bg-amber-500/30 transition flex items-center gap-2">
                         📋 Copy Talent Import String
                     </button>
                 </div>
 
-                <!-- QUICK UTILITY MACROS -->
+                <!-- DYNAMIC COMBAT MACROS -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 pt-4 border-t border-white/5 text-xs">
                     <div class="p-3 rounded-lg bg-black/40 border border-white/5">
-                        <p class="font-bold text-slate-200 mb-1">Focus Rebuke (Kick) Macro</p>
-                        <code class="text-slate-400 block font-mono text-[10px]">#showtooltip /cast [@focus,harm,nodead][] Rebuke</code>
+                        <p class="font-bold text-slate-200 mb-1" id="macro-1-title">Focus Rebuke (Kick) Macro</p>
+                        <code class="text-slate-400 block font-mono text-[10px]" id="macro-1-code">#showtooltip /cast [@focus,harm,nodead][] Rebuke</code>
                     </div>
                     <div class="p-3 rounded-lg bg-black/40 border border-white/5">
-                        <p class="font-bold text-slate-200 mb-1">Mouseover Cleanse Toxins</p>
-                        <code class="text-slate-400 block font-mono text-[10px]">#showtooltip /cast [@mouseover,help,nodead][] Cleanse</code>
+                        <p class="font-bold text-slate-200 mb-1" id="macro-2-title">Mouseover Cleanse Toxins</p>
+                        <code class="text-slate-400 block font-mono text-[10px]" id="macro-2-code">#showtooltip /cast [@mouseover,help,nodead][] Cleanse</code>
                     </div>
                 </div>
             </div>
@@ -249,7 +257,8 @@
                     <!-- H_S -->
                     <div class='p-2 rounded-lg hover:bg-white/5'>
                         <p class='text-xs text-slate-500'>27 Sep 2026</p>
-                        <p class='font-bold text-slate-200'>Retribution Paladin (Fortified)</p>
+                        <p class='font-bold text-slate-200'>Retribution Paladin</p>
+                        <p class='text-[11px] text-amber-400'>Fortified + Bursting</p>
                     </div>
                     <!-- H_E -->
                 </div>
