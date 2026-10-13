@@ -1,336 +1,528 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OmniGaming Intel 2026 — Daily Game Releases, Free Games & Meta Builds</title>
-    <meta name="description" content="Daily releases, Steam store specials, 100% free downloadable games, WoW tokens, and competitive gaming meta builds.">
-    <meta name="keywords" content="Steam free games, new game releases, buy games discount, WoW Mythic affixes, Path of Exile 2 economy">
-    <meta name="author" content="Kchour — OmniGaming Lab">
+    <title>OmniGaming Intel — Daily Free PC Games, Steam Specials & Meta Intel Hub</title>
     
+    <!-- Search Engine Indexing & SEO Meta -->
+    <meta name="description" content="Discover daily 100% free PC games, Steam specials, free-to-play drops, live WoW Token market gold pricing, Mythic+ keystone tier lists, and competitive gaming meta builds.">
+    <meta name="keywords" content="free steam games, claim free pc games 2026, steam deals, steam sales today, wow token price live, mythic plus tier list, path of exile 2 economy, gamerpower giveaways, free download games">
+    <meta name="author" content="OmniGaming Intel">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <link rel="canonical" href="https://autonomous-portfolio-2026.live/">
+
+    <!-- Social / Open Graph Meta for Social Shares & Discord Embeds -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://autonomous-portfolio-2026.live/">
+    <meta property="og:title" content="OmniGaming Intel — Daily Free PC Games, Steam Drops & Pro Meta Deck">
+    <meta property="og:description" content="Track daily free game giveaways, discounts, server economies, and verified competitive builds updated every 24 hours.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="OmniGaming Intel — Daily Free Games & Gaming Meta Hub">
+    <meta name="twitter:description" content="Daily 100% free PC game alerts, Steam specials, and live MMO meta builds.">
+
+    <!-- Schema.org Rich Snippet Structured Data for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://autonomous-portfolio-2026.live/#website",
+          "url": "https://autonomous-portfolio-2026.live/",
+          "name": "OmniGaming Intel",
+          "description": "Daily 100% Free PC Games, Steam Discounts, and Game Meta Tracker",
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "DataCatalog",
+          "name": "Live Gaming Economy and Deals Feed",
+          "description": "Real-time updates on free Steam game releases, token market trackers, and competitive loadouts."
+        }
+      ]
+    }
+    </script>
+
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3639279484055527" crossorigin="anonymous"></script>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            950: '#04060a',
+                            900: '#070b14',
+                            850: '#0c1222',
+                            800: '#121b33',
+                            700: '#1b284a'
+                        },
+                        brand: {
+                            cyan: '#00f2fe',
+                            blue: '#3b82f6',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            purple: '#8b5cf6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Orbitron', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         * { box-sizing: border-box; }
-        body { background: #05060b; color: #f1f5f9; font-family: 'Space Grotesk', sans-serif; margin: 0; }
-        .font-wow { font-family: 'Cinzel', serif; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        .glass { background: rgba(13, 17, 30, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 20px; }
-        .blink { animation: pulse 2.2s ease-in-out infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-        .code-box { background: rgba(3, 7, 18, 0.9); border: 1px solid rgba(255, 255, 255, 0.08); font-family: 'JetBrains Mono', monospace; }
-        .tab-btn.active { background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.6); color: #fbbf24; }
+        body {
+            background-color: #030509;
+            background-image: 
+                radial-gradient(ellipse 90% 60% at 50% -20%, rgba(14, 165, 233, 0.12), transparent),
+                radial-gradient(ellipse 60% 40% at 90% 30%, rgba(139, 92, 246, 0.08), transparent),
+                radial-gradient(ellipse 70% 50% at 10% 80%, rgba(16, 185, 129, 0.06), transparent);
+            background-attachment: fixed;
+            color: #e2e8f0;
+        }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(12, 18, 34, 0.85) 0%, rgba(6, 10, 20, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+        }
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.25);
+        }
+        .code-box {
+            background: rgba(3, 7, 18, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 9999px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col justify-between selection:bg-cyan-500/30 selection:text-cyan-200 antialiased font-sans">
 
-<!-- TOP TICKER BAR -->
-<div class="w-full border-b border-white/10 bg-[#05060b]/90 sticky top-0 z-50 backdrop-blur">
-    <div class="max-w-6xl mx-auto px-4 py-2.5 flex justify-between items-center text-xs">
-        <div class="flex items-center gap-3">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 blink"></span>
-            <span class="font-bold text-slate-300 uppercase tracking-widest">OmniGaming Daily Intel</span>
+<!-- TOP STICKY STATUS & MARKET TICKER -->
+<header class="w-full border-b border-slate-800/80 bg-[#030509]/95 sticky top-0 z-50 backdrop-blur-xl">
+    <div class="max-w-[1700px] mx-auto px-4 sm:px-8 py-3 flex flex-wrap justify-between items-center gap-3 text-xs">
+        <div class="flex items-center gap-3.5">
+            <a href="/" class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white font-black font-display text-sm shadow-lg shadow-cyan-500/20">Ω</span>
+                <span class="font-display font-black tracking-wider text-white text-sm">OMNIGAMING<span class="text-cyan-400">INTEL</span></span>
+            </a>
+            <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px] font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                Daily Systems Live
+            </span>
         </div>
-        <div class="flex items-center gap-5">
-            <span class="text-slate-400 hidden sm:inline" id="last-updated">Updated Daily</span>
-            <span class="text-amber-400 font-bold">🪙 WoW Token: <span id="token-price" class="mono text-white">314,500 Gold</span></span>
-        </div>
-    </div>
-</div>
 
-<div class="max-w-6xl mx-auto px-4 py-8">
+        <nav class="hidden md:flex items-center gap-6 text-slate-400 font-medium text-xs">
+            <a href="#free-games" class="hover:text-cyan-400 transition">Free Games</a>
+            <a href="#trending-topics" class="hover:text-cyan-400 transition">Categories</a>
+            <a href="#meta-builds" class="hover:text-cyan-400 transition">Meta Builds</a>
+            <a href="#dungeon-radar" class="hover:text-cyan-400 transition">Keystone Radar</a>
+            <a href="#faq" class="hover:text-cyan-400 transition">FAQ</a>
+        </nav>
 
-    <!-- MULTI-GAME PORTAL SELECTOR -->
-    <div class="flex flex-wrap items-center gap-2 mb-8 border-b border-white/10 pb-4">
-        <button class="tab-btn active px-4 py-2 rounded-xl border border-white/10 text-xs font-bold transition flex items-center gap-2">
-            <span>🎮</span> Steam & Daily Releases
-        </button>
-        <button class="tab-btn px-4 py-2 rounded-xl border border-white/10 text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2">
-            <span>⚔️</span> World of Warcraft
-        </button>
-        <button class="tab-btn px-4 py-2 rounded-xl border border-white/10 text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2">
-            <span>🔥</span> Path of Exile 2
-        </button>
-        <button class="tab-btn px-4 py-2 rounded-xl border border-white/10 text-xs font-bold text-slate-400 hover:text-white transition flex items-center gap-2">
-            <span>🎯</span> Valorant / Shooters
-        </button>
-    </div>
-
-    <!-- CINEMATIC HERO BANNER -->
-    <div class="relative w-full rounded-3xl overflow-hidden mb-10 border border-white/10 shadow-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 min-h-[220px]">
-        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1920&q=80" 
-             alt="Gaming Banner" 
-             class="w-full h-60 md:h-72 object-cover object-center brightness-75 transition duration-700 hover:scale-105"
-             onerror="this.style.display='none'">
-        <div class="absolute inset-0 bg-gradient-to-t from-[#05060b] via-[#05060b]/60 to-transparent"></div>
-        <div class="absolute bottom-6 left-6 right-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-                <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[11px] font-bold uppercase tracking-wider">
-                    Daily Game Radar • 2026
-                </span>
-                <h1 class="text-3xl md:text-5xl font-extrabold text-white mt-2 font-wow tracking-wide">OMNIGAMING INTEL</h1>
-                <p class="text-slate-300 text-xs md:text-sm mt-1">Daily free-to-claim game drops, Steam releases, and competitive endgame meta.</p>
-            </div>
-            <div class="flex gap-2">
-                <span class="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold">Daily Deals Active</span>
-                <span class="px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs font-bold">Steam Sync Online</span>
+        <div class="flex items-center gap-4 font-mono text-[11px]">
+            <span class="hidden lg:inline text-slate-400" id="last-updated">Updated Daily</span>
+            <div class="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-xl text-amber-300">
+                <span>🪙 WoW Token:</span>
+                <span id="token-price" class="text-white font-bold">314,500 Gold</span>
             </div>
         </div>
     </div>
+</header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-8">
+<!-- MAIN CONTENT WRAPPER: FULL-BLEED RESPONSIVE CANVAS -->
+<main class="w-full max-w-[1700px] mx-auto px-4 sm:px-8 py-8 flex-1 space-y-10">
 
-            <!-- DAILY NEW GAMES & 100% FREE CLAIMS -->
-            <div class="glass p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        <span>🎁</span> Daily Free Games & New Releases
-                    </h3>
-                    <span class="text-xs px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold">
-                        Updated Daily
+    <!-- HERO SHOWCASE WITH METRIC CHIPS -->
+    <section class="relative w-full rounded-3xl overflow-hidden glass-card p-6 sm:p-12 border border-slate-800 shadow-2xl">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=2200&q=80" 
+                 alt="Gaming Meta Visual" 
+                 class="w-full h-full object-cover object-center opacity-25 brightness-75">
+            <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#030509] via-[#030509]/80 to-transparent"></div>
+        </div>
+
+        <div class="relative z-10 max-w-4xl space-y-5">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold tracking-wide font-mono">
+                <span>⚡</span> The Competitive Gaming & Free Release Index • 2026
+            </div>
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white font-display tracking-tight leading-none drop-shadow-lg">
+                DAILY FREE PC GAMES, <br class="hidden sm:inline">
+                <span class="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">STEAM DROPS</span> & META INTEL
+            </h1>
+            <p class="text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
+                Your high-speed command terminal for 100% free downloadable PC game claims, Steam discounts, live MMO economies, and high-tier competitive talent trees updated every 24 hours.
+            </p>
+
+            <div class="flex flex-wrap gap-3 pt-2">
+                <a href="#free-games" class="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition font-mono flex items-center gap-2 shadow-lg shadow-cyan-500/20">
+                    <span>🎁</span> Browse Today's Free Games
+                </a>
+                <a href="#meta-builds" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white border border-white/10 font-bold text-xs transition font-mono flex items-center gap-2">
+                    <span>📋</span> Load In-Game Talent Strings
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MULTI-TOPIC CATEGORY DISCOVERY BAR -->
+    <section id="trending-topics" class="space-y-3">
+        <div class="flex items-center justify-between">
+            <h2 class="text-xs uppercase font-mono font-bold tracking-wider text-slate-400">Explore by Category & Topics</h2>
+            <span class="text-xs text-slate-500 font-mono">Curated Index</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            <a href="https://store.steampowered.com/genre/Free%20to%20Play/" target="_blank" rel="noopener noreferrer" class="glass-card p-4 rounded-2xl text-center group hover:border-cyan-500/40 transition">
+                <span class="text-2xl block mb-1 group-hover:scale-110 transition transform">🎮</span>
+                <span class="text-xs font-bold text-slate-200 group-hover:text-cyan-400 transition block">Steam Free-to-Play</span>
+                <span class="text-[10px] text-slate-400 font-mono">No Purchase Req.</span>
+            </a>
+            <a href="https://store.steampowered.com/search/?filter=topsellers" target="_blank" rel="noopener noreferrer" class="glass-card p-4 rounded-2xl text-center group hover:border-amber-500/40 transition">
+                <span class="text-2xl block mb-1 group-hover:scale-110 transition transform">🔥</span>
+                <span class="text-xs font-bold text-slate-200 group-hover:text-amber-400 transition block">Top Sellers & Deals</span>
+                <span class="text-[10px] text-slate-400 font-mono">Discounts Active</span>
+            </a>
+            <a href="#meta-builds" class="glass-card p-4 rounded-2xl text-center group hover:border-pink-500/40 transition">
+                <span class="text-2xl block mb-1 group-hover:scale-110 transition transform">⚔️</span>
+                <span class="text-xs font-bold text-slate-200 group-hover:text-pink-400 transition block">MMO Meta Specs</span>
+                <span class="text-[10px] text-slate-400 font-mono">Import Strings</span>
+            </a>
+            <a href="#dungeon-radar" class="glass-card p-4 rounded-2xl text-center group hover:border-emerald-500/40 transition">
+                <span class="text-2xl block mb-1 group-hover:scale-110 transition transform">🏆</span>
+                <span class="text-xs font-bold text-slate-200 group-hover:text-emerald-400 transition block">Keystone Push Radar</span>
+                <span class="text-[10px] text-slate-400 font-mono">Mythic+ Tier Lists</span>
+            </a>
+            <a href="https://www.pathofexile2.com" target="_blank" rel="noopener noreferrer" class="glass-card p-4 rounded-2xl text-center group hover:border-purple-500/40 transition">
+                <span class="text-2xl block mb-1 group-hover:scale-110 transition transform">🔮</span>
+                <span class="text-xs font-bold text-slate-200 group-hover:text-purple-400 transition block">Path of Exile 2</span>
+                <span class="text-[10px] text-slate-400 font-mono">Realms & Currency</span>
+            </a>
+            <a href="https://playvalorant.com" target="_blank" rel="noopener noreferrer" class="glass-card p-4 rounded-2xl text-center group hover:border-sky-500/40 transition">
+                <span class="text-2xl block mb-1 group-hover:scale-110 transition transform">🎯</span>
+                <span class="text-xs font-bold text-slate-200 group-hover:text-sky-400 transition block">Shooters & Tactical</span>
+                <span class="text-[10px] text-slate-400 font-mono">Patch Logs</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- CORE TWO-COLUMN COMMAND CENTER -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        <!-- PRIMARY LEFT PANEL (8 COLS) -->
+        <div class="lg:col-span-8 space-y-8">
+
+            <!-- SECTION: DAILY STEAM & 100% FREE GAMES FEED -->
+            <section id="free-games" class="glass-card rounded-3xl p-6 sm:p-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-800 gap-3 mb-6">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <span class="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-lg">🎁</span>
+                            <div>
+                                <h2 class="text-xl font-bold text-white font-display tracking-wide">Daily Free Games & Steam Drops</h2>
+                                <p class="text-xs text-slate-400 mt-0.5">100% off game giveaways, limited-time Steam promotions, and top new PC releases.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="inline-flex self-start sm:self-auto items-center text-[11px] font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">
+                        ● Refreshed Every 24h
                     </span>
                 </div>
-                <p class="text-xs text-slate-400 mb-4">Claim 100% free limited-time PC downloads and check discounted new releases.</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="daily-games">
+
+                <!-- DYNAMICALLY INJECTED BY agent_update.py -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="daily-games">
 <!-- DAILY_GAMES_START -->
-                    <div class='p-3.5 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/5 flex flex-col justify-between'>
+                    <div class='glass-card p-4 rounded-2xl border border-slate-800 flex flex-col justify-between hover:border-cyan-500/30 transition group'>
                         <div>
-                            <div class='flex items-center justify-between mb-1.5'>
-                                <span class='text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/20 text-emerald-400 border-emerald-500/30'>100% FREE</span>
-                                <span class='text-xs font-mono text-emerald-400 font-bold'>Free (Was N/A)</span>
+                            <div class='flex items-center justify-between mb-2'>
+                                <span class='text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/30 font-mono'>100% FREE</span>
+                                <span class='text-xs font-mono text-emerald-400 font-bold'>Free Claim</span>
                             </div>
-                            <a href='https://www.gamerpower.com/open/vaultbreakers-starter-pack-key-giveaway' target='_blank' rel='noopener noreferrer' class='font-bold text-white hover:text-amber-400 transition text-xs block leading-snug'>
-                                Vaultbreakers Starter Pack Key Giveaway
+                            <a href='https://store.steampowered.com' target='_blank' rel='noopener noreferrer' class='font-bold text-white group-hover:text-cyan-400 transition text-xs block leading-snug'>
+                                Steam Daily Free Releases & Specials
                             </a>
                         </div>
-                        <div class='mt-2 text-[10px] text-slate-400 flex items-center justify-between border-t border-white/5 pt-1.5'>
-                            <span>● Steam / PC Freebie</span>
-                            <span class='text-amber-400 hover:underline'>Get Game ↗</span>
-                        </div>
-                    </div>
-                    <div class='p-3.5 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/5 flex flex-col justify-between'>
-                        <div>
-                            <div class='flex items-center justify-between mb-1.5'>
-                                <span class='text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/20 text-emerald-400 border-emerald-500/30'>100% FREE</span>
-                                <span class='text-xs font-mono text-emerald-400 font-bold'>Free (Was N/A)</span>
-                            </div>
-                            <a href='https://www.gamerpower.com/open/meltdown-playtest-steam-key-giveaway' target='_blank' rel='noopener noreferrer' class='font-bold text-white hover:text-amber-400 transition text-xs block leading-snug'>
-                                Meltdown Playtest Steam Key Giveaway
-                            </a>
-                        </div>
-                        <div class='mt-2 text-[10px] text-slate-400 flex items-center justify-between border-t border-white/5 pt-1.5'>
-                            <span>● Steam / PC Freebie</span>
-                            <span class='text-amber-400 hover:underline'>Get Game ↗</span>
-                        </div>
-                    </div>
-                    <div class='p-3.5 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/5 flex flex-col justify-between'>
-                        <div>
-                            <div class='flex items-center justify-between mb-1.5'>
-                                <span class='text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/20 text-emerald-400 border-emerald-500/30'>100% FREE</span>
-                                <span class='text-xs font-mono text-emerald-400 font-bold'>Free (Was $14.99)</span>
-                            </div>
-                            <a href='https://www.gamerpower.com/open/terrascape-epic-games-giveaway' target='_blank' rel='noopener noreferrer' class='font-bold text-white hover:text-amber-400 transition text-xs block leading-snug'>
-                                TerraScape (Epic Games) Giveaway
-                            </a>
-                        </div>
-                        <div class='mt-2 text-[10px] text-slate-400 flex items-center justify-between border-t border-white/5 pt-1.5'>
-                            <span>● Steam / PC Freebie</span>
-                            <span class='text-amber-400 hover:underline'>Get Game ↗</span>
-                        </div>
-                    </div>
-                    <div class='p-3.5 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/5 flex flex-col justify-between'>
-                        <div>
-                            <div class='flex items-center justify-between mb-1.5'>
-                                <span class='text-[10px] font-bold px-2 py-0.5 rounded border bg-amber-500/20 text-amber-400 border-amber-500/30'>ON SALE</span>
-                                <span class='text-xs font-mono text-emerald-400 font-bold'>-50% ($19.99)</span>
-                            </div>
-                            <a href='https://store.steampowered.com/app/1808500' target='_blank' rel='noopener noreferrer' class='font-bold text-white hover:text-amber-400 transition text-xs block leading-snug'>
-                                ARC Raiders
-                            </a>
-                        </div>
-                        <div class='mt-2 text-[10px] text-slate-400 flex items-center justify-between border-t border-white/5 pt-1.5'>
+                        <div class='mt-3 text-[11px] text-slate-400 flex items-center justify-between border-t border-slate-800/80 pt-2 font-mono'>
                             <span>● Steam Store</span>
-                            <span class='text-amber-400 hover:underline'>Get Game ↗</span>
-                        </div>
-                    </div>
-                    <div class='p-3.5 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/5 flex flex-col justify-between'>
-                        <div>
-                            <div class='flex items-center justify-between mb-1.5'>
-                                <span class='text-[10px] font-bold px-2 py-0.5 rounded border bg-amber-500/20 text-amber-400 border-amber-500/30'>ON SALE</span>
-                                <span class='text-xs font-mono text-emerald-400 font-bold'>-75% ($9.99)</span>
-                            </div>
-                            <a href='https://store.steampowered.com/app/376282' target='_blank' rel='noopener noreferrer' class='font-bold text-white hover:text-amber-400 transition text-xs block leading-snug'>
-                                Halo: The Master Chief Collection
-                            </a>
-                        </div>
-                        <div class='mt-2 text-[10px] text-slate-400 flex items-center justify-between border-t border-white/5 pt-1.5'>
-                            <span>● Steam Store</span>
-                            <span class='text-amber-400 hover:underline'>Get Game ↗</span>
+                            <span class='text-cyan-400 group-hover:underline'>Get Game ↗</span>
                         </div>
                     </div>
 <!-- DAILY_GAMES_END -->
                 </div>
-            </div>
+            </section>
 
-            <!-- INTERACTIVE CLASS SELECTION BAR -->
-            <div class="glass p-6">
-                <p class="text-xs uppercase font-bold text-slate-300 tracking-wider mb-4">MMO Meta Build Strings</p>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-                    <button onclick="loadSpec('paladin')" id="btn-paladin" class="p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#F58CBA] text-[#F58CBA] font-bold transition flex items-center justify-center gap-2">
+            <!-- SECTION: COMPETITIVE LOADOUT GENERATOR -->
+            <section id="meta-builds" class="glass-card rounded-3xl p-6 sm:p-8">
+                <div class="flex items-center justify-between pb-5 border-b border-slate-800 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-lg">⚔️</span>
+                        <div>
+                            <h2 class="text-xl font-bold text-white font-display tracking-wide">Mythic+ & Raid Meta Build Deck</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Select a class archetype to view verified stat weights, consumables, and copy talent strings.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CLASS SELECTOR PILLS -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 text-xs">
+                    <button onclick="loadSpec('paladin')" id="btn-paladin" class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-pink-500 text-pink-400 font-bold transition flex items-center justify-center gap-2">
                         <span>🛡️</span> Paladin
                     </button>
-                    <button onclick="loadSpec('dh')" id="btn-dh" class="p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#A330C9] text-[#A330C9] font-bold transition flex items-center justify-center gap-2">
+                    <button onclick="loadSpec('dh')" id="btn-dh" class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-purple-500 text-purple-400 font-bold transition flex items-center justify-center gap-2">
                         <span>⚔️</span> Demon Hunter
                     </button>
-                    <button onclick="loadSpec('mage')" id="btn-mage" class="p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#3FC7EB] text-[#3FC7EB] font-bold transition flex items-center justify-center gap-2">
+                    <button onclick="loadSpec('mage')" id="btn-mage" class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-sky-400 text-sky-400 font-bold transition flex items-center justify-center gap-2">
                         <span>❄️</span> Frost Mage
                     </button>
-                    <button onclick="loadSpec('dk')" id="btn-dk" class="p-3 rounded-xl bg-white/5 border border-white/10 hover:border-[#C41E3A] text-[#C41E3A] font-bold transition flex items-center justify-center gap-2">
+                    <button onclick="loadSpec('dk')" id="btn-dk" class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-rose-600 text-rose-500 font-bold transition flex items-center justify-center gap-2">
                         <span>💀</span> Death Knight
                     </button>
                 </div>
-            </div>
 
-            <!-- DYNAMIC LOADOUT CARD -->
-            <div class="glass p-7" id="spec-card" style="border-left: 4px solid #F58CBA;">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="px-3 py-1 rounded-full bg-white/10 text-white border border-white/20 text-xs font-bold">📋 Selected Loadout</span>
-                    <span class="text-xs mono font-bold text-amber-300" id="spec-name">Retribution Paladin</span>
+                <!-- ACTIVE LOADOUT DETAIL CARD -->
+                <div class="p-6 sm:p-7 rounded-2xl bg-[#030712] border border-slate-800/80" id="spec-card" style="border-left: 4px solid #F58CBA;">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 text-[11px] font-mono font-bold">Verified Loadout</span>
+                        <span class="text-xs font-mono font-bold text-amber-300" id="spec-name">Retribution Paladin</span>
+                    </div>
+
+                    <h3 class="text-xl sm:text-2xl font-bold mb-2 text-white font-display" id="guide-title">Divine Storm Burst M+ Build</h3>
+                    <p class="text-slate-300 text-xs sm:text-sm mb-5 leading-relaxed" id="guide-desc">
+                        Specialized for high burst AoE on Fortified trash packs with Cleanse Toxins utility.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-5 text-xs">
+                        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                            <p class="text-[10px] uppercase font-mono font-bold tracking-wider text-slate-400 mb-1">Stat Priority</p>
+                            <span class="text-amber-400 font-bold font-mono" id="stat-priority">Item Level > Haste >= Mastery > Crit</span>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                            <p class="text-[10px] uppercase font-mono font-bold tracking-wider text-slate-400 mb-1">Top Consumables</p>
+                            <span class="text-emerald-400 font-bold font-mono" id="consumables">Flask of Chaos • Tempered Potion</span>
+                        </div>
+                    </div>
+
+                    <div class="code-box p-4 rounded-xl text-xs text-slate-300">
+                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-slate-800 text-[11px] text-slate-400 font-mono">
+                            <span>Import String for In-Game Talent UI</span>
+                            <span class="text-emerald-400">Ready to Import</span>
+                        </div>
+                        <pre class="whitespace-pre-wrap font-mono text-emerald-400 overflow-x-auto text-[11px] leading-relaxed select-all" id="talent-string">BYEAAAAAAAAAAAAAAAAAAAAAAAAAAgQCp0SjkIpkERik0SEAAAAAAAAAAAgEJRSSkWgIJRCA</pre>
+                        <button onclick="copyToClipboard('talent-string', this)" class="mt-4 w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-amber-500/20 to-amber-600/20 hover:from-amber-500/30 hover:to-amber-600/30 text-amber-300 border border-amber-500/40 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                            📋 Copy Talent Import String
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: KEYSTONE DUNGEON PUSH TIER LIST -->
+            <section id="dungeon-radar" class="glass-card rounded-3xl p-6 sm:p-8">
+                <div class="flex items-center justify-between pb-5 border-b border-slate-800 mb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-lg">🏆</span>
+                        <div>
+                            <h2 class="text-xl font-bold text-white font-display tracking-wide">Mythic+ Push Tier List & Affixes</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Dungeon route viability based on current seasonal affixes.</p>
+                        </div>
+                    </div>
+                    <span class="text-xs px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold font-mono">
+                        Week Active
+                    </span>
                 </div>
 
-                <h3 class="text-2xl font-bold mb-2 text-white" id="guide-title">Divine Storm Burst M+ Build</h3>
-                <p class="text-slate-300 text-sm mb-4 leading-relaxed" id="guide-desc">
-                    Specialized for high burst AoE on Fortified trash packs with Cleanse Toxins utility.
-                </p>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 text-xs">
-                    <div class="p-3 rounded-lg bg-black/40 border border-white/5">
-                        <p class="text-[10px] uppercase tracking-wider text-slate-400 mb-0.5">Stat Priority</p>
-                        <span class="text-amber-400 font-bold" id="stat-priority">Item Level > Haste >= Mastery > Crit</span>
+                <div class="space-y-3 text-xs">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 gap-2">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold font-mono">Tier S</span>
+                            <span class="text-white font-bold text-sm">The Stonevault • Dawnbreaker</span>
+                        </div>
+                        <span class="text-slate-400 font-mono">Clean mob grouping, forgiving timer margins</span>
                     </div>
-                    <div class="p-3 rounded-lg bg-black/40 border border-white/5">
-                        <p class="text-[10px] uppercase tracking-wider text-slate-400 mb-0.5">Top Consumables</p>
-                        <span class="text-emerald-400 font-bold" id="consumables">Flask of Chaos • Tempered Potion</span>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 gap-2">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-bold font-mono">Tier A</span>
+                            <span class="text-white font-bold text-sm">Ara-Kara • City of Threads</span>
+                        </div>
+                        <span class="text-slate-400 font-mono">Requires coordinate interrupts & dispels</span>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 gap-2">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 font-bold font-mono">Tier B</span>
+                            <span class="text-white font-bold text-sm">Grim Batol • Siege of Boralus</span>
+                        </div>
+                        <span class="text-slate-400 font-mono">Severe fortified mob spikes; high team damage</span>
                     </div>
                 </div>
-
-                <div class="relative code-box p-4 rounded-xl mb-4 text-xs text-slate-300">
-                    <div class="flex justify-between items-center mb-2 pb-2 border-b border-white/5 text-[11px] text-slate-500">
-                        <span>Import into in-game Talent UI</span>
-                        <span class="text-emerald-400">Verified Loadout</span>
-                    </div>
-                    <pre class="whitespace-pre-wrap font-mono text-emerald-400 overflow-x-auto text-[11px]" id="talent-string">BYEAAAAAAAAAAAAAAAAAAAAAAAAAAgQCp0SjkIpkERik0SEAAAAAAAAAAAgEJRSSkWgIJRCA</pre>
-                    <button onclick="copyToClipboard('talent-string', this)" class="mt-4 px-4 py-2.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-xl text-xs font-bold hover:bg-amber-500/30 transition flex items-center gap-2">
-                        📋 Copy Talent Import String
-                    </button>
-                </div>
-            </div>
+            </section>
 
         </div>
 
-        <!-- SIDEBAR -->
-        <aside class="space-y-8">
+        <!-- SIDEBAR UTILITIES & RIGHT COLUMN (4 COLS) -->
+        <aside class="lg:col-span-4 space-y-8">
 
-            <!-- REALM & ECONOMY WIDGET -->
-            <div class="glass p-6">
-                <p class="text-xs uppercase font-bold mb-4 tracking-wider text-slate-300 flex items-center justify-between">
-                    <span>Economy & Servers</span>
-                    <span class="text-[10px] text-emerald-400">Live Feed</span>
-                </p>
-                <div class="space-y-3.5 text-xs">
-                    <div class="flex justify-between items-center border-b border-white/5 pb-2.5">
-                        <span class="text-slate-400">WoW US / EU Servers</span>
-                        <span class="text-emerald-400 font-bold flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Online</span>
+            <!-- SIDEBAR: LIVE ECONOMY & SERVERS -->
+            <div class="glass-card rounded-3xl p-6 sm:p-7">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+                    <span class="text-xs uppercase font-mono font-bold text-slate-300 flex items-center gap-2">
+                        <span>⚡</span> Live Economy & Servers
+                    </span>
+                    <span class="text-[10px] text-emerald-400 font-mono font-bold">Active</span>
+                </div>
+                <div class="space-y-3.5 text-xs font-mono">
+                    <div class="flex justify-between items-center border-b border-slate-800/80 pb-2.5">
+                        <span class="text-slate-400">WoW US / EU Realms</span>
+                        <span class="text-emerald-400 font-bold flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Online</span>
                     </div>
-                    <div class="flex justify-between items-center border-b border-white/5 pb-2.5">
+                    <div class="flex justify-between items-center border-b border-slate-800/80 pb-2.5">
                         <span class="text-slate-400">Steam Network</span>
-                        <span class="text-emerald-400 font-bold flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Online</span>
+                        <span class="text-emerald-400 font-bold flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Normal</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-slate-800/80 pb-2.5">
+                        <span class="text-slate-400">PoE 2 Divine Ratio</span>
+                        <span class="text-amber-300 font-bold">140c</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-slate-400">WoW Token (US)</span>
-                        <span class="text-amber-400 font-bold mono" id="side-token">314,500 Gold</span>
+                        <span class="text-slate-400">WoW Token (Live)</span>
+                        <span class="text-amber-400 font-bold" id="side-token">314,500 Gold</span>
                     </div>
                 </div>
             </div>
 
-            <!-- DAILY GAMING NEWS TICKER -->
-            <div class="glass p-6">
-                <p class="text-xs uppercase font-bold mb-3 tracking-wider text-slate-300 flex items-center justify-between">
-                    <span>📰 Daily Industry News</span>
-                    <span class="text-[10px] text-emerald-400">Daily</span>
-                </p>
-                <div class="space-y-2 text-xs" id="news-feed">
+            <!-- SIDEBAR: HOURLY / DAILY INDUSTRY NEWS -->
+            <div class="glass-card rounded-3xl p-6 sm:p-7">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+                    <span class="text-xs uppercase font-mono font-bold text-slate-300 flex items-center gap-2">
+                        <span>📰</span> Industry News & Updates
+                    </span>
+                    <span class="text-[10px] text-cyan-400 font-mono font-bold">Daily Stream</span>
+                </div>
+                <div class="space-y-3 text-xs max-h-[500px] overflow-y-auto custom-scroll pr-1" id="news-feed">
 <!-- DAILY_NEWS_START -->
-                    <div class='p-3 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/5'>
-                        <a href='https://www.pcgamer.com/gaming-industry/game-development/our-humble-goal-is-to-survive-the-ai-revolution-says-epic-games-ceo-as-its-star-wars-and-marvel-crossover-pivots-to-ai-first-development/' target='_blank' rel='noopener noreferrer' class='font-bold text-white hover:text-amber-400 transition text-xs block leading-snug'>
-                            'Our humble goal is to survive the AI revolution' says Epic Games CEO,...
+                    <div class='p-3.5 rounded-xl bg-slate-900/60 hover:bg-slate-900 border border-slate-800 transition'>
+                        <a href='https://store.steampowered.com/news' target='_blank' rel='noopener noreferrer' class='font-bold text-white hover:text-cyan-400 transition text-xs block leading-snug'>
+                            Steam Community & Daily Patch Notes
                         </a>
-                        <div class='flex items-center justify-between mt-1.5 text-[10px] text-slate-400'>
-                            <span class='text-amber-400/90 font-bold'>● PC Gamer</span>
-                            <span>Daily Release</span>
-                        </div>
-                    </div>
-                    <div class='p-3 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/5'>
-                        <a href='https://www.pcgamer.com/games/rts/does-blizzards-revival-of-its-classic-games-signal-a-return-of-the-old-blizzard/' target='_blank' rel='noopener noreferrer' class='font-bold text-white hover:text-amber-400 transition text-xs block leading-snug'>
-                            Does Blizzard's revival of its classic games signal a return of the 'o...
-                        </a>
-                        <div class='flex items-center justify-between mt-1.5 text-[10px] text-slate-400'>
-                            <span class='text-amber-400/90 font-bold'>● PC Gamer</span>
-                            <span>Daily Release</span>
-                        </div>
-                    </div>
-                    <div class='p-3 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/5'>
-                        <a href='https://www.pcgamer.com/games/world-of-warcraft/why-alts-are-part-of-world-of-warcraft-forevers-core-progression-plans/' target='_blank' rel='noopener noreferrer' class='font-bold text-white hover:text-amber-400 transition text-xs block leading-snug'>
-                            Why alts are part of World of Warcraft: Forever's core progression pla...
-                        </a>
-                        <div class='flex items-center justify-between mt-1.5 text-[10px] text-slate-400'>
-                            <span class='text-amber-400/90 font-bold'>● PC Gamer</span>
-                            <span>Daily Release</span>
-                        </div>
-                    </div>
-                    <div class='p-3 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/5'>
-                        <a href='https://www.wowhead.com/news' target='_blank' rel='noopener noreferrer' class='font-bold text-white hover:text-amber-400 transition text-xs block leading-snug'>
-                            Wowhead News...
-                        </a>
-                        <div class='flex items-center justify-between mt-1.5 text-[10px] text-slate-400'>
-                            <span class='text-amber-400/90 font-bold'>● Wowhead</span>
-                            <span>Daily Release</span>
+                        <div class='flex items-center justify-between mt-2 text-[10px] text-slate-400 font-mono'>
+                            <span class='text-cyan-400 font-semibold'>● Steam Feed</span>
+                            <span>Daily Feed</span>
                         </div>
                     </div>
 <!-- DAILY_NEWS_END -->
                 </div>
             </div>
 
-            <!-- DONATION SECTION -->
-            <div class="glass p-6 border-l-4" style="border-color:#f59e0b">
-                <p class="text-xs uppercase font-bold mb-3" style="color:#f59e0b">💰 Support the Gaming Lab</p>
-                <div class="space-y-3 text-xs">
+            <!-- SIDEBAR: COMMUNITY SUPPORT & LAB -->
+            <div class="glass-card rounded-3xl p-6 sm:p-7 border-l-4" style="border-left-color: #f59e0b;">
+                <p class="text-xs uppercase font-mono font-bold mb-3 text-amber-400 flex items-center gap-1.5">
+                    <span>💎</span> Support the Research Lab
+                </p>
+                <div class="space-y-3.5 text-xs">
                     <div>
-                        <p class="text-slate-400 mb-1">Smart Chain (BEP20/ERC20)</p>
-                        <p class="font-mono text-slate-200 break-all">0x30ce31b427707335343b43708a35b20955f1763c</p>
+                        <p class="text-slate-400 mb-1 text-[11px] font-mono">Smart Chain (BEP20 / ERC20)</p>
+                        <p class="font-mono text-slate-200 break-all bg-black/60 p-2.5 rounded-xl border border-slate-800 text-[10px]">0x30ce31b427707335343b43708a35b20955f1763c</p>
                     </div>
-                    <a href="https://www.binance.com/activity/referral-entry/CPA?ref=CPA_00LPXS1YYG" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 px-4 py-2 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400 hover:bg-yellow-500/30 transition text-xs font-bold">
-                        📊 Create Account (Binance Ref)
+                    <a href="https://www.binance.com/activity/referral-entry/CPA?ref=CPA_00LPXS1YYG" target="_blank" rel="noopener noreferrer" class="w-full text-center block px-4 py-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400 hover:bg-amber-500/20 transition text-xs font-bold font-mono">
+                        📊 Create Binance Account (Ref Bonus) ↗
                     </a>
                 </div>
             </div>
 
         </aside>
     </div>
-</div>
 
-<footer class="mt-16 pt-8 border-t border-white/10 text-center text-xs text-slate-600">
-    <div class="flex justify-center flex-wrap gap-4 mb-3">
-        <a href="/about.html" class="hover:text-white">About</a>
-        <a href="/privacy.html" class="hover:text-white">Privacy</a>
-        <a href="/terms.html" class="hover:text-white">Terms</a>
+    <!-- EXPANDED SEO FAQ TOPIC SECTION (DRIVES GOOGLE SEARCH CLICKS) -->
+    <section id="faq" class="glass-card rounded-3xl p-6 sm:p-10 border border-slate-800">
+        <div class="max-w-3xl mb-8">
+            <span class="text-xs uppercase font-mono font-bold tracking-wider text-cyan-400">Frequently Asked Questions</span>
+            <h2 class="text-2xl font-bold text-white font-display mt-1">Finding Free Games, Releases & Meta Builds</h2>
+            <p class="text-xs text-slate-400 mt-1">Common questions indexed for quick reference and search navigation.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
+                <h3 class="font-bold text-white text-sm mb-2 flex items-center gap-2">
+                    <span class="text-cyan-400">Q:</span> How often are free PC games updated?
+                </h3>
+                <p class="text-slate-400">
+                    Our automated agent runs daily scans across Steam, GamerPower, and community feeds to capture 100% free claimable PC promotions before they expire.
+                </p>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
+                <h3 class="font-bold text-white text-sm mb-2 flex items-center gap-2">
+                    <span class="text-cyan-400">Q:</span> How do I import the talent build string?
+                </h3>
+                <p class="text-slate-400">
+                    Click the <strong>Copy Talent Import String</strong> button. Open your in-game Talents tree, click the bottom-left dropdown, select "Import", and press <kbd class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">Ctrl+V</kbd>.
+                </p>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
+                <h3 class="font-bold text-white text-sm mb-2 flex items-center gap-2">
+                    <span class="text-cyan-400">Q:</span> Are the games 100% free to keep forever?
+                </h3>
+                <p class="text-slate-400">
+                    Yes. Items tagged with <span class="text-emerald-400 font-bold font-mono">100% FREE</span> are permanent license promotions on stores like Steam, Epic Games Store, and GOG that remain in your library permanently once claimed.
+                </p>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80">
+                <h3 class="font-bold text-white text-sm mb-2 flex items-center gap-2">
+                    <span class="text-cyan-400">Q:</span> When do game resets occur?
+                </h3>
+                <p class="text-slate-400">
+                    World of Warcraft resets on Tuesday mornings for North America (US) and Wednesday mornings for Europe (EU). Steam updates discounts at 10:00 AM PST.
+                </p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- PROFESSIONAL SITE FOOTER -->
+<footer class="mt-20 border-t border-slate-800/80 bg-[#020306] py-10 text-xs text-slate-500">
+    <div class="max-w-[1700px] mx-auto px-4 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+            <span class="font-display font-black text-slate-200">OMNIGAMING INTEL</span>
+            <span class="text-slate-700">|</span>
+            <span>Independent Competitive Gaming Radar & Free Games Index</span>
+        </div>
+        <div class="flex flex-wrap gap-6 font-mono text-[11px]">
+            <a href="/about.html" class="hover:text-cyan-400 transition">About Project</a>
+            <a href="/privacy.html" class="hover:text-cyan-400 transition">Privacy Policy</a>
+            <a href="/terms.html" class="hover:text-cyan-400 transition">Terms of Service</a>
+            <a href="https://store.steampowered.com" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition">Steam Store</a>
+        </div>
+        <p class="font-mono text-[11px] text-slate-600">© 2026 OmniGaming Intel. Powered by autonomous updates.</p>
     </div>
-    <p>© 2026 OmniGaming Intel • Competitive Game Hub</p>
 </footer>
 
+<!-- INTERACTIVE SCRIPTS -->
 <script>
 const specDatabase = {
     paladin: {
@@ -382,7 +574,7 @@ function loadSpec(key) {
     document.getElementById("talent-string").textContent = data.talents;
     const card = document.getElementById("spec-card");
     card.style.borderLeft = `4px solid ${data.color}`;
-    card.style.boxShadow = `0 0 25px ${data.color}20`;
+    card.style.boxShadow = `0 10px 30px ${data.color}15`;
 }
 
 function copyToClipboard(elementId, btn) {
@@ -413,10 +605,10 @@ function fallbackCopy(text, btn) {
 function showSuccess(btn) {
     const orig = btn.innerHTML;
     btn.innerHTML = "✅ Copied to Clipboard!";
-    btn.classList.add("bg-emerald-500/40", "text-white");
+    btn.classList.add("bg-emerald-500/30", "text-emerald-200", "border-emerald-500/50");
     setTimeout(() => {
         btn.innerHTML = orig;
-        btn.classList.remove("bg-emerald-500/40", "text-white");
+        btn.classList.remove("bg-emerald-500/30", "text-emerald-200", "border-emerald-500/50");
     }, 2000);
 }
 </script>
