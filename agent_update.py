@@ -9,19 +9,23 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 }
 
+# Affiliate Links & Telegram Settings
 G2G_REFLINK = "https://www.g2g.com/mjq"
+TELEGRAM_CHANNEL = os.getenv("TELEGRAM_CHAT_ID", "@AII2026futher")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
 # ─────────────────────────────────────────────
 # 1. LIVE STEAM RELEASES, FREE GAMES & G2G DEALS
 # ─────────────────────────────────────────────
 def get_free_and_new_games():
     """
-    Fetches 100% free PC games, Steam specials, and always includes
+    Fetches 100% free PC games, Steam specials, and includes
     the verified G2G partner marketplace deal.
+    Returns: (html_cards_str, list_of_game_objects_for_telegram)
     """
     games = []
     
-    # ALWAYS RECOMMENDED: Featured G2G Marketplace Card
+    # 1. ALWAYS RECOMMENDED: Featured G2G Marketplace Card
     g2g_card = {
         "title": "G2G Gamer Market — Discounted Game Keys, Top-Ups & In-Game Gold",
         "link": G2G_REFLINK,
@@ -33,7 +37,7 @@ def get_free_and_new_games():
     }
     games.append(g2g_card)
 
-    # 1. Fetch 100% Free / Free-to-Claim Games (GamerPower Freebie API)
+    # 2. Fetch 100% Free / Free-to-Claim Games (GamerPower Freebie API)
     try:
         r = requests.get("https://www.gamerpower.com/api/giveaways?platform=pc", headers=HEADERS, timeout=7)
         if r.status_code == 200:
@@ -54,7 +58,7 @@ def get_free_and_new_games():
     except Exception as e:
         print(f"Notice: Free games giveaway feed skipped ({e})")
 
-    # 2. Fetch Steam Featured New Releases & Specials
+    # 3. Fetch Steam Featured New Releases & Specials
     try:
         r = requests.get("https://store.steampowered.com/api/featuredcategories/?l=english", headers=HEADERS, timeout=7)
         if r.status_code == 200:
@@ -117,7 +121,8 @@ def get_free_and_new_games():
             f"                    </div>"
         )
         html_cards.append(card)
-    return "\n".join(html_cards)
+
+    return "\n".join(html_cards), games
 
 # ─────────────────────────────────────────────
 # 2. LIVE GAME ECONOMY (WOW TOKEN)
@@ -189,11 +194,62 @@ def get_live_game_news():
                 f"                        </div>\n"
                 f"                    </div>"
             )
-        return "\n".join(cards)
-    return ""
+        return "\n".join(cards), news_items
+    return "", []
 
 # ─────────────────────────────────────────────
-# 4. SITE BUILDER
+# 4. TELEGRAM AUTO-BROADCASTER
+# ─────────────────────────────────────────────
+def send_telegram_update(date_str, token_price, games_list):
+    """
+    Broadcasts the daily gaming update to the specified Telegram channel.
+    """
+    if not TELEGRAM_BOT_TOKEN:
+        print("ℹ️ Telegram: TELEGRAM_BOT_TOKEN not set. Skipping channel broadcast.")
+        return
+
+    # Build the Telegram message (HTML formatted)
+    msg_lines = [
+        f"🎮 <b>OMNIGAMING INTEL DAILY RADAR</b>",
+        f"📅 <i>{date_str}</i>",
+        f"🪙 <b>WoW Token:</b> <code>{token_price}</code>",
+        "",
+        "🎁 <b>TODAY'S FREE GAMES & DROPS:</b>"
+    ]
+
+    for g in games_list[:4]:
+        tag_icon = "💎" if g.get("is_partner") else ("🔥" if "FREE" in g.get("tag", "") else "🎯")
+        msg_lines.append(f"{tag_icon} <b>[{g.get('tag')}]</b> <a href='{g.get('link')}'>{html.escape(g.get('title'))}</a>")
+        msg_lines.append(f"   └ <i>{g.get('price')} • {g.get('source')}</i>")
+
+    msg_lines.extend([
+        "",
+        f"🛒 <b>G2G Market Partner:</b> <a href='{G2G_REFLINK}'>Shop Cheap Keys, Gold & Giftcards (20% Off Rate)</a>",
+        "",
+        "🌐 <b>Live Web Dashboard:</b> https://autonomous-portfolio-2026.live/"
+    ])
+
+    full_message = "\n".join(msg_lines)
+
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_CHANNEL,
+        "text": full_message,
+        "parse_mode": "HTML",
+        "disable_web_page_preview": False
+    }
+
+    try:
+        res = requests.post(url, json=payload, timeout=10)
+        if res.status_code == 200:
+            print(f"✅ Telegram: Successfully broadcasted update to {TELEGRAM_CHANNEL}!")
+        else:
+            print(f"⚠️ Telegram broadcast response ({res.status_code}): {res.text}")
+    except Exception as e:
+        print(f"❌ Telegram broadcast error: {e}")
+
+# ─────────────────────────────────────────────
+# 5. SITE BUILDER & EXECUTION
 # ─────────────────────────────────────────────
 def update_site():
     if not os.path.exists("index.html"):
@@ -204,8 +260,8 @@ def update_site():
     print(f"\n[OmniGaming Daily Agent] Running for {today_str}...")
 
     token_price = get_wow_token()
-    game_deals_html = get_free_and_new_games()
-    news_html = get_live_game_news()
+    game_deals_html, raw_games = get_free_and_new_games()
+    news_html, raw_news = get_live_game_news()
 
     with open("index.html", "r", encoding="utf-8") as f:
         content = f.read()
@@ -236,7 +292,10 @@ def update_site():
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(content)
 
-    print(f"✅ index.html updated successfully with G2G partner link ({G2G_REFLINK})!")
+    print("✅ index.html updated successfully!")
+
+    # 5. Broadcast to Telegram Channel
+    send_telegram_update(today_str, token_price, raw_games)
 
 if __name__ == "__main__":
     update_site()
